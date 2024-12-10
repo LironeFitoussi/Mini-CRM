@@ -25,6 +25,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 app = Flask(__name__)
 
 # Paths and settings
+CHROME_PROFILE_PATH = "/home/ubuntu/.whatsapp-profile"  # Update this path
 QR_CODE_IMAGE_PATH = "whatsapp_qr.png"
 
 # AWS S3 Client
@@ -38,28 +39,31 @@ s3 = boto3.client(
 
 class WhatsAppAutomation:
     @staticmethod
-    def generate_qr_code(driver):
-        """Save QR code screenshot, or capture full page if QR code is not found."""
+    def generate_qr_code_or_screenshot(driver):
+        """Check login status, save QR code or full page screenshot accordingly."""
         try:
-            WebDriverWait(driver, 15).until(
-                EC.presence_of_element_located((By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]'))
+            # Check if the user is already logged in
+            WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
             )
-            qr_code_element = driver.find_element(By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]')
-            qr_code_element.screenshot(QR_CODE_IMAGE_PATH)
-            logging.info(f"QR code screenshot saved at {QR_CODE_IMAGE_PATH}.")
-            return QR_CODE_IMAGE_PATH
-        except Exception as e:
-            logging.warning(f"QR code element not found. Capturing full page instead: {str(e)}")
-            # Capture full page screenshot as a fallback
-            fallback_screenshot_path = "fallback_page_screenshot.png"
+            # Already logged in, capture full page screenshot
+            logged_in_screenshot = "logged_in_screenshot.png"
+            driver.save_screenshot(logged_in_screenshot)
+            logging.info("User already logged in. Captured full page screenshot.")
+            return logged_in_screenshot, "logged_in"
+        except Exception:
+            # User not logged in, generate QR code
             try:
-                driver.save_screenshot(fallback_screenshot_path)
-                logging.info(f"Full page screenshot saved at {fallback_screenshot_path}.")
-                return fallback_screenshot_path
-            except Exception as screenshot_error:
-                logging.error(f"Failed to capture full page screenshot: {str(screenshot_error)}")
-                return None
-
+                WebDriverWait(driver, 15).until(
+                    EC.presence_of_element_located((By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]'))
+                )
+                qr_code_element = driver.find_element(By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]')
+                qr_code_element.screenshot(QR_CODE_IMAGE_PATH)
+                logging.info(f"QR code screenshot saved at {QR_CODE_IMAGE_PATH}.")
+                return QR_CODE_IMAGE_PATH, "qr_code"
+            except Exception as e:
+                logging.warning(f"Failed to locate QR code: {str(e)}")
+                return None, "error"
 
     @staticmethod
     def wait_for_login(driver):
@@ -103,43 +107,55 @@ class ImageUploader:
             return None
 
 
+def start_webdriver():
+    """Start a WebDriver instance with a persistent user profile."""
+    chrome_options = Options()
+    chrome_options.add_argument(f"--user-data-dir={CHROME_PROFILE_PATH}")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    # Uncomment for headless mode
+    # chrome_options.add_argument("--headless")
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    return driver
+
+
 @app.route("/get-qr-code", methods=["GET"])
 def get_qr_code():
-    """Generate WhatsApp QR code, upload it to S3, and wait for user login."""
+    """Generate WhatsApp QR code or capture a screenshot if already logged in."""
     try:
         # Start WebDriver
         logging.info("Starting WebDriver.")
-        chrome_options = Options()
-        # chrome_options.add_argument("--headless")  # Uncomment for headless mode
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver = start_webdriver()
         driver.get("https://web.whatsapp.com")
-        time.sleep(7)  # Wait for QR code to load
+        time.sleep(7)  # Wait for the page to load
 
-        # Capture QR code or fallback screenshot
-        qr_code_path = WhatsAppAutomation.generate_qr_code(driver)
-        if not qr_code_path:
+        # Generate QR code or take a screenshot if already logged in
+        file_path, status = WhatsAppAutomation.generate_qr_code_or_screenshot(driver)
+        if not file_path:
             driver.quit()
-            return jsonify({"error": "Failed to generate QR code or fallback screenshot."}), 500
+            return jsonify({"error": "Failed to generate QR code or capture screenshot."}), 500
 
-        # Upload screenshot to S3
+        # Upload image to S3
         bucket_name = os.getenv("AWS_BUCKET_NAME")
-        file_url = ImageUploader.upload_image_to_s3(qr_code_path, bucket_name)
+        file_url = ImageUploader.upload_image_to_s3(file_path, bucket_name)
         if not file_url:
             driver.quit()
-            return jsonify({"error": "Failed to upload screenshot to S3."}), 500
+            return jsonify({"error": "Failed to upload image to S3."}), 500
 
-        # Wait for login in a separate thread
-        login_thread = Thread(target=WhatsAppAutomation.wait_for_login, args=(driver,))
-        login_thread.start()
+        # Start a separate thread to wait for login if a QR code was generated
+        if status == "qr_code":
+            login_thread = Thread(target=WhatsAppAutomation.wait_for_login, args=(driver,))
+            login_thread.start()
 
-        return jsonify({"message": "QR code or fallback screenshot uploaded successfully.", "url": file_url})
+        driver.quit()
+        return jsonify({"message": "Process completed successfully.", "status": status, "url": file_url})
 
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An error occurred during the process."}), 500
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
