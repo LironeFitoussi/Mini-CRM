@@ -17,7 +17,7 @@ app.use("/api/upload", uploadRoutes);
 app.get("/api/login-to-whatsapp", async (req, res) => {
   try {
     // Fetch the QR code image from the Python server
-    const response = await axios.get("http://localhost:5001/get-qr-code");
+    const response = await axios.get("http://3.79.29.11/get-qr-code");
 
     // Extract the URL from the response
     const url = response.data.url;

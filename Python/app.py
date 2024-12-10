@@ -130,5 +130,5 @@ def get_qr_code():
         return jsonify({"error": "An error occurred during the process."}), 500
 
 
-if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
