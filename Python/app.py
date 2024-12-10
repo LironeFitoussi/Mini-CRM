@@ -39,15 +39,24 @@ s3 = boto3.client(
 class WhatsAppAutomation:
     @staticmethod
     def generate_qr_code(driver):
-        """Save QR code screenshot."""
+        """Save QR code screenshot, or capture full page if QR code is not found."""
         try:
             qr_code_element = driver.find_element(By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]')
             qr_code_element.screenshot(QR_CODE_IMAGE_PATH)
             logging.info(f"QR code screenshot saved at {QR_CODE_IMAGE_PATH}.")
             return QR_CODE_IMAGE_PATH
         except Exception as e:
-            logging.error(f"Failed to capture QR code: {str(e)}")
-            return None
+            logging.warning(f"QR code element not found. Capturing full page instead: {str(e)}")
+            # Capture full page screenshot as a fallback
+            fallback_screenshot_path = "fallback_page_screenshot.png"
+            try:
+                driver.save_screenshot(fallback_screenshot_path)
+                logging.info(f"Full page screenshot saved at {fallback_screenshot_path}.")
+                return fallback_screenshot_path
+            except Exception as screenshot_error:
+                logging.error(f"Failed to capture full page screenshot: {str(screenshot_error)}")
+                return None
+
 
     @staticmethod
     def wait_for_login(driver):
@@ -106,29 +115,28 @@ def get_qr_code():
         driver.get("https://web.whatsapp.com")
         time.sleep(7)  # Wait for QR code to load
 
-        # Capture QR code
+        # Capture QR code or fallback screenshot
         qr_code_path = WhatsAppAutomation.generate_qr_code(driver)
         if not qr_code_path:
             driver.quit()
-            return jsonify({"error": "Failed to generate QR code."}), 500
+            return jsonify({"error": "Failed to generate QR code or fallback screenshot."}), 500
 
-        # Upload QR code to S3
+        # Upload screenshot to S3
         bucket_name = os.getenv("AWS_BUCKET_NAME")
         file_url = ImageUploader.upload_image_to_s3(qr_code_path, bucket_name)
         if not file_url:
             driver.quit()
-            return jsonify({"error": "Failed to upload QR code to S3."}), 500
+            return jsonify({"error": "Failed to upload screenshot to S3."}), 500
 
         # Wait for login in a separate thread
         login_thread = Thread(target=WhatsAppAutomation.wait_for_login, args=(driver,))
         login_thread.start()
 
-        return jsonify({"message": "QR code generated and uploaded successfully.", "url": file_url})
+        return jsonify({"message": "QR code or fallback screenshot uploaded successfully.", "url": file_url})
 
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An error occurred during the process."}), 500
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
