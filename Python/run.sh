@@ -2,8 +2,9 @@
 
 # Update package list and install necessary system dependencies
 echo "Installing system dependencies..."
-sudo yum update -y
-sudo yum install -y python3 python3-pip nss xorg-x11-server-Xvfb unzip wget
+sudo apt update -y
+sudo apt upgrade -y
+sudo apt install -y python3 python3-pip libnss3 xvfb unzip wget
 
 # Remove all existing pip packages
 echo "Removing all existing pip packages..."
@@ -27,9 +28,9 @@ pip3 install webdriver-manager
 if ! command -v google-chrome &> /dev/null
 then
     echo "Google Chrome not found. Installing..."
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
-    sudo yum install -y ./google-chrome-stable_current_x86_64.rpm
-    rm -f google-chrome-stable_current_x86_64.rpm
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    sudo apt install -y ./google-chrome-stable_current_amd64.deb
+    rm -f google-chrome-stable_current_amd64.deb
 else
     echo "Google Chrome is already installed."
 fi
