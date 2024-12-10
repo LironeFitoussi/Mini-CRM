@@ -41,6 +41,9 @@ class WhatsAppAutomation:
     def generate_qr_code(driver):
         """Save QR code screenshot, or capture full page if QR code is not found."""
         try:
+            WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located((By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]'))
+            )
             qr_code_element = driver.find_element(By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]')
             qr_code_element.screenshot(QR_CODE_IMAGE_PATH)
             logging.info(f"QR code screenshot saved at {QR_CODE_IMAGE_PATH}.")
