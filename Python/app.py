@@ -351,7 +351,11 @@ def logout():
         driver.execute_script("window.indexedDB.databases().then(dbs => { dbs.forEach(db => { indexedDB.deleteDatabase(db.name); }); });")
     
         driver.quit()
-            
+    
+        # Remove the Cached Driver at /root/.wdm/drivers/chromedriver/
+        os.system("rm -rf /root/.wdm/drivers/chromedriver/")
+    
+        # Remove the profile directory        
         if os.path.exists(PROFILE_DIRECTORY):
             print(f"Deleting profile directory: {PROFILE_DIRECTORY}")
             os.system(f"rm -rf {PROFILE_DIRECTORY}")
