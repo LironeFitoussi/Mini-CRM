@@ -26,6 +26,10 @@ app = Flask(__name__)
 
 # Paths and settings
 QR_CODE_IMAGE_PATH = "whatsapp_qr.png"
+PROFILE_DIRECTORY = os.path.join(os.getcwd(), "chrome_profile")
+
+if not os.path.exists(PROFILE_DIRECTORY):
+    os.makedirs(PROFILE_DIRECTORY)
 
 # AWS S3 Client
 s3 = boto3.client(
@@ -35,6 +39,41 @@ s3 = boto3.client(
     region_name=os.getenv("AWS_REGION"),
 )
 
+# STATIC STATUS
+STATUS = {
+    "status": "User not logged in",
+    "message": "Please scan the QR code to log in.",
+}
+
+# On App Start, Open Browser to Get Status of WhatsApp
+def init_load():
+    # Step 1: Start WebDriver
+    logging.info("Starting WebDriver.")
+    chrome_options = Options()
+    # chrome_options.add_argument("--headless")  # Uncomment for headless mode
+    chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver.get("https://web.whatsapp.com")
+    
+    # Step 2: Check if User is Logged In
+    try:
+        logging.info("Checking if user is logged in...")
+        WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
+        )
+        logging.info("User is logged in.")
+        STATUS["status"] = "User logged in"
+        STATUS["message"] = "User is logged in."
+    except Exception as e:
+        logging.info("User is not logged in.")
+        STATUS["status"] = "User not logged in"
+        STATUS["message"] = "Please scan the QR code to log in."
+    finally:
+        driver.quit()
+init_load()
 
 class WhatsAppAutomation:
     @staticmethod
@@ -107,14 +146,20 @@ class ImageUploader:
 def get_qr_code():
     """Generate WhatsApp QR code, upload it to S3, and wait for user login."""
     try:
+        # before starting the WebDriver, check if there is a logged in user
+        if STATUS["status"] == "User logged in":
+            return jsonify({"message": "User is already logged in."})
+        
         # Start WebDriver
         logging.info("Starting WebDriver.")
         chrome_options = Options()
         # chrome_options.add_argument("--headless")  # Uncomment for headless mode
+        chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
 
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.get("https://web.whatsapp.com")
         time.sleep(7)  # Wait for QR code to load
 
@@ -141,5 +186,11 @@ def get_qr_code():
         logging.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An error occurred during the process."}), 500
 
+@app.route("/status", methods=["GET"])
+def get_status():
+    """Get the current status of the WhatsApp user."""
+    return jsonify(STATUS)
+
 if __name__ == '__main__':
+    # Run the app
     app.run(host='0.0.0.0', port=5000, debug=True)
