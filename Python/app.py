@@ -326,9 +326,17 @@ class WhatsAppAutomation:
         """Wait for the user to log in and then notify the server."""
         try:
             logging.info("Waiting for user login...")
+            WebDriverWait(driver, 120).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
+            )
+            
+            # in case of unfound element, try to refresh the page
+            driver.refresh()
+            time.sleep(5)
             WebDriverWait(driver, 60).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
             )
+            
             logging.info("User successfully logged in.")
             # Update the status
             STATUS["status"] = "User logged in"
