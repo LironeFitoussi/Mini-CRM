@@ -338,9 +338,18 @@ def logout():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     try:
+        # Start WebDriver
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         driver.get("https://web.whatsapp.com")
+        
+        # Delete all cookies
         driver.delete_all_cookies()
+        
+        # Delete Entire Browsing Data
+        driver.execute_script("window.localStorage.clear();")
+        driver.execute_script("window.sessionStorage.clear();")
+        driver.execute_script("window.indexedDB.databases().then(dbs => { dbs.forEach(db => { indexedDB.deleteDatabase(db.name); }); });")
+    
         driver.quit()
             
         if os.path.exists(PROFILE_DIRECTORY):
