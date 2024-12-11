@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ImageUploader from "./components/ImageUploader";
 import axios from "axios";
-
+import DisplayNumbers from "./components/DisplayNumbers";
 const App = () => {
   const [qrCodeSrc, setQrCodeSrc] = useState(null); // State to store QR code image source
   const [error, setError] = useState(null); // State to handle errors
@@ -23,11 +23,13 @@ const App = () => {
 
   return (
     <div>
-      <h1>Upload Images to S3</h1>
-      <ImageUploader />
-      <button onClick={handleLoginToWhatsApp}>Login to WhatsApp</button>
+      <DisplayNumbers />
+      {/* <h1>Upload Images to S3</h1> */}
+      {/* <ImageUploader /> */}
+      {/* <button onClick={handleLoginToWhatsApp}>Login to WhatsApp</button> */}
 
       {/* Display the QR code or an error message */}
+
       {qrCodeSrc ? (
         <div>
           <h2>Scan the QR Code</h2>

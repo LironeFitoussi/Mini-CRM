@@ -16,6 +16,7 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 from dotenv import load_dotenv
 from threading import Thread
+from selenium.common.exceptions import TimeoutException
 import phonenumbers
 from phonenumbers import geocoder
 from typing import Optional
@@ -220,7 +221,6 @@ class ImageUploader:
         except Exception as e:
             logging.error(f"Failed to upload image to S3: {str(e)}")
             return None
-
 
 # WhatsApp Automation Class
 class WhatsAppAutomation:
@@ -481,6 +481,77 @@ def process_numbers():
     finally:
         os.remove(temp_file_path)
 
+@app.route('/validate', methods=['POST'])
+def validate_whatsapp_numbers():
+    def background_validation():
+        driver = None
+        try:
+            # Setup browser with persistent session
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")  # Uncomment for headless mode
+            chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            
+            # Fetch numbers where is_whatsapp is "unknown"
+            to_validate = list(valid_numbers_col.find({"is_whatsapp": "unknown"}))
+            
+            validated_count = 0
+            for entry in to_validate:
+                phone_number = entry["phoneNumber"]
+                url = f"https://web.whatsapp.com/send?phone={phone_number}"
+                driver.get(url)
+                
+                try:
+                    # Wait for conversation header or error state
+                    WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, "//header[@class='_amid']"))
+                    )
+                    # Number is valid on WhatsApp
+                    valid_numbers_col.update_one(
+                        {"_id": entry["_id"]}, 
+                        {"$set": {"is_whatsapp": True}}
+                    )
+                    print(f"Number {phone_number} is valid on WhatsApp")
+                    validated_count += 1
+                except TimeoutException:
+                    # Number is not valid on WhatsApp
+                    valid_numbers_col.update_one(
+                        {"_id": entry["_id"]}, 
+                        {"$set": {"is_whatsapp": False}}
+                    )
+                    print(f"Number {phone_number} is not valid on WhatsApp")
+            
+            print({
+                "message": "WhatsApp validation completed",
+                "total_checked": len(to_validate),
+                "validated_count": validated_count
+            })
+        
+        except Exception as e:
+            print({
+                "error": "Validation failed",
+                "details": str(e)
+            })
+        
+        finally:
+            if driver:
+                driver.quit()
+    # Check if the user is logged in
+    if STATUS["status"] == "User not logged in":
+        return jsonify({"error": "User is not logged in"}), 400
+    else:
+        # Start the background validation in a new thread
+        thread = Thread(target=background_validation)
+        thread.start()
+    
+
+    # Immediate response to the client
+    return jsonify({
+        "message": "Scanning started, we will notify you when the job is done"
+    }), 202
+    
 if __name__ == '__main__':
     # Run the app
     app.run(host='0.0.0.0', port=5000, debug=True)
