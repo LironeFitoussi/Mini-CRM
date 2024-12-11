@@ -8,7 +8,7 @@ const DisplayNumbers = () => {
     useEffect(() => {
         const fetchContacts = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/contacts');
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/contacts`);
                 console.log(response.data);
                 
                 setContacts(response.data);
