@@ -332,6 +332,11 @@ def get_qr_code():
 def logout():
     """Log out the user by deleting the profile directory."""
     try:
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver.get("https://web.whatsapp.com")
+        driver.delete_all_cookies()
+        driver.quit()
+            
         if os.path.exists(PROFILE_DIRECTORY):
             print(f"Deleting profile directory: {PROFILE_DIRECTORY}")
             os.system(f"rm -rf {PROFILE_DIRECTORY}")
@@ -355,7 +360,6 @@ def logout():
             except Exception as e:
                 driver.quit()
                 return jsonify({"error": "Failed to log out the user."}), 500
-                
                 
             logging.info("User logged out.")
             STATUS["status"] = "User not logged in"
