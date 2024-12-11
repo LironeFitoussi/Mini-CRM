@@ -8,6 +8,7 @@ echo "Installing system dependencies..."
 sudo apt update -y
 sudo apt upgrade -y
 sudo apt install -y python3 python3-pip libnss3 xvfb unzip wget software-properties-common
+sudo apt install python3.12-venv
 
 # Remove all existing pip packages
 echo "Removing all existing pip packages..."
@@ -73,7 +74,7 @@ xvfb-run --auto-servernum --server-args='-screen 0 1024x768x24' bash -c "
 
 # Verify Selenium and WebDriver setup
 echo "Testing Selenium setup..."
-python - <<EOF
+python3 - <<EOF
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 

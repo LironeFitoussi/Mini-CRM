@@ -95,7 +95,7 @@ def init_load():
     chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+    # chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
@@ -116,7 +116,7 @@ def init_load():
         STATUS["message"] = "Please scan the QR code to log in."
     finally:
         driver.quit()
-# init_load()
+init_load()
 
 # Phone Number Class
 class PhoneNumber:
@@ -342,7 +342,7 @@ def logout():
     chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+    # chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 
     try:
         # Start WebDriver
@@ -499,7 +499,7 @@ def validate_whatsapp_numbers():
             chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
-            chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+            # chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
             
