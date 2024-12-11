@@ -87,3 +87,16 @@ driver.get("https://www.google.com")
 print("Title:", driver.title)
 driver.quit()
 EOF
+
+# sudo apt-get update
+# sudo apt-get install -y \
+    # libgbm-dev libnss3 libx11-xcb1 libxcomposite1 libxcursor1 libxi6 libxtst6 libxrandr2 \
+    # fonts-liberation libasound2 libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0
+
+# sudo apt-get install libasound2=1.2.11-1build2
+
+
+# cd /tmp
+# wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+# sudo dpkg -i google-chrome-stable_current_amd64.deb
+# sudo apt-get -f install

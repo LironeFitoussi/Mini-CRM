@@ -20,6 +20,8 @@ from selenium.common.exceptions import TimeoutException
 import phonenumbers
 from phonenumbers import geocoder
 from typing import Optional
+from sys import platform
+
 
 
 # Load environment variables
@@ -45,8 +47,8 @@ invalid_numbers_col.create_index("phoneNumber", unique=True)
 QR_CODE_IMAGE_PATH = "whatsapp_qr.png"
 PROFILE_DIRECTORY = os.path.join(os.getcwd(), "chrome_profile")
 
-if not os.path.exists(PROFILE_DIRECTORY):
-    os.makedirs(PROFILE_DIRECTORY)
+# if not os.path.exists(PROFILE_DIRECTORY):
+#     os.makedirs(PROFILE_DIRECTORY)
 
 # AWS S3 Client
 s3 = boto3.client(
@@ -86,19 +88,35 @@ COUNTRY_PREFIXES = {
     "598": "Uruguay",
 }
 
+def setup_driver():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Uncomment for headless mode
+    
+    # Check if there is a profile directory
+    if os.path.exists(PROFILE_DIRECTORY):
+        # os.makedirs(PROFILE_DIRECTORY)
+        chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
+        
+    chrome_options.add_argument("--no-sandbox")
+    # chrome_options.add_argument("--disable-dev-shm-usage")
+    # if it is a Linux Machine Set the a Different Binary Location
+    if platform == "linux" or platform == "linux2":
+        print("Linux Machine")
+        chrome_options.binary_location = "/usr/bin/google-chrome"
+    elif platform == "win32":
+        print("Windows Machine")
+        chrome_options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+
+    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
+
+
 # On App Start, Open Browser to Get Status of WhatsApp
 def init_load():
     # Step 1: Start WebDriver
     logging.info("Starting WebDriver.")
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Uncomment for headless mode
-    chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    # chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
-
-
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    
+    driver = setup_driver()
     driver.get("https://web.whatsapp.com")
     
     # Step 2: Check if User is Logged In
@@ -336,17 +354,9 @@ def logout():
     # stop all running processes and threads of chrome
     os.system("pkill -f chrome")
     
-    # Validate if the profile directory is deleted by opening the browser
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    # chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
-
     try:
         # Start WebDriver
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        driver = setup_driver()
         driver.get("https://web.whatsapp.com")
         
         # Delete all cookies
@@ -366,7 +376,7 @@ def logout():
         if os.path.exists(PROFILE_DIRECTORY):
             print(f"Deleting profile directory: {PROFILE_DIRECTORY}")
             os.system(f"rm -rf {PROFILE_DIRECTORY}")
-            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            driver = setup_driver()
             driver.get("https://web.whatsapp.com")
             time.sleep(5)
             
@@ -493,15 +503,7 @@ def validate_whatsapp_numbers():
     def background_validation():
         driver = None
         try:
-            # Setup browser with persistent session
-            chrome_options = Options()
-            chrome_options.add_argument("--headless")  # Uncomment for headless mode
-            chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
-            # chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
-
-            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+            driver = setup_driver()
             
             # Fetch numbers where is_whatsapp is "unknown"
             to_validate = list(valid_numbers_col.find({"is_whatsapp": "unknown"}))
