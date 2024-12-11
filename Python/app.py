@@ -95,6 +95,8 @@ def init_load():
     chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     driver.get("https://web.whatsapp.com")
@@ -114,9 +116,7 @@ def init_load():
         STATUS["message"] = "Please scan the QR code to log in."
     finally:
         driver.quit()
-init_load()
-
-# Helper Functions
+# init_load()
 
 # Phone Number Class
 class PhoneNumber:
@@ -285,6 +285,7 @@ class WhatsAppAutomation:
 @app.route("/get-qr-code", methods=["GET"])
 def get_qr_code():
     """Generate WhatsApp QR code, upload it to S3, and wait for user login."""
+    print("Generating QR code...")
     try:
         # before starting the WebDriver, check if there is a logged in user
         if STATUS["status"] == "User logged in":
@@ -331,12 +332,18 @@ def get_qr_code():
 @app.route("/logout", methods=["POST"])
 def logout():
     """Log out the user by deleting the profile directory."""
+    
+    # stop all running processes and threads of chrome
+    os.system("pkill -f chrome")
+    
     # Validate if the profile directory is deleted by opening the browser
     chrome_options = Options()
     chrome_options.add_argument("--headless")
-    # chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
+    chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+
     try:
         # Start WebDriver
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
@@ -353,7 +360,7 @@ def logout():
         driver.quit()
     
         # Remove the Cached Driver at /root/.wdm/drivers/chromedriver/
-        os.system("rm -rf /root/.wdm/drivers/chromedriver/")
+        # os.system("rm -rf /root/.wdm/drivers/chromedriver/")
     
         # Remove the profile directory        
         if os.path.exists(PROFILE_DIRECTORY):
@@ -492,6 +499,8 @@ def validate_whatsapp_numbers():
             chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.binary_location = os.getenv("CHROME_BINARY", r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
             
             # Fetch numbers where is_whatsapp is "unknown"

@@ -81,12 +81,19 @@ app.get("/api/contacts", async (req, res) => {
 
 
 app.get("/api/login-to-whatsapp", async (req, res) => {
+  console.log("Logging in to WhatsApp...");
   try {
     // Fetch the QR code image from the Python server
-    const response = await axios.get("http://3.79.29.11:5000/get-qr-code");
+    const response = await axios.get("http://localhost:5000/get-qr-code");
 
+    console.log(response.data);
+    
     // Extract the URL from the response
     const url = response.data.url;
+
+    if (!url && response.data.message === 'User is already logged in.') {
+      return res.status(400).json({ error: response.data.message });
+    }
 
     // Send the QR code URL as a response
     res.status(200).send({ url });
@@ -101,6 +108,32 @@ app.get("/api/login-to-whatsapp", async (req, res) => {
     res
       .status(500)
       .json({ error: "Failed to login to WhatsApp", details: error.message });
+  }
+});
+
+app.get("/api/logout", async (req, res) => {
+  try {
+    // Fetch the QR code image from the Python server
+    const response = await axios.post("http://localhost:5000/logout");
+
+    console.log(response.data);
+    
+    // Extract the URL from the response
+    const message = response.data.message;
+
+    // Send the QR code URL as a response
+    res.status(200).send({ message });
+  } catch (error) {
+    console.error("Error logging out of WhatsApp:", {
+      message: error.message,
+      stack: error.stack,
+      details: error.response ? error.response.data : null,
+    });
+
+    // Send a response if there's an error
+    res
+      .status(500)
+      .json({ error: "Failed to logout of WhatsApp", details: error.message });
   }
 });
 
