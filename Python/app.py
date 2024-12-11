@@ -113,7 +113,7 @@ def init_load():
         STATUS["message"] = "Please scan the QR code to log in."
     finally:
         driver.quit()
-# init_load()
+init_load()
 
 # Helper Functions
 
@@ -229,7 +229,7 @@ class WhatsAppAutomation:
         """Wait for the user to log in and then notify the server."""
         try:
             logging.info("Waiting for user login...")
-            WebDriverWait(driver, 300).until(
+            WebDriverWait(driver, 60).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
             )
             logging.info("User successfully logged in.")
