@@ -228,6 +228,7 @@ class WhatsAppAutomation:
     def generate_qr_code(driver):
         """Save QR code screenshot, or capture full page if QR code is not found."""
         try:
+            # Wait for the QR code canvas to be present
             WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]'))
             )
@@ -235,17 +236,18 @@ class WhatsAppAutomation:
             qr_code_element.screenshot(QR_CODE_IMAGE_PATH)
             logging.info(f"QR code screenshot saved at {QR_CODE_IMAGE_PATH}.")
             return QR_CODE_IMAGE_PATH
+
         except Exception as e:
             logging.warning(f"QR code element not found. Capturing full page instead: {str(e)}")
-            # Capture full page screenshot as a fallback
+            # Fallback to full-page screenshot
             fallback_screenshot_path = "fallback_page_screenshot.png"
             try:
                 driver.save_screenshot(fallback_screenshot_path)
                 logging.info(f"Full page screenshot saved at {fallback_screenshot_path}.")
-                return fallback_screenshot_path
+                return fallback_screenshot_path  # Return fallback screenshot path
             except Exception as screenshot_error:
                 logging.error(f"Failed to capture full page screenshot: {str(screenshot_error)}")
-                return None
+                return None  # Return None if both attempts fail
 
 
     @staticmethod
@@ -303,9 +305,11 @@ def get_qr_code():
 
         # Capture QR code or fallback screenshot
         qr_code_path = WhatsAppAutomation.generate_qr_code(driver)
-        if not qr_code_path:
+        if not qr_code_path or qr_code_path == "fallback_page_screenshot.png":
+            fallback_screenshot_path = qr_code_path
             driver.quit()
-            return jsonify({"error": "Failed to generate QR code or fallback screenshot."}), 500
+            file_url = ImageUploader.upload_image_to_s3(fallback_screenshot_path, os.getenv("AWS_BUCKET_NAME"))
+            return jsonify({"error": "Failed to generate QR code or fallback screenshot.", "url": file_url}), 500
 
         # Upload screenshot to S3
         bucket_name = os.getenv("AWS_BUCKET_NAME")
