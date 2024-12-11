@@ -245,6 +245,13 @@ class WhatsAppAutomation:
                 logging.error("Failed to notify success-log endpoint.")
         except Exception as e:
             logging.error(f"Error waiting for login: {str(e)}")
+            # Take a screenshot in case of failure
+            screenshot_path = "login_failure_screenshot.png"
+            try:
+                driver.save_screenshot(screenshot_path)
+                logging.info(f"Screenshot saved at {screenshot_path}.")
+            except Exception as screenshot_error:
+                logging.error(f"Failed to capture screenshot: {str(screenshot_error)}")
 
 # Image Uploader Class
 class ImageUploader:
