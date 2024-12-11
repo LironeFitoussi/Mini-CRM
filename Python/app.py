@@ -331,6 +331,12 @@ def get_qr_code():
 @app.route("/logout", methods=["POST"])
 def logout():
     """Log out the user by deleting the profile directory."""
+    # Validate if the profile directory is deleted by opening the browser
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
     try:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         driver.get("https://web.whatsapp.com")
@@ -340,14 +346,6 @@ def logout():
         if os.path.exists(PROFILE_DIRECTORY):
             print(f"Deleting profile directory: {PROFILE_DIRECTORY}")
             os.system(f"rm -rf {PROFILE_DIRECTORY}")
-            
-            # Validate if the profile directory is deleted by opening the browser
-            chrome_options = Options()
-            chrome_options.add_argument("--headless")
-            # chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
-            
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
             driver.get("https://web.whatsapp.com")
             time.sleep(5)
