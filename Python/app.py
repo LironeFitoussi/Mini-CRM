@@ -198,6 +198,30 @@ class PhoneNumber:
                 return COUNTRY_PREFIXES[prefix]
         return "Unknown"
 
+# Image Uploader Class
+class ImageUploader:
+    @staticmethod
+    def upload_image_to_s3(file_path, bucket_name):
+        """Upload an image file to AWS S3."""
+        try:
+            file_name = os.path.basename(file_path)
+            s3.upload_file(
+                file_path,
+                bucket_name,
+                file_name,
+                ExtraArgs={"ContentType": "image/png"},
+            )
+            file_url = f"https://{bucket_name}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{file_name}"
+            logging.info(f"Image uploaded to S3: {file_url}")
+            return file_url
+        except NoCredentialsError:
+            logging.error("AWS credentials not found.")
+            return None
+        except Exception as e:
+            logging.error(f"Failed to upload image to S3: {str(e)}")
+            return None
+
+
 # WhatsApp Automation Class
 class WhatsAppAutomation:
     @staticmethod
@@ -249,32 +273,12 @@ class WhatsAppAutomation:
             screenshot_path = "login_failure_screenshot.png"
             try:
                 driver.save_screenshot(screenshot_path)
-                logging.info(f"Screenshot saved at {screenshot_path}.")
+                ImageUploader.upload_image_to_s3(screenshot_path, os.getenv("AWS_BUCKET_NAME"))
+                
+                # Notify the failure endpoint
+                logging.info(f"Screenshot saved at {screenshot_path} and uploaded to S3.")
             except Exception as screenshot_error:
                 logging.error(f"Failed to capture screenshot: {str(screenshot_error)}")
-
-# Image Uploader Class
-class ImageUploader:
-    @staticmethod
-    def upload_image_to_s3(file_path, bucket_name):
-        """Upload an image file to AWS S3."""
-        try:
-            file_name = os.path.basename(file_path)
-            s3.upload_file(
-                file_path,
-                bucket_name,
-                file_name,
-                ExtraArgs={"ContentType": "image/png"},
-            )
-            file_url = f"https://{bucket_name}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{file_name}"
-            logging.info(f"Image uploaded to S3: {file_url}")
-            return file_url
-        except NoCredentialsError:
-            logging.error("AWS credentials not found.")
-            return None
-        except Exception as e:
-            logging.error(f"Failed to upload image to S3: {str(e)}")
-            return None
 
 @app.route("/get-qr-code", methods=["GET"])
 def get_qr_code():
