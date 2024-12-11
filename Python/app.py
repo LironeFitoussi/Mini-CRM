@@ -11,7 +11,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.chrome import ChromeDriverManager, ChromeType
 import boto3
 from botocore.exceptions import NoCredentialsError
 from dotenv import load_dotenv
@@ -21,6 +21,8 @@ import phonenumbers
 from phonenumbers import geocoder
 from typing import Optional
 from sys import platform
+import subprocess
+import sys
 
 
 
@@ -45,10 +47,10 @@ invalid_numbers_col.create_index("phoneNumber", unique=True)
 
 # Paths and settings
 QR_CODE_IMAGE_PATH = "whatsapp_qr.png"
-PROFILE_DIRECTORY = os.path.join(os.getcwd(), "chrome_profile")
+PROFILE_DIRECTORY = "./chrome_profile"
 
-# if not os.path.exists(PROFILE_DIRECTORY):
-#     os.makedirs(PROFILE_DIRECTORY)
+if not os.path.exists(PROFILE_DIRECTORY):
+    os.makedirs(PROFILE_DIRECTORY)
 
 # AWS S3 Client
 s3 = boto3.client(
@@ -88,28 +90,80 @@ COUNTRY_PREFIXES = {
     "598": "Uruguay",
 }
 
+
+def check_chrome_version():
+    """
+    Attempt to get Chrome version across different platforms
+    """
+    try:
+        if sys.platform == 'win32':
+            # Windows version check
+            result = subprocess.run(['reg', 'query', 'HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon', '/v', 'version'], 
+                                    capture_output=True, text=True)
+            version = result.stdout.split()[-1] if result.returncode == 0 else "Unknown"
+        elif sys.platform == 'darwin':
+            # macOS version check
+            result = subprocess.run(['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '--version'], 
+                                    capture_output=True, text=True)
+            version = result.stdout.strip() if result.returncode == 0 else "Unknown"
+        else:
+            # Linux version check
+            result = subprocess.run(['google-chrome', '--version'], 
+                                    capture_output=True, text=True)
+            version = result.stdout.strip() if result.returncode == 0 else "Unknown"
+        return version
+    except Exception as e:
+        logging.error(f"Could not determine Chrome version: {e}")
+        return "Unable to determine"
+
 def setup_driver():
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Uncomment for headless mode
+    """
+    Advanced WebDriver setup with extensive error handling and logging
+    """
+    logging.basicConfig(level=logging.INFO)
     
-    # Check if there is a profile directory
-    if os.path.exists(PROFILE_DIRECTORY):
-        # os.makedirs(PROFILE_DIRECTORY)
-        chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
+    try:
+        # Check Chrome version
+        chrome_version = check_chrome_version()
+        logging.info(f"Detected Chrome Version: {chrome_version}")
         
-    chrome_options.add_argument("--no-sandbox")
-    # chrome_options.add_argument("--disable-dev-shm-usage")
-    # if it is a Linux Machine Set the a Different Binary Location
-    if platform == "linux" or platform == "linux2":
-        print("Linux Machine")
-        chrome_options.binary_location = "/usr/bin/google-chrome"
-    elif platform == "win32":
-        print("Windows Machine")
-        chrome_options.binary_location = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-
-
+        # Configure Chrome options
+        chrome_options = Options()
+        
+        # User profile directory for session persistence
+        chrome_options.add_argument(f"--user-data-dir={os.path.abspath(PROFILE_DIRECTORY)}")
+        
+        # Optional: Specify a particular profile within the user-data-dir
+        # chrome_options.add_argument("--profile-directory=Default")
+        
+        # Aggressive troubleshooting options
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--verbose")
+        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        
+        # Optional: Uncomment to debug
+        # chrome_options.add_argument("--remote-debugging-port=9222")
+        
+        try:
+            # Use ChromeDriverManager with specific Chrome type
+            service = Service(ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install())
+            
+            # Initialize the WebDriver with extended timeout
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            
+            return driver
+        
+        except Exception as detailed_error:
+            logging.error(f"WebDriver Initialization Failed: {detailed_error}")
+            logging.error(f"Detailed Error Type: {type(detailed_error)}")
+            raise
+    
+    except Exception as general_error:
+        logging.error(f"Setup Error: {general_error}")
+        raise
 
 # On App Start, Open Browser to Get Status of WhatsApp
 def init_load():
@@ -134,7 +188,7 @@ def init_load():
         STATUS["message"] = "Please scan the QR code to log in."
     finally:
         driver.quit()
-init_load()
+# init_load()
 
 # Phone Number Class
 class PhoneNumber:
@@ -267,7 +321,6 @@ class WhatsAppAutomation:
                 logging.error(f"Failed to capture full page screenshot: {str(screenshot_error)}")
                 return None  # Return None if both attempts fail
 
-
     @staticmethod
     def wait_for_login(driver):
         """Wait for the user to log in and then notify the server."""
@@ -287,6 +340,7 @@ class WhatsAppAutomation:
                 logging.info("Successfully notified success-log endpoint.")
             else:
                 logging.error("Failed to notify success-log endpoint.")
+            driver.quit()
         except Exception as e:
             logging.error(f"Error waiting for login: {str(e)}")
             # Take a screenshot in case of failure
@@ -297,6 +351,7 @@ class WhatsAppAutomation:
                 
                 # Notify the failure endpoint
                 logging.info(f"Screenshot saved at {screenshot_path} and uploaded to S3.")
+                driver.quit()
             except Exception as screenshot_error:
                 logging.error(f"Failed to capture screenshot: {str(screenshot_error)}")
 
@@ -311,14 +366,7 @@ def get_qr_code():
         
         # Start WebDriver
         logging.info("Starting WebDriver.")
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")  # Uncomment for headless mode
-        chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        driver = setup_driver()
         driver.get("https://web.whatsapp.com")
         time.sleep(7)  # Wait for QR code to load
 
@@ -562,7 +610,18 @@ def validate_whatsapp_numbers():
     return jsonify({
         "message": "Scanning started, we will notify you when the job is done"
     }), 202
-    
+
+def main():
+    try:
+        driver = setup_driver()
+        # Test the driver
+        driver.get("https://www.google.com")
+        print("Successfully opened Google!")
+        driver.quit()
+    except Exception as e:
+        print(f"Driver test failed: {e}")
+
 if __name__ == '__main__':
     # Run the app
+    main()
     app.run(host='0.0.0.0', port=5000, debug=True)
