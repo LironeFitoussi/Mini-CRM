@@ -5,6 +5,10 @@ yarn-debug.log*
 yarn-error.log*
 .env 
 
+# Python
+Python/chrome_profile
+Python/.venv
+
 # React/Vite
 dist/
 .vite/
