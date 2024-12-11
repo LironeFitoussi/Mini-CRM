@@ -8,6 +8,7 @@ yarn-error.log*
 # Python
 Python/chrome_profile
 Python/.venv
+Python/whatsapp_qr.png
 
 # React/Vite
 dist/
