@@ -50,7 +50,7 @@ def init_load():
     # Step 1: Start WebDriver
     logging.info("Starting WebDriver.")
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")  # Uncomment for headless mode
+    chrome_options.add_argument("--headless")  # Uncomment for headless mode
     chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
@@ -153,7 +153,7 @@ def get_qr_code():
         # Start WebDriver
         logging.info("Starting WebDriver.")
         chrome_options = Options()
-        # chrome_options.add_argument("--headless")  # Uncomment for headless mode
+        chrome_options.add_argument("--headless")  # Uncomment for headless mode
         chrome_options.add_argument(f"--user-data-dir={PROFILE_DIRECTORY}")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
