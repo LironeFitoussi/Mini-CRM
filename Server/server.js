@@ -7,6 +7,8 @@ const morgan = require("morgan");
 const axios = require("axios");
 const imageUploader = require("./utils/imageUploader.js");
 const mongoose = require("mongoose");
+const Contact = require("./models/Contact");
+
 dotenv.config();
 
 const app = express();
@@ -17,21 +19,52 @@ app.use(bodyParser.json());
 app.use("/api/upload", uploadRoutes);
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+mongoose.connect(process.env.MONGO_URI).then(() => {
+  console.log("Connected to MongoDB");
 });
 
 app.get("/api/contacts", async (req, res) => {
   try {
-    // Fetch valid_numbers collection (query) from the database (MongoDB)
-    const contacts = await mongoose.connection.db
-      .collection("valid_numbers")
-      .find()
-      .toArray();
-  
-    // Send the contacts as a response
-    res.status(200).json(contacts);
+    const { query } = req;
+
+    // Extract pagination parameters from query
+    const page = parseInt(query.page) || 1; // Default to page 1 if not provided
+    const limit = parseInt(query.limit) || 10; // Default to 10 items per page if not provided
+    const skip = (page - 1) * limit;
+    let is_whatsapp;
+    switch (query.is_whatsapp) {
+      case 'true':
+        is_whatsapp = true;
+        break;
+      case 'false':
+        is_whatsapp = false;
+        break;
+      default:
+        is_whatsapp = 'unknown';
+    }
+
+    console.log("params", query);
+
+    // Fetch valid_numbers collection (query) from the database (MongoDB) with pagination
+    const contacts = await Contact.find({is_whatsapp})
+      .skip(skip)
+      .limit(limit);
+
+    // Get total count of documents
+    const totalDocuments = await Contact.countDocuments({is_whatsapp});
+
+    console.log(totalDocuments);
+    
+    // Calculate total pages
+    const totalPages = Math.ceil(totalDocuments / limit);
+
+    // Send the paginated data and metadata as a response
+    res.status(200).json({
+      currentPage: page,
+      totalPages,
+      totalDocuments,
+      contacts,
+    });
   } catch (error) {
     console.error("Error fetching contacts:", {
       message: error.message,
@@ -44,6 +77,8 @@ app.get("/api/contacts", async (req, res) => {
       .json({ error: "Failed to fetch contacts", details: error.message });
   }
 });
+
+
 
 app.get("/api/login-to-whatsapp", async (req, res) => {
   try {
