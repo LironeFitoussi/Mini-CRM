@@ -10,6 +10,11 @@ sudo apt upgrade -y
 sudo apt install -y python3 python3-pip libnss3 xvfb unzip wget software-properties-common
 sudo apt install python3.12-venv
 
+# Install Chrome 131.0.6778.108
+sudo apt-get install -y \
+    libgbm-dev libnss3 libx11-xcb1 libxcomposite1 libxcursor1 libxi6 libxtst6 libxrandr2 \
+    fonts-liberation libasound2 libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0
+
 # Remove all existing pip packages
 echo "Removing all existing pip packages..."
 pip3 freeze > installed_packages.txt
