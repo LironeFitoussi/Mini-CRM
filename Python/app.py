@@ -1,9 +1,10 @@
 import os
 import time
 import logging
-import datetime
+from datetime import datetime
 import requests 
 import pandas as pd
+from selenium.webdriver.common.keys import Keys
 from pymongo import MongoClient
 from flask import Flask, jsonify, request
 from selenium import webdriver
@@ -139,7 +140,7 @@ def setup_driver():
         # chrome_options.add_argument("--profile-directory=Default")
         
         # Aggressive troubleshooting options
-        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
@@ -642,8 +643,8 @@ def send_messages():
         messages_col = db["messages"]
         valid_numbers_col = db["valid_numbers"]
 
-        # print numbers to be sent
-        print(valid_numbers_col.find({"is_whatsapp": True}).count())
+        # Print the count of valid numbers
+        print(valid_numbers_col.count_documents({"is_whatsapp": True}))
         
         # Check if the message already exists in the "messages" collection
         existing_message = messages_col.find_one({"message": message})
@@ -651,8 +652,9 @@ def send_messages():
 
         # Fetch valid numbers by their IDs, excluding those already sent
         valid_numbers = valid_numbers_col.find({"_id": {"$nin": sent_ids}, "is_whatsapp": True})
+        valid_numbers_list = list(valid_numbers)
         
-        if valid_numbers.count() == 0:
+        if len(valid_numbers_list) == 0:
             return jsonify({
                 "message": "All valid recipients have already received this message",
                 "total_sent": len(sent_ids),
@@ -661,28 +663,53 @@ def send_messages():
         
         # Initialize WebDriver
         driver = setup_driver()
-        driver.get("https://web.whatsapp.com")
+        # driver.get("https://web.whatsapp.com")
         
         # Wait for WhatsApp Web login
-        try:
-            print("Waiting for login...")
-            WebDriverWait(driver, 60).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
-            )
-        except TimeoutException:
-            return jsonify({
-                "error": "Login failed",
-                "message": "Could not access WhatsApp Web. Please try again."
-            }), 400
+        # try:
+        #     print("Waiting for login...")
+        #     WebDriverWait(driver, 60).until(
+        #         EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
+        #     )
+        # except TimeoutException:
+        #     return jsonify({
+        #         "error": "Login failed",
+        #         "message": "Could not access WhatsApp Web. Please try again."
+        #     }), 400
 
         send_count = 0
-        for entry in valid_numbers:
+
+        for entry in valid_numbers_list:
             recipient_id = entry["_id"]
             phone_number = entry["phoneNumber"]
-            url = f"https://web.whatsapp.com/send?phone={phone_number}&text={message}"
+            url = f"https://web.whatsapp.com/send?phone={phone_number}"
             driver.get(url)
-            
+
             try:
+                # Wait for the message input field
+                # Wait for the chat interface to load
+                WebDriverWait(driver, 15).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+                )
+
+                # Focus on the input box
+                input_box = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+                )
+                input_box.click()
+                time.sleep(1)  # Small pause to ensure the input is focused
+
+                
+                print(f"Sending message to {phone_number}")
+                print(f"Message: {message}")
+                # Type the message with line breaks
+                for line in message.split("\n"):
+                    input_box.send_keys(line)  # Type the line
+                    input_box.send_keys(Keys.SHIFT, Keys.ENTER)  # Simulate "Shift + Enter" for a new line
+                
+                # Remove the last "Shift + Enter" (if there was one) to avoid an empty line at the end
+                input_box.send_keys(Keys.BACKSPACE)
+                
                 # Wait for the send button and click it
                 send_button = WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
@@ -699,18 +726,18 @@ def send_messages():
                 send_count += 1
             except TimeoutException:
                 print(f"Failed to send message to {phone_number}")
-        
+
         # Update or insert the document in the "messages" collection
         if existing_message:
             messages_col.update_one(
                 {"_id": existing_message["_id"]},
-                {"$set": {"sent_ids": sent_ids, "timestamp": datetime.utcnow()}}
+                {"$set": {"sent_ids": sent_ids, "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')}}
             )
         else:
             messages_col.insert_one({
                 "message": message,
                 "sent_ids": sent_ids,
-                "timestamp": datetime.utcnow()
+                "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')
             })
         
         return jsonify({
