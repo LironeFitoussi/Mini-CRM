@@ -1,9 +1,12 @@
 import os
 import time
 import logging
-import datetime
+from datetime import datetime
 import requests 
 import pandas as pd
+import certifi
+from bson.objectid import ObjectId
+from selenium.webdriver.common.keys import Keys
 from pymongo import MongoClient
 from flask import Flask, jsonify, request
 from selenium import webdriver
@@ -24,6 +27,7 @@ from typing import Optional
 from sys import platform
 import subprocess
 import sys
+from selenium.webdriver.common.keys import Keys
 
 
 
@@ -37,8 +41,19 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 app = Flask(__name__)
 
 # MongoDB Connection
-client = MongoClient("mongodb+srv://lironefit:FiXSGqvTlq7Zb0EZ@cluster0.e2j9t.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-db = client.get_database("phone_data")
+client = MongoClient(
+    "mongodb+srv://lironefit:4YrMTTViFjGfG0yf@cluster0.e2j9t.mongodb.net/?retryWrites=true&w=majority",
+    tlsCAFile=certifi.where()
+)
+
+try:
+    # Attempt to retrieve server information
+    client.server_info()
+    print("Connection successful!")
+except Exception as e:
+    print(f"An error occurred: {e}")
+    
+db = client.get_database("test")
 valid_numbers_col = db.valid_numbers
 invalid_numbers_col = db.invalid_numbers
 messages_col = db.messages
@@ -194,7 +209,7 @@ def init_load():
         STATUS["message"] = "Please scan the QR code to log in."
     finally:
         driver.quit()
-# init_load()
+init_load()
 
 # Phone Number Class
 class PhoneNumber:
@@ -624,7 +639,6 @@ def validate_whatsapp_numbers():
         thread = Thread(target=background_validation)
         thread.start()
     
-
     # Immediate response to the client
     return jsonify({
         "message": "Scanning started, we will notify you when the job is done"
@@ -646,17 +660,18 @@ def send_messages():
         messages_col = db["messages"]
         valid_numbers_col = db["valid_numbers"]
 
-        # print numbers to be sent
-        print(valid_numbers_col.find({"is_whatsapp": True}).count())
+        # Print the count of valid numbers
+        print(valid_numbers_col.count_documents({"is_whatsapp": True}))
         
         # Check if the message already exists in the "messages" collection
         existing_message = messages_col.find_one({"message": message})
-        sent_ids = existing_message.get("sent_ids", []) if existing_message else []
+        sent_ids = [str(_id) for _id in existing_message.get("sent_ids", [])] if existing_message else []
 
         # Fetch valid numbers by their IDs, excluding those already sent
-        valid_numbers = valid_numbers_col.find({"_id": {"$nin": sent_ids}, "is_whatsapp": True})
+        valid_numbers = valid_numbers_col.find({"_id": {"$nin": [ObjectId(_id) for _id in sent_ids]}, "is_whatsapp": True})
+        valid_numbers_list = list(valid_numbers)
         
-        if valid_numbers.count() == 0:
+        if len(valid_numbers_list) == 0:
             return jsonify({
                 "message": "All valid recipients have already received this message",
                 "total_sent": len(sent_ids),
@@ -665,35 +680,43 @@ def send_messages():
         
         # Initialize WebDriver
         driver = setup_driver()
-        driver.get("https://web.whatsapp.com")
         
-        # Wait for WhatsApp Web login
-        try:
-            print("Waiting for login...")
-            WebDriverWait(driver, 60).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
-            )
-        except TimeoutException:
-            return jsonify({
-                "error": "Login failed",
-                "message": "Could not access WhatsApp Web. Please try again."
-            }), 400
-
         send_count = 0
-        for entry in valid_numbers:
-            recipient_id = entry["_id"]
+
+        for entry in valid_numbers_list:
+            recipient_id = str(entry["_id"])  # Convert ObjectId to string
             phone_number = entry["phoneNumber"]
-            url = f"https://web.whatsapp.com/send?phone={phone_number}&text={message}"
+            url = f"https://web.whatsapp.com/send?phone={phone_number}"
             driver.get(url)
-            
+
             try:
+                # Wait for the chat interface to load
+                WebDriverWait(driver, 15).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+                )
+
+                # Focus on the input box
+                input_box = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+                )
+                input_box.click()
+                time.sleep(1)  # Small pause to ensure the input is focused
+                
+                # Type the message with line breaks
+                for line in message.split("\n"):
+                    input_box.send_keys(line)  # Type the line
+                    input_box.send_keys(Keys.SHIFT, Keys.ENTER)  # Simulate "Shift + Enter" for a new line
+                
+                # Remove the last "Shift + Enter" to avoid an empty line at the end
+                input_box.send_keys(Keys.BACKSPACE)
+                
                 # Wait for the send button and click it
                 send_button = WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
                 )
                 send_button.click()
                 
-                # Wait for the message to be sent (indicated by one tick)
+                # Wait for the message to be sent
                 WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
                 )
@@ -703,18 +726,18 @@ def send_messages():
                 send_count += 1
             except TimeoutException:
                 print(f"Failed to send message to {phone_number}")
-        
+
         # Update or insert the document in the "messages" collection
         if existing_message:
             messages_col.update_one(
                 {"_id": existing_message["_id"]},
-                {"$set": {"sent_ids": sent_ids, "timestamp": datetime.utcnow()}}
+                {"$set": {"sent_ids": sent_ids, "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')}}
             )
         else:
             messages_col.insert_one({
                 "message": message,
                 "sent_ids": sent_ids,
-                "timestamp": datetime.utcnow()
+                "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')
             })
         
         return jsonify({
@@ -732,7 +755,7 @@ def send_messages():
     finally:
         if driver:
             driver.quit()
-
+            
 def main():
     try:
         driver = setup_driver()
@@ -745,5 +768,5 @@ def main():
 
 if __name__ == '__main__':
     # Run the app
-    main()
+    # main()
     app.run(host='0.0.0.0', port=5001, debug=True)
