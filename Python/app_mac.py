@@ -29,8 +29,6 @@ import subprocess
 import sys
 from selenium.webdriver.common.keys import Keys
 
-
-
 # Load environment variables
 load_dotenv()
 
