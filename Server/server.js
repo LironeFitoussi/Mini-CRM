@@ -18,6 +18,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use("/api/upload", uploadRoutes);
 
+const PYTHON_SERVER_URL = process.env.MODE === "development" ? "http://localhost:5000" : "http://51.17.225.233:5001";
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI).then(() => {
   console.log("Connected to MongoDB");
@@ -84,7 +85,7 @@ app.get("/api/login-to-whatsapp", async (req, res) => {
   console.log("Logging in to WhatsApp...");
   try {
     // Fetch the QR code image from the Python server
-    const response = await axios.get("http://localhost:5000/get-qr-code");
+    const response = await axios.get(`${PYTHON_SERVER_URL}/get-qr-code`);
 
     console.log(response.data);
     
@@ -114,7 +115,7 @@ app.get("/api/login-to-whatsapp", async (req, res) => {
 app.get("/api/logout", async (req, res) => {
   try {
     // Fetch the QR code image from the Python server
-    const response = await axios.post("http://localhost:5000/logout");
+    const response = await axios.post(`${PYTHON_SERVER_URL}/logout`);
 
     console.log(response.data);
     

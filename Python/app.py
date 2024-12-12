@@ -2,6 +2,7 @@ import os
 import time
 import logging
 from datetime import datetime
+from bson.objectid import ObjectId
 import requests 
 import pandas as pd
 from selenium.webdriver.common.keys import Keys
@@ -38,7 +39,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 app = Flask(__name__)
 
 # MongoDB Connection
-client = MongoClient("mongodb+srv://lironefit:FiXSGqvTlq7Zb0EZ@cluster0.e2j9t.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+client = MongoClient("mongodb+srv://lironefit:4YrMTTViFjGfG0yf@cluster0.e2j9t.mongodb.net/phone_data?retryWrites=true&w=majority&appName=Cluster0")
 db = client.get_database("test")
 valid_numbers_col = db.valid_numbers
 invalid_numbers_col = db.invalid_numbers
@@ -140,7 +141,7 @@ def setup_driver():
         # chrome_options.add_argument("--profile-directory=Default")
         
         # Aggressive troubleshooting options
-        # chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
@@ -648,10 +649,10 @@ def send_messages():
         
         # Check if the message already exists in the "messages" collection
         existing_message = messages_col.find_one({"message": message})
-        sent_ids = existing_message.get("sent_ids", []) if existing_message else []
+        sent_ids = [str(_id) for _id in existing_message.get("sent_ids", [])] if existing_message else []
 
         # Fetch valid numbers by their IDs, excluding those already sent
-        valid_numbers = valid_numbers_col.find({"_id": {"$nin": sent_ids}, "is_whatsapp": True})
+        valid_numbers = valid_numbers_col.find({"_id": {"$nin": [ObjectId(_id) for _id in sent_ids]}, "is_whatsapp": True})
         valid_numbers_list = list(valid_numbers)
         
         if len(valid_numbers_list) == 0:
@@ -663,30 +664,16 @@ def send_messages():
         
         # Initialize WebDriver
         driver = setup_driver()
-        # driver.get("https://web.whatsapp.com")
         
-        # Wait for WhatsApp Web login
-        # try:
-        #     print("Waiting for login...")
-        #     WebDriverWait(driver, 60).until(
-        #         EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
-        #     )
-        # except TimeoutException:
-        #     return jsonify({
-        #         "error": "Login failed",
-        #         "message": "Could not access WhatsApp Web. Please try again."
-        #     }), 400
-
         send_count = 0
 
         for entry in valid_numbers_list:
-            recipient_id = entry["_id"]
+            recipient_id = str(entry["_id"])  # Convert ObjectId to string
             phone_number = entry["phoneNumber"]
             url = f"https://web.whatsapp.com/send?phone={phone_number}"
             driver.get(url)
 
             try:
-                # Wait for the message input field
                 # Wait for the chat interface to load
                 WebDriverWait(driver, 15).until(
                     EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
@@ -698,16 +685,13 @@ def send_messages():
                 )
                 input_box.click()
                 time.sleep(1)  # Small pause to ensure the input is focused
-
                 
-                print(f"Sending message to {phone_number}")
-                print(f"Message: {message}")
                 # Type the message with line breaks
                 for line in message.split("\n"):
                     input_box.send_keys(line)  # Type the line
                     input_box.send_keys(Keys.SHIFT, Keys.ENTER)  # Simulate "Shift + Enter" for a new line
                 
-                # Remove the last "Shift + Enter" (if there was one) to avoid an empty line at the end
+                # Remove the last "Shift + Enter" to avoid an empty line at the end
                 input_box.send_keys(Keys.BACKSPACE)
                 
                 # Wait for the send button and click it
@@ -716,7 +700,7 @@ def send_messages():
                 )
                 send_button.click()
                 
-                # Wait for the message to be sent (indicated by one tick)
+                # Wait for the message to be sent
                 WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
                 )
@@ -755,7 +739,7 @@ def send_messages():
     finally:
         if driver:
             driver.quit()
-
+            
 def main():
     try:
         driver = setup_driver()
