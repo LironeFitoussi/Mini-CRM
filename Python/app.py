@@ -192,7 +192,7 @@ def init_load():
         STATUS["message"] = "Please scan the QR code to log in."
     finally:
         driver.quit()
-# init_load()
+init_load()
 
 # Phone Number Class
 class PhoneNumber:
@@ -352,7 +352,7 @@ class WhatsAppAutomation:
             STATUS["message"] = "User is logged in."
             
             # Notify the success endpoint
-            response = requests.post("http://localhost:5000/success-log", json={"status": "User logged in"})
+            response = requests.post("https://mini-crm-y7v9.onrender.com/api/success-log", json={"status": "User logged in"})
             if response.status_code == 200:
                 logging.info("Successfully notified success-log endpoint.")
             else:
@@ -416,9 +416,23 @@ def get_qr_code():
 def logout():
     """Log out the user by deleting the profile directory."""
     
-    # stop all running processes and threads of chrome
+    # stop all running processes and threads of chrome and chromedriver or any other relevant process
     os.system("pkill -f chrome")
+    os.system("pkill -f chromedriver")
+    os.system("pkill -f Xvfb")
+    os.system("pkill -f Xorg")
+
+    # Delete the profile directory "./chrome_profile"
+    def delete_profile_directory():
+        if os.path.exists(PROFILE_DIRECTORY):
+            print(f"Deleting profile directory: {PROFILE_DIRECTORY}")
+            os.system(f"rm -rf {PROFILE_DIRECTORY}")
+            return jsonify({"message": "User logged out."})
+        else:
+            return jsonify({"message": "User is already logged out."})
     
+    delete_profile_directory()
+        
     try:
         # Start WebDriver
         driver = setup_driver()
@@ -573,6 +587,9 @@ def validate_whatsapp_numbers():
             # Fetch numbers where is_whatsapp is "unknown"
             to_validate = list(valid_numbers_col.find({"is_whatsapp": "unknown"}))
             
+            # Reverse the list
+            to_validate.reverse()
+            
             validated_count = 0
             for entry in to_validate:
                 phone_number = entry["phoneNumber"]
@@ -633,102 +650,178 @@ def send_messages():
     data = request.json
     message = data.get("message")
     
-    print(message)
-    
     if not message:
         return jsonify({"error": "Message content is required"}), 400
     
+    def send_messages_thread(message):
+        driver = None
+        try:
+            # Connect to the "messages" collection in MongoDB
+            messages_col = db["messages"]
+            valid_numbers_col = db["valid_numbers"]
+
+            # Check if the message already exists in the "messages" collection
+            existing_message = messages_col.find_one({"message": message})
+            sent_ids = [str(_id) for _id in existing_message.get("sent_ids", [])] if existing_message else []
+
+            # Fetch valid numbers by their IDs, excluding those already sent
+            valid_numbers = valid_numbers_col.find({"_id": {"$nin": [ObjectId(_id) for _id in sent_ids]}, "is_whatsapp": True})
+            valid_numbers_list = list(valid_numbers)
+            
+            if len(valid_numbers_list) == 0:
+                requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
+                    "message": "All valid recipients have already received this message",
+                    "total_sent": len(sent_ids),
+                    "sent_ids": sent_ids
+                })
+                return
+            
+            # Initialize WebDriver
+            driver = setup_driver()
+            
+            send_count = 0
+
+            for i, entry in enumerate(valid_numbers_list):
+                recipient_id = str(entry["_id"])  # Convert ObjectId to string
+                phone_number = entry["phoneNumber"]
+                url = f"https://web.whatsapp.com/send?phone={phone_number}"
+                driver.get(url)
+
+                try:
+                    # Wait for the chat interface to load
+                    WebDriverWait(driver, 15).until(
+                        EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+                    )
+
+                    # Focus on the input box
+                    input_box = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+                    )
+                    input_box.click()
+                    time.sleep(1)  # Small pause to ensure the input is focused
+                    
+                    # Type the message with line breaks
+                    for line in message.split("\n"):
+                        input_box.send_keys(line)  # Type the line
+                        input_box.send_keys(Keys.SHIFT, Keys.ENTER)  # Simulate "Shift + Enter" for a new line
+                    
+                    # Remove the last "Shift + Enter" to avoid an empty line at the end
+                    input_box.send_keys(Keys.BACKSPACE)
+                    
+                    # Wait for the send button and click it
+                    send_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
+                    )
+                    send_button.click()
+                    
+                    # Wait for the message to be sent
+                    WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
+                    )
+                    
+                    # Add the recipient's ID to the list of sent IDs
+                    sent_ids.append(recipient_id)
+                    send_count += 1
+
+                    # Notify after every 100 numbers
+                    if (i + 1) % 100 == 0 or (i + 1) == len(valid_numbers_list):
+                        requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
+                            "message": f"Progress update: {send_count} messages sent",
+                            "total_sent": send_count,
+                            "sent_ids": sent_ids
+                        })
+
+                except TimeoutException:
+                    print(f"Failed to send message to {phone_number}")
+
+            # Update or insert the document in the "messages" collection
+            if existing_message:
+                messages_col.update_one(
+                    {"_id": existing_message["_id"]},
+                    {"$set": {"sent_ids": sent_ids, "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')}}
+                )
+            else:
+                messages_col.insert_one({
+                    "message": message,
+                    "sent_ids": sent_ids,
+                    "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+                })
+            
+            # Final success notification
+            requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
+                "message": "All messages sent successfully",
+                "total_sent": send_count,
+                "sent_ids": sent_ids
+            })
+        
+        except Exception as e:
+            # Notify on error
+            requests.post("https://mini-crm-y7v9.onrender.com/api/bot-error", json={
+                "error": "Message sending failed",
+                "details": str(e)
+            })
+        
+        finally:
+            if driver:
+                driver.quit()
+    
+    # Start the message sending process in a new thread
+    thread = Thread(target=send_messages_thread, args=(message,))
+    thread.start()
+
+    return jsonify({"message": "Message sending process started"}), 202
+
+# Send to a single number for testing
+@app.route('/test-message', methods=['POST'])
+def test_message():
+    data = request.json
+    phone_number = data.get("phone_number")
+    message = data.get("message")
+    
+    if not phone_number or not message:
+        return jsonify({"error": "Phone number and message content are required"}), 400
+    
     driver = None
     try:
-        # Connect to the "messages" collection in MongoDB
-        messages_col = db["messages"]
-        valid_numbers_col = db["valid_numbers"]
-
-        # Print the count of valid numbers
-        print(valid_numbers_col.count_documents({"is_whatsapp": True}))
-        
-        # Check if the message already exists in the "messages" collection
-        existing_message = messages_col.find_one({"message": message})
-        sent_ids = [str(_id) for _id in existing_message.get("sent_ids", [])] if existing_message else []
-
-        # Fetch valid numbers by their IDs, excluding those already sent
-        valid_numbers = valid_numbers_col.find({"_id": {"$nin": [ObjectId(_id) for _id in sent_ids]}, "is_whatsapp": True})
-        valid_numbers_list = list(valid_numbers)
-        
-        if len(valid_numbers_list) == 0:
-            return jsonify({
-                "message": "All valid recipients have already received this message",
-                "total_sent": len(sent_ids),
-                "sent_ids": sent_ids
-            }), 200
-        
         # Initialize WebDriver
         driver = setup_driver()
         
-        send_count = 0
-
-        for entry in valid_numbers_list:
-            recipient_id = str(entry["_id"])  # Convert ObjectId to string
-            phone_number = entry["phoneNumber"]
-            url = f"https://web.whatsapp.com/send?phone={phone_number}"
-            driver.get(url)
-
-            try:
-                # Wait for the chat interface to load
-                WebDriverWait(driver, 15).until(
-                    EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
-                )
-
-                # Focus on the input box
-                input_box = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
-                )
-                input_box.click()
-                time.sleep(1)  # Small pause to ensure the input is focused
-                
-                # Type the message with line breaks
-                for line in message.split("\n"):
-                    input_box.send_keys(line)  # Type the line
-                    input_box.send_keys(Keys.SHIFT, Keys.ENTER)  # Simulate "Shift + Enter" for a new line
-                
-                # Remove the last "Shift + Enter" to avoid an empty line at the end
-                input_box.send_keys(Keys.BACKSPACE)
-                
-                # Wait for the send button and click it
-                send_button = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
-                )
-                send_button.click()
-                
-                # Wait for the message to be sent
-                WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
-                )
-                
-                # Add the recipient's ID to the list of sent IDs
-                sent_ids.append(recipient_id)
-                send_count += 1
-            except TimeoutException:
-                print(f"Failed to send message to {phone_number}")
-
-        # Update or insert the document in the "messages" collection
-        if existing_message:
-            messages_col.update_one(
-                {"_id": existing_message["_id"]},
-                {"$set": {"sent_ids": sent_ids, "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')}}
-            )
-        else:
-            messages_col.insert_one({
-                "message": message,
-                "sent_ids": sent_ids,
-                "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-            })
+        # Open the chat with the provided phone number
+        url = f"https://web.whatsapp.com/send?phone={phone_number}"
+        driver.get(url)
         
-        return jsonify({
-            "message": "Messages sent successfully",
-            "total_sent": send_count,
-            "sent_ids": sent_ids
-        }), 200
+        # Wait for the chat interface to load
+        WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+        )
+        
+        # Focus on the input box
+        input_box = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+        )
+        input_box.click()
+        time.sleep(1)  # Small pause to ensure the input is focused
+        
+        # Type the message with line breaks
+        for line in message.split("\n"):
+            input_box.send_keys(line)  # Type the line
+            input_box.send_keys(Keys.SHIFT, Keys.ENTER)  # Simulate "Shift + Enter" for a new line
+        
+        # Remove the last "Shift + Enter" to avoid an empty line at the end
+        input_box.send_keys(Keys.BACKSPACE)
+        
+        # Wait for the send button and click it
+        send_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
+        )
+        send_button.click()
+        
+        # Wait for the message to be sent
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
+        )
+        
+        return jsonify({"message": "Message sent successfully"}), 200
     
     except Exception as e:
         return jsonify({
@@ -739,7 +832,7 @@ def send_messages():
     finally:
         if driver:
             driver.quit()
-            
+
 def main():
     try:
         driver = setup_driver()

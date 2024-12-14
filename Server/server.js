@@ -18,7 +18,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use("/api/upload", uploadRoutes);
 
-const PYTHON_SERVER_URL = process.env.MODE === "development" ? "http://localhost:5000" : "http://51.17.225.233:5001";
+const PYTHON_SERVER_URL = process.env.MODE === "development" ? "http://localhost:5000" : "http://3.122.240.89:5000";
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI).then(() => {
   console.log("Connected to MongoDB");
@@ -79,8 +79,6 @@ app.get("/api/contacts", async (req, res) => {
   }
 });
 
-
-
 app.get("/api/login-to-whatsapp", async (req, res) => {
   console.log("Logging in to WhatsApp...");
   try {
@@ -135,6 +133,66 @@ app.get("/api/logout", async (req, res) => {
     res
       .status(500)
       .json({ error: "Failed to logout of WhatsApp", details: error.message });
+  }
+});
+
+app.post("/api/notify-sendstatus", async (req, res) => {
+  try {
+    const { body } = req;
+    console.log("Notify send status", body);
+
+    // Send the QR code URL as a response
+    res.status(200).send({ message: "Notification received" });
+  } catch (error) {
+    console.error("Error notifying send status:", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    // Send a response if there's an error
+    res
+      .status(500)
+      .json({ error: "Failed to notify send status", details: error.message });
+  }
+});
+
+app.post("/api/bot-error", async (req, res) => {
+  try {
+    const { body } = req;
+    console.log("Bot error", body);
+
+    // Send the QR code URL as a response
+    res.status(200).send({ message: "Bot error received" });
+  } catch (error) {
+    console.error("Error notifying bot error:", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    // Send a response if there's an error
+    res
+      .status(500)
+      .json({ error: "Failed to notify bot error", details: error.message });
+  }
+});
+
+app.post("/api/success-log", async (req, res) => {
+  try {
+    const { body } = req;
+    console.log("Success log", body);
+
+    // Send the QR code URL as a response
+    res.status(200).send({ message: "Success log received" });
+  } catch (error) {
+    console.error("Error notifying success log:", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    // Send a response if there's an error
+    res
+      .status(500)
+      .json({ error: "Failed to notify success log", details: error.message });
   }
 });
 
