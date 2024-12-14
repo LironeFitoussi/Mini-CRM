@@ -577,6 +577,7 @@ def process_numbers():
     finally:
         os.remove(temp_file_path)
 
+
 @app.route('/validate', methods=['POST'])
 def validate_whatsapp_numbers():
     def background_validation():
@@ -597,24 +598,38 @@ def validate_whatsapp_numbers():
                 driver.get(url)
                 
                 try:
-                    # Wait for conversation header or error state
-                    WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.XPATH, "//header[@class='_amid']"))
+                    # Wait for either the valid conversation header or the invalid phone number message
+                    element = WebDriverWait(driver, 30).until(
+                        EC.any_of(
+                            EC.presence_of_element_located((By.XPATH, "//header[@class='_amid']")),
+                            EC.presence_of_element_located((By.XPATH, "//div[text()='Phone number shared via url is invalid.']"))
+                        )
                     )
-                    # Number is valid on WhatsApp
-                    valid_numbers_col.update_one(
-                        {"_id": entry["_id"]}, 
-                        {"$set": {"is_whatsapp": True}}
-                    )
-                    print(f"Number {phone_number} is valid on WhatsApp")
-                    validated_count += 1
+                    
+                    # Determine which element appeared
+                    if element.tag_name == "header":
+                        # Number is valid on WhatsApp
+                        valid_numbers_col.update_one(
+                            {"_id": entry["_id"]}, 
+                            {"$set": {"is_whatsapp": True}}
+                        )
+                        print(f"Number {phone_number} is valid on WhatsApp")
+                        validated_count += 1
+                    elif element.tag_name == "div":
+                        # Number is not valid on WhatsApp
+                        valid_numbers_col.update_one(
+                            {"_id": entry["_id"]}, 
+                            {"$set": {"is_whatsapp": False}}
+                        )
+                        print(f"Number {phone_number} is not valid on WhatsApp")
+                
                 except TimeoutException:
-                    # Number is not valid on WhatsApp
+                    # Handle case where neither element appears
                     valid_numbers_col.update_one(
                         {"_id": entry["_id"]}, 
-                        {"$set": {"is_whatsapp": False}}
+                        {"$set": {"is_whatsapp": "unknown"}}
                     )
-                    print(f"Number {phone_number} is not valid on WhatsApp")
+                    print(f"Validation for number {phone_number} timed out. Status set to unknown.")
             
             print({
                 "message": "WhatsApp validation completed",
@@ -631,6 +646,7 @@ def validate_whatsapp_numbers():
         finally:
             if driver:
                 driver.quit()
+    
     # Check if the user is logged in
     if STATUS["status"] == "User not logged in":
         return jsonify({"error": "User is not logged in"}), 400
@@ -639,12 +655,10 @@ def validate_whatsapp_numbers():
         thread = Thread(target=background_validation)
         thread.start()
     
-
     # Immediate response to the client
     return jsonify({
         "message": "Scanning started, we will notify you when the job is done"
     }), 202
-
 @app.route('/send', methods=['POST'])
 def send_messages():
     data = request.json
