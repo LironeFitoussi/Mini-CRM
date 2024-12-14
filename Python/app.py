@@ -40,7 +40,7 @@ app = Flask(__name__)
 
 # MongoDB Connection
 client = MongoClient("mongodb+srv://lironefit:4YrMTTViFjGfG0yf@cluster0.e2j9t.mongodb.net/phone_data?retryWrites=true&w=majority&appName=Cluster0")
-db = client.get_database("test")
+db = client.get_database("phone_data")
 valid_numbers_col = db.valid_numbers
 invalid_numbers_col = db.invalid_numbers
 messages_col = db.messages
