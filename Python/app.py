@@ -181,7 +181,7 @@ def init_load():
     try:
         logging.info("Checking if user is logged in...")
         WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
+            EC.presence_of_element_located((By.XPATH, "//span[@data-icon='lock-small']"))
         )
         logging.info("User is logged in.")
         STATUS["status"] = "User logged in"
@@ -336,14 +336,14 @@ class WhatsAppAutomation:
         try:
             logging.info("Waiting for user login...")
             WebDriverWait(driver, 120).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
+                EC.presence_of_element_located((By.XPATH, "//span[@data-icon='lock-small']"))
             )
             
             # in case of unfound element, try to refresh the page
             driver.refresh()
             time.sleep(5)
             WebDriverWait(driver, 60).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, 'span[aria-hidden="true"][data-icon="lock-small"]'))
+                EC.presence_of_element_located((By.XPATH, "//span[@data-icon='lock-small']"))
             )
             
             logging.info("User successfully logged in.")
@@ -617,6 +617,7 @@ def validate_whatsapp_numbers():
                         validated_count += 1
                     elif element.tag_name == "div":
                         # Number is not valid on WhatsApp
+                        
                         valid_numbers_col.update_one(
                             {"_id": entry["_id"]}, 
                             {"$set": {"is_whatsapp": False}}
@@ -630,6 +631,8 @@ def validate_whatsapp_numbers():
                         {"$set": {"is_whatsapp": "unknown"}}
                     )
                     print(f"Validation for number {phone_number} timed out. Status set to unknown.")
+                    driver.close()
+                    time.sleep(60)
             
             print({
                 "message": "WhatsApp validation completed",
@@ -659,6 +662,7 @@ def validate_whatsapp_numbers():
     return jsonify({
         "message": "Scanning started, we will notify you when the job is done"
     }), 202
+
 @app.route('/send', methods=['POST'])
 def send_messages():
     data = request.json
@@ -838,10 +842,14 @@ def test_message():
         return jsonify({"message": "Message sent successfully"}), 200
     
     except Exception as e:
-        return jsonify({
-            "error": "Message sending failed",
-            "details": str(e)
-        }), 500
+        # Take a screenshot on error
+        screenshot_path = "test_message_screenshot.png"
+        try:
+            driver.save_screenshot(screenshot_path)
+            ImageUploader.upload_image_to_s3(screenshot_path, os.getenv("AWS_BUCKET_NAME"))
+            return jsonify({"error": "Failed to send message", "details": str(e), "screenshot_url": f"https://{os.getenv('AWS_BUCKET_NAME')}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{screenshot_path}"}), 500
+        except Exception as screenshot_error:
+            return jsonify({"error": "Failed to send message", "details": str(e)}), 500
     
     finally:
         if driver:
