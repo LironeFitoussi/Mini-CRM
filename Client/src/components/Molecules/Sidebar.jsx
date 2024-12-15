@@ -1,0 +1,63 @@
+// Auth0 imports
+import React from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Link } from 'react-router-dom';
+
+const Sidebar = () => {
+  // Auth0 hook
+  const { logout } = useAuth0();
+
+  return (
+    <aside className="w-64 bg-gray-800 text-white flex flex-col justify-between">
+      <div>
+        <div className="p-4 text-center text-xl font-bold border-b border-gray-700">
+          My Dashboard
+        </div>
+        <nav className="mt-4">
+          <ul>
+            <li>
+              <Link to="overview" className="block px-4 py-2 hover:bg-gray-700 transition">
+                Overview
+              </Link>
+            </li>
+            <li>
+              <Link to="clients" className="block px-4 py-2 hover:bg-gray-700 transition">
+                Clients
+              </Link>
+            </li>
+            <li>
+              <Link to="donations" className="block px-4 py-2 hover:bg-gray-700 transition">
+                Donations
+              </Link>
+            </li>
+            <li>
+              <Link to="email" className="block px-4 py-2 hover:bg-gray-700 transition">
+                Email
+              </Link>
+            </li>
+            <li>
+              <Link to="whatsapp" className="block px-4 py-2 hover:bg-gray-700 transition">
+                WhatsApp
+              </Link> 
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div>
+        <ul>
+          <li>
+            <a
+              href="#"
+              className="block px-4 py-2 hover:bg-gray-700 transition"
+              onClick={() => logout({ returnTo: window.location.origin })}
+            >
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </aside>
+  );
+}
+
+export default Sidebar;

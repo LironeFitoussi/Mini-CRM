@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import ImageUploader from "./components/ImageUploader";
 import axios from "axios";
+import Header from "./components//Molecules/Header.jsx";
+
+import { Outlet } from "react-router-dom";
+import ImageUploader from "./components/ImageUploader";
 import DisplayNumbers from "./components/DisplayNumbers";
 const App = () => {
   const [qrCodeSrc, setQrCodeSrc] = useState(null); // State to store QR code image source
@@ -46,11 +49,14 @@ const App = () => {
   }
   return (
     <div>
-      <DisplayNumbers />
+      <Header />
+      { <Outlet /> }
+      {/* <h1>WhatsApp Bot</h1> */}
+      {/* <DisplayNumbers /> */}
       {/* <h1>Upload Images to S3</h1> */}
       {/* <ImageUploader /> */}
-      <button onClick={handleLoginToWhatsApp}>Login to WhatsApp</button>
-      <button onClick={handleLogout}>Logout</button>
+      {/* <button onClick={handleLoginToWhatsApp}>Login to WhatsApp</button>
+      <button onClick={handleLogout}>Logout</button> */}
       {/* Display the QR code or an error message */}
 
       {qrCodeSrc ? (
