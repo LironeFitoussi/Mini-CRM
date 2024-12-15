@@ -18,7 +18,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use("/api/upload", uploadRoutes);
 
-const PYTHON_SERVER_URL = process.env.MODE === "development" ? "http://localhost:5000" : "http://3.122.240.89:5000";
+const PYTHON_SERVER_URL = process.env.MODE === "development" ? "http://localhost:5000" : "http://5.28.180.39:5000";
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI).then(() => {
   console.log("Connected to MongoDB");
