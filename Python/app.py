@@ -24,6 +24,8 @@ from threading import Thread
 from selenium.common.exceptions import TimeoutException
 import phonenumbers
 from phonenumbers import geocoder
+from selenium.webdriver.common.action_chains import ActionChains
+
 from typing import Optional
 from sys import platform
 import subprocess
@@ -459,7 +461,6 @@ class WhatsAppAutomation:
             except Exception as screenshot_error:
                 logging.error(f"Failed to capture screenshot: {str(screenshot_error)}")
 
-
 @app.route("/get-qr-code", methods=["GET"])
 def get_qr_code():
     """Generate WhatsApp QR code, upload it to S3, and wait for user login."""
@@ -515,7 +516,118 @@ def get_qr_code():
         logging.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An error occurred during the process."}), 500
 
+@app.route("/log-with-code", methods=["GET"])
+def log_with_code():
+    """Generate a login code using a phone number, upload it to S3, and wait for user login."""
+    print("Generating login code...")
+    # Get Phone Number from params
+    phone_number = request.args.get("phone_number")
+    if not phone_number:
+        return jsonify({"error": "Phone number is required."}), 400
+    
+    # Remove the leading '0' if present at the start of the number
+    if phone_number.startswith('0'):
+        phone_number = phone_number[1:]
+    
+    try:
+        # Before starting the WebDriver, check if there is a logged-in user
+        if STATUS["status"] == "User logged in":
+            return jsonify({"message": "User is already logged in."})
+        
+        # Start WebDriver
+        logging.info("Starting WebDriver for code-based login.")
+        driver = setup_driver()
+        driver.get("https://web.whatsapp.com")
+        
+        # Wait for the chevron icon to appear and click it
+        phone_link = WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.XPATH, "(//span[@data-icon='chevron'])[1]"))
+        )
+        phone_link.click()
 
+        # Wait for either the '+972' or '+1' phone input to appear
+        phone_input = WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located(
+                (By.XPATH, "(//input[@value='+972 ' or @value='+1 '])[1]")
+            )
+        )
+
+        # Check the current value of the phone input
+        if "+1" in phone_input.get_attribute("value"):
+            # find and Click on element that match //button/div/div/div
+            select_country = WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable((By.XPATH, "//button/div/div/div"))
+            )
+            select_country.click()
+            time.sleep(1)
+            
+            # find p 
+            select_country = WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable((By.XPATH, "//p"))
+            )
+            
+            select_country.click()
+            select_country.send_keys("972")
+            
+            # Wait for (//img[@alt='🇮🇱'])[1]
+            select_country = WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable((By.XPATH, "(//img[@alt='🇮🇱'])[1]"))
+            )
+            select_country.click()
+            
+        
+        # Type the phone number
+        phone_input.send_keys(phone_number)
+        
+        # Click the 'Next' button
+        next_button = WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.XPATH, "(//div[contains(text(),'Next') or contains(text(),'הבא')])[1]"))
+        )
+        next_button.click()
+        
+        # Wait for the code instructions to appear
+        code_instructions = WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.XPATH, "//div[@aria-details='link-device-phone-number-code-screen-instructions']"))
+        )
+        
+        # Extract the login code
+        code = code_instructions.get_attribute("data-link-code")
+        logging.info(f"Extracted login code: {code}")
+        
+        # Take a screenshot of the element containing the code
+        code_screenshot_path = "login_code_screenshot.png"
+        code_instructions.screenshot(code_screenshot_path)
+        
+        
+        # Upload the screenshot to S3
+        bucket_name = os.getenv("AWS_BUCKET_NAME")
+        file_url = ImageUploader.upload_image_to_s3(code_screenshot_path, bucket_name)
+        
+        if not file_url:
+            driver.quit()
+            return jsonify({"error": "Failed to upload screenshot to S3."}), 500
+        
+        # Start a background thread to wait for the user to complete login on their phone
+        login_thread = Thread(target=WhatsAppAutomation.wait_for_login, args=(driver,))
+        login_thread.start()
+        
+        # Return the code and a reference to the screenshot
+        return jsonify({
+            "message": "Login code generated successfully.",
+            "code": code,
+            "url": file_url
+        })
+        
+    except TimeoutException as te:
+        logging.error(f"Timeout waiting for an element: {str(te)}")
+        driver.quit()
+        return jsonify({"error": "Timeout waiting for an element. Please try again."}), 500
+    except Exception as e:
+        logging.error(f"An error occurred: {str(e)}")
+        if 'driver' in locals():
+            driver.quit()
+        return jsonify({"error": "An error occurred during the process."}), 500
+       
 @app.route("/logout", methods=["POST"])
 def logout():
     """Log out the user by deleting the profile directory."""
@@ -589,12 +701,10 @@ def logout():
         logging.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An error occurred during the process."}), 500
 
-
 @app.route("/status", methods=["GET"])
 def get_status():
     """Get the current status of the WhatsApp user."""
     return jsonify(STATUS)
-
 
 @app.route("/process", methods=["POST"])
 def process_numbers():
@@ -1197,7 +1307,6 @@ def main():
         # driver.quit()
     except Exception as e:
         print(f"Driver test failed: {e}")
-
 
 if __name__ == "__main__":
     # Run the app
