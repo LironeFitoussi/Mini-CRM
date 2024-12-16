@@ -897,17 +897,28 @@ def send_messages():
     thread.start()
 
     return jsonify({"message": "Message sending process started"}), 202
+
 # Send to a single number for testing
 @app.route('/test-message', methods=['POST'])
 def test_message():
-    data = request.json
-    phone_number = data.get("phone_number")
-    message = data.get("message")
-    
-    if not phone_number or not message:
-        return jsonify({"error": "Phone number and message content are required"}), 400
-    
+    # Check if image is provided in multipart/form-data
+    if 'image' in request.files:
+        # multipart/form-data request
+        message = request.form.get("message", "")
+        phone_number = request.form.get("phone_number", "")
+        image_file = request.files['image']
+    else:
+        # JSON request
+        data = request.json
+        phone_number = data.get("phone_number")
+        message = data.get("message")
+        image_file = None
+
+    if not phone_number or (not message and image_file is None):
+        return jsonify({"error": "Phone number and message or image are required"}), 400
+
     driver = None
+    screenshot_path = "test_message_screenshot.png"
     try:
         # Initialize WebDriver
         driver = setup_driver()
@@ -917,48 +928,107 @@ def test_message():
         driver.get(url)
         
         # Wait for the chat interface to load
-        WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+        chat_box = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox']"))
         )
-        
-        # Focus on the input box
-        input_box = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
-        )
-        input_box.click()
-        time.sleep(1)  # Small pause to ensure the input is focused
-        
-        # Type the message with line breaks
-        for line in message.split("\n"):
-            input_box.send_keys(line)  # Type the line
-            input_box.send_keys(Keys.SHIFT, Keys.ENTER)  # Simulate "Shift + Enter" for a new line
-        
-        # Remove the last "Shift + Enter" to avoid an empty line at the end
-        input_box.send_keys(Keys.BACKSPACE)
-        
-        # Wait for the send button and click it
-        send_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
-        )
-        send_button.click()
-        
-        # Wait for the message to be sent
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
-        )
-        
+
+        if image_file:
+            # Handle image sending
+            
+            # Save the image locally
+            if not os.path.exists(IMAGE_SAVE_DIR):
+                os.makedirs(IMAGE_SAVE_DIR)
+
+            ext = os.path.splitext(image_file.filename)[1]
+            if not ext:
+                ext = ".png"  # Default extension if none provided
+            image_filename = f"{time.time()}{ext}"
+            image_path = os.path.join(IMAGE_SAVE_DIR, image_filename)
+            image_file.save(image_path)
+
+            # Click attachment (plus) button
+            plus_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='plus']"))
+            )
+            plus_button.click()
+
+            # Click "Photos & videos"
+            photos_videos_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "(//span[normalize-space()='Photos & videos'])"))
+            )
+            photos_videos_button.click()
+
+            # Wait for file input to appear and upload the image
+            file_input = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//input[@accept='image/*,video/mp4,video/3gpp,video/quicktime']"))
+            )
+            file_input.send_keys(os.path.abspath(image_path))
+
+            # Wait for the image preview and caption box
+            caption_box = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Add a caption') or @aria-placeholder='Add a caption']"))
+            )
+
+            # Find the actual editable caption field
+            caption_input = caption_box.find_element(By.XPATH, ".//ancestor::div[@role='textbox']")
+            caption_input.click()
+            time.sleep(1)
+
+            # Insert the caption text (handle line breaks)
+            for line in message.split("\n"):
+                caption_input.send_keys(line)
+                caption_input.send_keys(Keys.SHIFT, Keys.ENTER)
+            # Remove the last extra line break
+            caption_input.send_keys(Keys.BACKSPACE)
+
+            # Click send button
+            send_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
+            )
+            send_button.click()
+
+            # Wait for the message to be sent
+            WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
+            )
+
+        else:
+            # Text-only message
+            # Focus on the input box
+            input_box = chat_box
+            input_box.click()
+            time.sleep(1)  # Small pause to ensure the input is focused
+
+            # Type the message with line breaks
+            for line in message.split("\n"):
+                input_box.send_keys(line)  # Type the line
+                input_box.send_keys(Keys.SHIFT, Keys.ENTER)  # Simulate "Shift + Enter" for a new line
+
+            # Remove the last "Shift + Enter" to avoid an empty line at the end
+            input_box.send_keys(Keys.BACKSPACE)
+
+            # Wait for the send button and click it
+            send_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
+            )
+            send_button.click()
+
+            # Wait for the message to be sent
+            WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
+            )
+
         return jsonify({"message": "Message sent successfully"}), 200
-    
+
     except Exception as e:
-        # Take a screenshot on error
-        screenshot_path = "test_message_screenshot.png"
         try:
-            driver.save_screenshot(screenshot_path)
+            if driver:
+                driver.save_screenshot(screenshot_path)
             ImageUploader.upload_image_to_s3(screenshot_path, os.getenv("AWS_BUCKET_NAME"))
-            return jsonify({"error": "Failed to send message", "details": str(e), "screenshot_url": f"https://{os.getenv('AWS_BUCKET_NAME')}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{screenshot_path}"}), 500
+            screenshot_url = f"https://{os.getenv('AWS_BUCKET_NAME')}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{screenshot_path}"
+            return jsonify({"error": "Failed to send message", "details": str(e), "screenshot_url": screenshot_url}), 500
         except Exception as screenshot_error:
             return jsonify({"error": "Failed to send message", "details": str(e)}), 500
-    
     finally:
         if driver:
             driver.quit()
