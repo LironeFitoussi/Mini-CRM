@@ -1,9 +1,11 @@
 import os
 import time
 import logging
+import uuid
 from datetime import datetime
+import pyperclip
 from bson.objectid import ObjectId
-import requests 
+import requests
 import pandas as pd
 from selenium.webdriver.common.keys import Keys
 from pymongo import MongoClient
@@ -28,19 +30,22 @@ import subprocess
 import sys
 
 
-
 # Load environment variables
 load_dotenv()
 
 # Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 # Flask app
 app = Flask(__name__)
 
 # MongoDB Connection
-client = MongoClient("mongodb+srv://lironefit:4YrMTTViFjGfG0yf@cluster0.e2j9t.mongodb.net/phone_data?retryWrites=true&w=majority&appName=Cluster0")
-db = client.get_database("phone_data")
+client = MongoClient(
+    "mongodb+srv://lironefit:4YrMTTViFjGfG0yf@cluster0.e2j9t.mongodb.net/phone_data?retryWrites=true&w=majority&appName=Cluster0"
+)
+db = client.get_database("test")
 valid_numbers_col = db.valid_numbers
 invalid_numbers_col = db.invalid_numbers
 messages_col = db.messages
@@ -105,97 +110,127 @@ if not os.path.exists(IMAGE_SAVE_DIR):
 if not os.path.exists(SCREENSHOT_DIR):
     os.makedirs(SCREENSHOT_DIR)
 
+
 def log_message(msg):
     with open(LOGFILE, "a") as f:
         f.write(f"{datetime.now()} - {msg}\n")
+
 
 def check_chrome_version():
     """
     Attempt to get Chrome version across different platforms
     """
     try:
-        if sys.platform == 'win32':
+        if sys.platform == "win32":
             # Windows version check
-            result = subprocess.run(['reg', 'query', 'HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon', '/v', 'version'], 
-                                    capture_output=True, text=True)
+            result = subprocess.run(
+                [
+                    "reg",
+                    "query",
+                    "HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon",
+                    "/v",
+                    "version",
+                ],
+                capture_output=True,
+                text=True,
+            )
             version = result.stdout.split()[-1] if result.returncode == 0 else "Unknown"
-        elif sys.platform == 'darwin':
+        elif sys.platform == "darwin":
             # macOS version check
-            result = subprocess.run(['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '--version'], 
-                                    capture_output=True, text=True)
+            result = subprocess.run(
+                [
+                    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                    "--version",
+                ],
+                capture_output=True,
+                text=True,
+            )
             version = result.stdout.strip() if result.returncode == 0 else "Unknown"
         else:
             # Linux version check
-            result = subprocess.run(['google-chrome', '--version'], 
-                                    capture_output=True, text=True)
+            result = subprocess.run(
+                ["google-chrome", "--version"], capture_output=True, text=True
+            )
             version = result.stdout.strip() if result.returncode == 0 else "Unknown"
         return version
     except Exception as e:
         logging.error(f"Could not determine Chrome version: {e}")
         return "Unable to determine"
 
+
 def setup_driver():
     """
     Advanced WebDriver setup with extensive error handling and logging
     """
     logging.basicConfig(level=logging.INFO)
-    
+
     try:
         # Check Chrome version
         chrome_version = check_chrome_version()
         logging.info(f"Detected Chrome Version: {chrome_version}")
-        
+
         # Configure Chrome options
         chrome_options = Options()
-        
+
         # User profile directory for session persistence
-        chrome_options.add_argument(f"--user-data-dir={os.path.abspath(PROFILE_DIRECTORY)}")
-        
+        chrome_options.add_argument(
+            f"--user-data-dir={os.path.abspath(PROFILE_DIRECTORY)}"
+        )
+
         # Optional: Specify a particular profile within the user-data-dir
         # chrome_options.add_argument("--profile-directory=Default")
-        
+
         # Aggressive troubleshooting options
-        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--verbose")
-        chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
+
         # Optional: Uncomment to debug
         # chrome_options.add_argument("--remote-debugging-port=9222")
-        
+
         try:
             # Use ChromeDriverManager with specific Chrome type
-            service = Service(ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install())
-            
+            service = Service(
+                ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()
+            )
+
             # Initialize the WebDriver with extended timeout
             driver = webdriver.Chrome(service=service, options=chrome_options)
-            
+
             return driver
-        
+
         except Exception as detailed_error:
             logging.error(f"WebDriver Initialization Failed: {detailed_error}")
             logging.error(f"Detailed Error Type: {type(detailed_error)}")
             raise
-    
+
     except Exception as general_error:
         logging.error(f"Setup Error: {general_error}")
         raise
+
+# Define helper function outside of the route so the thread can access it
+def input_multiline_text(input_element, message):
+    pyperclip.copy(message)
+    input_element.send_keys(Keys.CONTROL, 'v')
 
 # On App Start, Open Browser to Get Status of WhatsApp
 def init_load():
     # Step 1: Start WebDriver
     logging.info("Starting WebDriver.")
-    
+
     driver = setup_driver()
     driver.get("https://web.whatsapp.com")
-    
+
     # Step 2: Check if User is Logged In
     try:
         logging.info("Checking if user is logged in...")
         WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located((By.XPATH, "//span[@data-icon='lock-small']"))
+            EC.presence_of_element_located(
+                (By.XPATH, "//span[@data-icon='lock-small']")
+            )
         )
         logging.info("User is logged in.")
         STATUS["status"] = "User logged in"
@@ -206,6 +241,7 @@ def init_load():
         STATUS["message"] = "Please scan the QR code to log in."
     finally:
         driver.quit()
+
 init_load()
 
 # Phone Number Class
@@ -221,7 +257,7 @@ class PhoneNumber:
             return None
         if any(char in phone_str for char in ["%", "&"]):
             return None
-        
+
         # if last 2 characters are ".0" then remove them
         if phone_str[-2:] == ".0":
             phone_str = phone_str[:-2]
@@ -232,15 +268,26 @@ class PhoneNumber:
             phone_str = phone_str.split("/")[0]
         if phone_str.startswith(("O6", "O7", "06", "07")):
             phone_str = "33" + phone_str[1:]
-        elif (phone_str.startswith("6") or phone_str.startswith("7")) and len(phone_str) == 9:
+        elif (phone_str.startswith("6") or phone_str.startswith("7")) and len(
+            phone_str
+        ) == 9:
             phone_str = "33" + phone_str
-        elif phone_str.startswith("50") or phone_str.startswith("51") or phone_str.startswith("52") or phone_str.startswith("53") or phone_str.startswith("54") or phone_str.startswith("55") or phone_str.startswith("58") and len(phone_str) == 9:
+        elif (
+            phone_str.startswith("50")
+            or phone_str.startswith("51")
+            or phone_str.startswith("52")
+            or phone_str.startswith("53")
+            or phone_str.startswith("54")
+            or phone_str.startswith("55")
+            or phone_str.startswith("58")
+            and len(phone_str) == 9
+        ):
             phone_str = "972" + phone_str
         elif phone_str.startswith("9726"):
             phone_str = "336" + phone_str[4:]
         elif phone_str.startswith("330"):
             phone_str = "33" + phone_str[3:]
-        
+
         print(phone_str)
         # Check if the phone number is all digits
         if phone_str.isdigit():
@@ -248,7 +295,7 @@ class PhoneNumber:
         else:
             print(f"Invalid Phone Number: {phone_str}")
             return None
-    
+
     # Phone Column Class Detection
     @staticmethod
     def detect_phone_column(df):
@@ -278,7 +325,9 @@ class PhoneNumber:
         parse_number = "+" + phone_number
         try:
             parsed = phonenumbers.parse(parse_number, None)
-            if not phonenumbers.is_possible_number(parsed) or not phonenumbers.is_valid_number(parsed):
+            if not phonenumbers.is_possible_number(
+                parsed
+            ) or not phonenumbers.is_valid_number(parsed):
                 return ""
             return geocoder.description_for_number(parsed, "en") or ""
         except phonenumbers.NumberParseException:
@@ -325,23 +374,36 @@ class WhatsAppAutomation:
         try:
             # Wait for the QR code canvas to be present
             WebDriverWait(driver, 30).until(
-                EC.presence_of_element_located((By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]'))
+                EC.presence_of_element_located(
+                    (
+                        By.XPATH,
+                        '//canvas[@aria-label="Scan this QR code to link a device!"]',
+                    )
+                )
             )
-            qr_code_element = driver.find_element(By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]')
+            qr_code_element = driver.find_element(
+                By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]'
+            )
             qr_code_element.screenshot(QR_CODE_IMAGE_PATH)
             logging.info(f"QR code screenshot saved at {QR_CODE_IMAGE_PATH}.")
             return QR_CODE_IMAGE_PATH
 
         except Exception as e:
-            logging.warning(f"QR code element not found. Capturing full page instead: {str(e)}")
+            logging.warning(
+                f"QR code element not found. Capturing full page instead: {str(e)}"
+            )
             # Fallback to full-page screenshot
             fallback_screenshot_path = "fallback_page_screenshot.png"
             try:
                 driver.save_screenshot(fallback_screenshot_path)
-                logging.info(f"Full page screenshot saved at {fallback_screenshot_path}.")
+                logging.info(
+                    f"Full page screenshot saved at {fallback_screenshot_path}."
+                )
                 return fallback_screenshot_path  # Return fallback screenshot path
             except Exception as screenshot_error:
-                logging.error(f"Failed to capture full page screenshot: {str(screenshot_error)}")
+                logging.error(
+                    f"Failed to capture full page screenshot: {str(screenshot_error)}"
+                )
                 return None  # Return None if both attempts fail
 
     @staticmethod
@@ -350,23 +412,30 @@ class WhatsAppAutomation:
         try:
             logging.info("Waiting for user login...")
             WebDriverWait(driver, 120).until(
-                EC.presence_of_element_located((By.XPATH, "//span[@data-icon='lock-small']"))
+                EC.presence_of_element_located(
+                    (By.XPATH, "//span[@data-icon='lock-small']")
+                )
             )
-            
+
             # in case of unfound element, try to refresh the page
             driver.refresh()
             time.sleep(5)
             WebDriverWait(driver, 60).until(
-                EC.presence_of_element_located((By.XPATH, "//span[@data-icon='lock-small']"))
+                EC.presence_of_element_located(
+                    (By.XPATH, "//span[@data-icon='lock-small']")
+                )
             )
-            
+
             logging.info("User successfully logged in.")
             # Update the status
             STATUS["status"] = "User logged in"
             STATUS["message"] = "User is logged in."
-            
+
             # Notify the success endpoint
-            response = requests.post("https://mini-crm-y7v9.onrender.com/api/success-log", json={"status": "User logged in"})
+            response = requests.post(
+                "https://mini-crm-y7v9.onrender.com/api/success-log",
+                json={"status": "User logged in"},
+            )
             if response.status_code == 200:
                 logging.info("Successfully notified success-log endpoint.")
             else:
@@ -378,13 +447,18 @@ class WhatsAppAutomation:
             screenshot_path = "login_failure_screenshot.png"
             try:
                 driver.save_screenshot(screenshot_path)
-                ImageUploader.upload_image_to_s3(screenshot_path, os.getenv("AWS_BUCKET_NAME"))
-                
+                ImageUploader.upload_image_to_s3(
+                    screenshot_path, os.getenv("AWS_BUCKET_NAME")
+                )
+
                 # Notify the failure endpoint
-                logging.info(f"Screenshot saved at {screenshot_path} and uploaded to S3.")
+                logging.info(
+                    f"Screenshot saved at {screenshot_path} and uploaded to S3."
+                )
                 driver.quit()
             except Exception as screenshot_error:
                 logging.error(f"Failed to capture screenshot: {str(screenshot_error)}")
+
 
 @app.route("/get-qr-code", methods=["GET"])
 def get_qr_code():
@@ -394,7 +468,7 @@ def get_qr_code():
         # before starting the WebDriver, check if there is a logged in user
         if STATUS["status"] == "User logged in":
             return jsonify({"message": "User is already logged in."})
-        
+
         # Start WebDriver
         logging.info("Starting WebDriver.")
         driver = setup_driver()
@@ -406,8 +480,18 @@ def get_qr_code():
         if not qr_code_path or qr_code_path == "fallback_page_screenshot.png":
             fallback_screenshot_path = qr_code_path
             driver.quit()
-            file_url = ImageUploader.upload_image_to_s3(fallback_screenshot_path, os.getenv("AWS_BUCKET_NAME"))
-            return jsonify({"error": "Failed to generate QR code or fallback screenshot.", "url": file_url}), 500
+            file_url = ImageUploader.upload_image_to_s3(
+                fallback_screenshot_path, os.getenv("AWS_BUCKET_NAME")
+            )
+            return (
+                jsonify(
+                    {
+                        "error": "Failed to generate QR code or fallback screenshot.",
+                        "url": file_url,
+                    }
+                ),
+                500,
+            )
 
         # Upload screenshot to S3
         bucket_name = os.getenv("AWS_BUCKET_NAME")
@@ -420,16 +504,22 @@ def get_qr_code():
         login_thread = Thread(target=WhatsAppAutomation.wait_for_login, args=(driver,))
         login_thread.start()
 
-        return jsonify({"message": "QR code or fallback screenshot uploaded successfully.", "url": file_url})
+        return jsonify(
+            {
+                "message": "QR code or fallback screenshot uploaded successfully.",
+                "url": file_url,
+            }
+        )
 
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An error occurred during the process."}), 500
 
+
 @app.route("/logout", methods=["POST"])
 def logout():
     """Log out the user by deleting the profile directory."""
-    
+
     # stop all running processes and threads of chrome and chromedriver or any other relevant process
     os.system("pkill -f chrome")
     os.system("pkill -f chromedriver")
@@ -444,44 +534,51 @@ def logout():
             return jsonify({"message": "User logged out."})
         else:
             return jsonify({"message": "User is already logged out."})
-    
+
     delete_profile_directory()
-        
+
     try:
         # Start WebDriver
         driver = setup_driver()
         driver.get("https://web.whatsapp.com")
-        
+
         # Delete all cookies
         driver.delete_all_cookies()
-        
+
         # Delete Entire Browsing Data
         driver.execute_script("window.localStorage.clear();")
         driver.execute_script("window.sessionStorage.clear();")
-        driver.execute_script("window.indexedDB.databases().then(dbs => { dbs.forEach(db => { indexedDB.deleteDatabase(db.name); }); });")
-    
+        driver.execute_script(
+            "window.indexedDB.databases().then(dbs => { dbs.forEach(db => { indexedDB.deleteDatabase(db.name); }); });"
+        )
+
         driver.quit()
-    
+
         # Remove the Cached Driver at /root/.wdm/drivers/chromedriver/
         # os.system("rm -rf /root/.wdm/drivers/chromedriver/")
-    
-        # Remove the profile directory        
+
+        # Remove the profile directory
         if os.path.exists(PROFILE_DIRECTORY):
             print(f"Deleting profile directory: {PROFILE_DIRECTORY}")
             os.system(f"rm -rf {PROFILE_DIRECTORY}")
             driver = setup_driver()
             driver.get("https://web.whatsapp.com")
             time.sleep(5)
-            
+
             try:
                 WebDriverWait(driver, 15).until(
-                    EC.presence_of_element_located((By.XPATH, '//canvas[@aria-label="Scan this QR code to link a device!"]'))
+                    EC.presence_of_element_located(
+                        (
+                            By.XPATH,
+                            '//canvas[@aria-label="Scan this QR code to link a device!"]',
+                        )
+                    )
                 )
                 driver.quit()
             except Exception as e:
                 driver.quit()
                 return jsonify({"error": "Failed to log out the user."}), 500
-                
+
             logging.info("User logged out.")
             STATUS["status"] = "User not logged in"
             STATUS["message"] = "Please scan the QR code to log in."
@@ -492,17 +589,19 @@ def logout():
         logging.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An error occurred during the process."}), 500
 
+
 @app.route("/status", methods=["GET"])
 def get_status():
     """Get the current status of the WhatsApp user."""
     return jsonify(STATUS)
 
-@app.route('/process', methods=['POST'])
+
+@app.route("/process", methods=["POST"])
 def process_numbers():
-    if 'file' not in request.files:
+    if "file" not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
 
-    file = request.files['file']
+    file = request.files["file"]
     temp_file_path = f"temp/{file.filename}"
     os.makedirs("temp", exist_ok=True)
     file.save(temp_file_path)
@@ -516,10 +615,12 @@ def process_numbers():
 
         # Fetch existing phone numbers from the database
         existing_valid_numbers = set(
-            entry["phoneNumber"] for entry in valid_numbers_col.find({}, {"phoneNumber": 1})
+            entry["phoneNumber"]
+            for entry in valid_numbers_col.find({}, {"phoneNumber": 1})
         )
         existing_invalid_numbers = set(
-            entry["phoneNumber"] for entry in invalid_numbers_col.find({}, {"phoneNumber": 1})
+            entry["phoneNumber"]
+            for entry in invalid_numbers_col.find({}, {"phoneNumber": 1})
         )
 
         processed_numbers = set()
@@ -528,7 +629,7 @@ def process_numbers():
 
         for _, row in df.iterrows():
             raw_phone = str(row[phone_col]).strip()
-            
+
             # Skip rows with 'nan' or empty phone numbers
             if raw_phone.lower() in {"nan", "", "none"}:
                 print("Skipping empty phone number")
@@ -540,28 +641,46 @@ def process_numbers():
                 processed_numbers.add(normalized)
 
                 # Skip duplicates in both valid and invalid collections
-                if normalized in existing_valid_numbers or normalized in existing_invalid_numbers:
+                if (
+                    normalized in existing_valid_numbers
+                    or normalized in existing_invalid_numbers
+                ):
                     continue
 
-                country = PhoneNumber.infer_country_from_phone(normalized) or PhoneNumber.guess_country_from_prefix(normalized)
+                country = PhoneNumber.infer_country_from_phone(
+                    normalized
+                ) or PhoneNumber.guess_country_from_prefix(normalized)
                 if country and country != "Unknown":
-                    valid_entries.append({
-                        "phoneNumber": normalized, 
-                        "country": country, 
-                        "is_whatsapp": "unknown"  # Set initial status to unknown
-                    })
+                    valid_entries.append(
+                        {
+                            "phoneNumber": normalized,
+                            "country": country,
+                            "is_whatsapp": "unknown",  # Set initial status to unknown
+                        }
+                    )
                     existing_valid_numbers.add(normalized)
                 else:
                     # Only add to invalid_entries if not already in invalid numbers
-                    raw_phone_processed = PhoneNumber.normalize_phone_number(raw_phone) or raw_phone
+                    raw_phone_processed = (
+                        PhoneNumber.normalize_phone_number(raw_phone) or raw_phone
+                    )
                     if raw_phone_processed not in existing_invalid_numbers:
-                        invalid_entries.append({"phoneNumber": raw_phone_processed, "reason": "No country detected"})
+                        invalid_entries.append(
+                            {
+                                "phoneNumber": raw_phone_processed,
+                                "reason": "No country detected",
+                            }
+                        )
                         existing_invalid_numbers.add(raw_phone_processed)
             elif not normalized:
                 # Similarly, prevent duplicate invalid entries
-                raw_phone_processed = PhoneNumber.normalize_phone_number(raw_phone) or raw_phone
+                raw_phone_processed = (
+                    PhoneNumber.normalize_phone_number(raw_phone) or raw_phone
+                )
                 if raw_phone_processed not in existing_invalid_numbers:
-                    invalid_entries.append({"phoneNumber": raw_phone_processed, "reason": "Invalid format"})
+                    invalid_entries.append(
+                        {"phoneNumber": raw_phone_processed, "reason": "Invalid format"}
+                    )
                     existing_invalid_numbers.add(raw_phone_processed)
 
         # Insert valid and invalid entries in bulk
@@ -569,100 +688,120 @@ def process_numbers():
             try:
                 valid_numbers_col.insert_many(valid_entries, ordered=False)
             except Exception as e:
-                return jsonify({"error": "Error inserting valid entries", "details": str(e)}), 500
+                return (
+                    jsonify(
+                        {"error": "Error inserting valid entries", "details": str(e)}
+                    ),
+                    500,
+                )
 
         if invalid_entries:
             try:
                 invalid_numbers_col.insert_many(invalid_entries, ordered=False)
             except Exception as e:
-                return jsonify({"error": "Error inserting invalid entries", "details": str(e)}), 500
+                return (
+                    jsonify(
+                        {"error": "Error inserting invalid entries", "details": str(e)}
+                    ),
+                    500,
+                )
 
         # Get updated counts
         valid_count = valid_numbers_col.count_documents({})
         invalid_count = invalid_numbers_col.count_documents({})
 
-        return jsonify({
-            "message": "Processing completed",
-            "new_valid_count": len(valid_entries),
-            "new_invalid_count": len(invalid_entries),
-            "total_valid_count": valid_count,
-            "total_invalid_count": invalid_count,
-        }), 200
+        return (
+            jsonify(
+                {
+                    "message": "Processing completed",
+                    "new_valid_count": len(valid_entries),
+                    "new_invalid_count": len(invalid_entries),
+                    "total_valid_count": valid_count,
+                    "total_invalid_count": invalid_count,
+                }
+            ),
+            200,
+        )
     finally:
         os.remove(temp_file_path)
 
-@app.route('/validate', methods=['POST'])
+@app.route("/validate", methods=["POST"])
 def validate_whatsapp_numbers():
     def background_validation():
         driver = None
         try:
             driver = setup_driver()
-            
+
             # Fetch numbers where is_whatsapp is "unknown"
             to_validate = list(valid_numbers_col.find({"is_whatsapp": "unknown"}))
-            
+
             # Reverse the list
             to_validate.reverse()
-            
+
             validated_count = 0
             for entry in to_validate:
                 phone_number = entry["phoneNumber"]
                 url = f"https://web.whatsapp.com/send?phone={phone_number}"
                 driver.get(url)
-                
+
                 try:
                     # Wait for either the valid conversation header or the invalid phone number message
                     element = WebDriverWait(driver, 30).until(
                         EC.any_of(
-                            EC.presence_of_element_located((By.XPATH, "//header[@class='_amid']")),
-                            EC.presence_of_element_located((By.XPATH, "//div[text()='Phone number shared via url is invalid.']"))
+                            EC.presence_of_element_located(
+                                (By.XPATH, "//header[@class='_amid']")
+                            ),
+                            EC.presence_of_element_located(
+                                (
+                                    By.XPATH,
+                                    "//div[text()='Phone number shared via url is invalid.']",
+                                )
+                            ),
                         )
                     )
-                    
+
                     # Determine which element appeared
                     if element.tag_name == "header":
                         # Number is valid on WhatsApp
                         valid_numbers_col.update_one(
-                            {"_id": entry["_id"]}, 
-                            {"$set": {"is_whatsapp": True}}
+                            {"_id": entry["_id"]}, {"$set": {"is_whatsapp": True}}
                         )
                         print(f"Number {phone_number} is valid on WhatsApp")
                         validated_count += 1
                     elif element.tag_name == "div":
                         # Number is not valid on WhatsApp
-                        
+
                         valid_numbers_col.update_one(
-                            {"_id": entry["_id"]}, 
-                            {"$set": {"is_whatsapp": False}}
+                            {"_id": entry["_id"]}, {"$set": {"is_whatsapp": False}}
                         )
                         print(f"Number {phone_number} is not valid on WhatsApp")
-                
+
                 except TimeoutException:
                     # Handle case where neither element appears
                     valid_numbers_col.update_one(
-                        {"_id": entry["_id"]}, 
-                        {"$set": {"is_whatsapp": "unknown"}}
+                        {"_id": entry["_id"]}, {"$set": {"is_whatsapp": "unknown"}}
                     )
-                    print(f"Validation for number {phone_number} timed out. Status set to unknown.")
+                    print(
+                        f"Validation for number {phone_number} timed out. Status set to unknown."
+                    )
                     driver.close()
                     time.sleep(60)
-            
-            print({
-                "message": "WhatsApp validation completed",
-                "total_checked": len(to_validate),
-                "validated_count": validated_count
-            })
-        
+
+            print(
+                {
+                    "message": "WhatsApp validation completed",
+                    "total_checked": len(to_validate),
+                    "validated_count": validated_count,
+                }
+            )
+
         except Exception as e:
-            print({
-                "error": "Validation failed",
-                "details": str(e)
-            })
-        
+            print({"error": "Validation failed", "details": str(e)})
+
         finally:
             if driver:
                 driver.quit()
-    
+
     # Check if the user is logged in
     if STATUS["status"] == "User not logged in":
         return jsonify({"error": "User is not logged in"}), 400
@@ -670,44 +809,61 @@ def validate_whatsapp_numbers():
         # Start the background validation in a new thread
         thread = Thread(target=background_validation)
         thread.start()
-    
+
     # Immediate response to the client
-    return jsonify({
-        "message": "Scanning started, we will notify you when the job is done"
-    }), 202
+    return (
+        jsonify(
+            {"message": "Scanning started, we will notify you when the job is done"}
+        ),
+        202,
+    )
 
 @app.route('/send', methods=['POST'])
 def send_messages():
-    # Determine if it's JSON only or multipart form-data with image
+    # Check if an image is provided (multipart/form-data)
+    image_path = None
     if 'image' in request.files:
-        # Multipart form-data request with image
         message = request.form.get("message", "")
         image_file = request.files['image']
     else:
-        # JSON request (no image)
-        data = request.json
+        # If not multipart/form-data, assume JSON
+        data = request.get_json(silent=True) or {}
         message = data.get("message", "")
         image_file = None
 
     if not message and image_file is None:
         return jsonify({"error": "Message content or image is required"}), 400
 
-    def send_messages_thread(message, image_file):
+    # Save the image file now (within the request context) if one is provided
+    if image_file:
+        ext = os.path.splitext(image_file.filename)[1]
+        if not ext:
+            ext = ".png"
+        image_filename = f"{uuid.uuid4()}{ext}"
+        image_path = os.path.join(IMAGE_SAVE_DIR, image_filename)
+        image_file.save(image_path)
+
+    def send_messages_thread(message, image_path):
         driver = None
         try:
+            log_message("Thread started for sending messages.")
             messages_col = db["messages"]
             valid_numbers_col = db["valid_numbers"]
 
-            # Check if the message already exists in the "messages" collection
+            # Check if the message already exists in the database
             existing_message = messages_col.find_one({"message": message})
             sent_ids = [str(_id) for _id in existing_message.get("sent_ids", [])] if existing_message else []
+            log_message(f"Existing message found: {bool(existing_message)}, sent_ids count: {len(sent_ids)}")
 
-            # Fetch valid numbers by their IDs, excluding those already sent
-            valid_numbers = valid_numbers_col.find({"_id": {"$nin": [ObjectId(_id) for _id in sent_ids]}, "is_whatsapp": True})
+            # Fetch valid numbers that haven't received this message yet
+            valid_numbers = valid_numbers_col.find({
+                "_id": {"$nin": [ObjectId(_id) for _id in sent_ids]},
+                "is_whatsapp": True
+            })
             valid_numbers_list = list(valid_numbers)
-            
+            log_message(f"Found {len(valid_numbers_list)} recipients to send to.")
+
             if len(valid_numbers_list) == 0:
-                # No new recipients
                 log_message("No new recipients. All previously messaged.")
                 requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
                     "message": "All valid recipients have already received this message",
@@ -715,117 +871,89 @@ def send_messages():
                     "sent_ids": sent_ids
                 })
                 return
-            
-            # If image is provided, save it
-            image_path = None
-            if image_file:
-                # Save the image locally
-                ext = os.path.splitext(image_file.filename)[1]
-                if not ext:
-                    ext = ".png"  # Default extension if none provided
-                # Filename based on date
-                image_filename = f"image_{int(time.time())}{ext}"
-                image_path = os.path.join(IMAGE_SAVE_DIR, image_filename)
-                image_file.save(image_path)
-                log_message(f"Saved image to {image_path}")
 
             # Initialize WebDriver
+            log_message("Initializing WebDriver.")
             driver = setup_driver()
-            
+            log_message("WebDriver initialized.")
             send_count = 0
 
             for i, entry in enumerate(valid_numbers_list):
-                recipient_id = str(entry["_id"])  # Convert ObjectId to string
+                recipient_id = str(entry["_id"])
                 phone_number = entry["phoneNumber"]
                 url = f"https://web.whatsapp.com/send?phone={phone_number}"
+                log_message(f"Navigating to {url}")
                 driver.get(url)
 
                 try:
-                    # Wait for the chat interface to load
+                    # Wait for the chat input box to load
                     chat_box = WebDriverWait(driver, 20).until(
-                        EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox']"))
+                        EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
                     )
+                    log_message(f"Chat interface loaded for {phone_number}")
 
                     if image_path:
-                        # Sending image + caption
-
-                        # Click attachment (plus) button
+                        # IMAGE + CAPTION FLOW
                         plus_button = WebDriverWait(driver, 10).until(
                             EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='plus']"))
                         )
                         plus_button.click()
-                        
-                        # Click "Photos & videos"
+
                         photos_videos_button = WebDriverWait(driver, 10).until(
                             EC.element_to_be_clickable((By.XPATH, "(//span[normalize-space()='Photos & videos'])"))
                         )
                         photos_videos_button.click()
 
-                        # Wait for file input to appear and upload the image
                         file_input = WebDriverWait(driver, 10).until(
                             EC.presence_of_element_located((By.XPATH, "//input[@accept='image/*,video/mp4,video/3gpp,video/quicktime']"))
                         )
                         file_input.send_keys(os.path.abspath(image_path))
+                        log_message(f"Image selected for {phone_number}")
 
-                        # Wait for image preview and caption box
                         caption_box = WebDriverWait(driver, 20).until(
                             EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Add a caption') or @aria-placeholder='Add a caption']"))
                         )
-
-                        # The caption box might be a parent element, we need the actual editable field
-                        # Try to find the editable div (aria-autocomplete="list")
                         caption_input = caption_box.find_element(By.XPATH, ".//ancestor::div[@role='textbox']")
-                        
-                        # Insert the caption text (handle line breaks)
                         caption_input.click()
                         time.sleep(1)
-                        for line in message.split("\n"):
-                            caption_input.send_keys(line)
-                            caption_input.send_keys(Keys.SHIFT, Keys.ENTER)
-                        # Remove the last extra line break
-                        caption_input.send_keys(Keys.BACKSPACE)
-                        
-                        # Click send button for the image
+
+                        # Type caption as multiline text
+                        input_multiline_text(caption_input, message)
+
                         send_button = WebDriverWait(driver, 10).until(
                             EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
                         )
                         send_button.click()
 
-                        # Wait for confirmation that the message was sent
                         WebDriverWait(driver, 20).until(
                             EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
                         )
+                        log_message(f"Image message sent to {phone_number}")
 
                     else:
-                        # Sending text-only message
+                        # TEXT-ONLY FLOW
                         chat_box.click()
-                        time.sleep(1)  # Small pause to ensure the input is focused
-                    
-                        # Type the message with line breaks
-                        for line in message.split("\n"):
-                            chat_box.send_keys(line)
-                            chat_box.send_keys(Keys.SHIFT, Keys.ENTER)
-                        
-                        # Remove the last "Shift + Enter" to avoid an empty line at the end
-                        chat_box.send_keys(Keys.BACKSPACE)
-                        
-                        # Send the text message
+                        time.sleep(1)
+
+                        # Type message as multiline text
+                        input_multiline_text(chat_box, message)
+
                         send_button = WebDriverWait(driver, 10).until(
                             EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
                         )
                         send_button.click()
-                        
-                        # Wait for the message to be sent
-                        WebDriverWait(driver, 20).until(
+
+                        WebDriverWait(driver, 10).until(
                             EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
                         )
-                    
-                    # Add the recipient's ID to the list of sent IDs
+                        log_message(f"Text message sent to {phone_number}")
+
                     sent_ids.append(recipient_id)
                     send_count += 1
 
-                    # Notify after every 100 numbers or at the end
+                    # Notify progress every 100 messages or at the end
                     if (i + 1) % 100 == 0 or (i + 1) == len(valid_numbers_list):
+                        log_message(f"Progress update: {send_count} messages sent so far.")
                         requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
                             "message": f"Progress update: {send_count} messages sent",
                             "total_sent": send_count,
@@ -835,7 +963,6 @@ def send_messages():
                 except TimeoutException as e:
                     error_msg = f"Failed to send message to {phone_number}: {str(e)}"
                     log_message(error_msg)
-                    # Take a screenshot
                     screenshot_path = os.path.join(SCREENSHOT_DIR, f"error_{phone_number}_{int(time.time())}.png")
                     driver.save_screenshot(screenshot_path)
                     requests.post("https://mini-crm-y7v9.onrender.com/api/bot-error", json={
@@ -846,7 +973,6 @@ def send_messages():
                 except Exception as e:
                     error_msg = f"Unexpected error for {phone_number}: {str(e)}"
                     log_message(error_msg)
-                    # Take a screenshot
                     screenshot_path = os.path.join(SCREENSHOT_DIR, f"error_{phone_number}_{int(time.time())}.png")
                     driver.save_screenshot(screenshot_path)
                     requests.post("https://mini-crm-y7v9.onrender.com/api/bot-error", json={
@@ -855,7 +981,7 @@ def send_messages():
                         "screenshot": screenshot_path
                     })
 
-            # Update or insert the document in the "messages" collection
+            # Update or insert the message record
             if existing_message:
                 messages_col.update_one(
                     {"_id": existing_message["_id"]},
@@ -868,7 +994,7 @@ def send_messages():
                     "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')
                 })
             
-            # Final success notification
+            log_message("All messages sent successfully.")
             requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
                 "message": "All messages sent successfully",
                 "total_sent": send_count,
@@ -876,8 +1002,7 @@ def send_messages():
             })
         
         except Exception as e:
-            # General exception outside of loop
-            error_msg = f"General error: {str(e)}"
+            error_msg = f"General error in thread: {str(e)}"
             log_message(error_msg)
             if driver:
                 screenshot_path = os.path.join(SCREENSHOT_DIR, f"general_error_{int(time.time())}.png")
@@ -887,26 +1012,26 @@ def send_messages():
                     "details": error_msg,
                     "screenshot": screenshot_path
                 })
-        
         finally:
             if driver:
                 driver.quit()
-    
-    # Start the message sending process in a new thread
-    thread = Thread(target=send_messages_thread, args=(message, image_file))
+                log_message("WebDriver closed in thread.")
+
+    # Start the background thread now that we have saved the file and have all data ready
+    thread = Thread(target=send_messages_thread, args=(message, image_path))
     thread.start()
 
     return jsonify({"message": "Message sending process started"}), 202
 
 # Send to a single number for testing
-@app.route('/test-message', methods=['POST'])
+@app.route("/test-message", methods=["POST"])
 def test_message():
     # Check if image is provided in multipart/form-data
-    if 'image' in request.files:
+    if "image" in request.files:
         # multipart/form-data request
         message = request.form.get("message", "")
         phone_number = request.form.get("phone_number", "")
-        image_file = request.files['image']
+        image_file = request.files["image"]
     else:
         # JSON request
         data = request.json
@@ -922,19 +1047,23 @@ def test_message():
     try:
         # Initialize WebDriver
         driver = setup_driver()
-        
+
         # Open the chat with the provided phone number
         url = f"https://web.whatsapp.com/send?phone={phone_number}"
         driver.get(url)
-        
+
         # Wait for the chat interface to load
-        chat_box = WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox']"))
+        WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']",
+                )
+            )
         )
 
         if image_file:
-            # Handle image sending
-            
+            # IMAGE + CAPTION FLOW
             # Save the image locally
             if not os.path.exists(IMAGE_SAVE_DIR):
                 os.makedirs(IMAGE_SAVE_DIR)
@@ -942,7 +1071,7 @@ def test_message():
             ext = os.path.splitext(image_file.filename)[1]
             if not ext:
                 ext = ".png"  # Default extension if none provided
-            image_filename = f"{time.time()}{ext}"
+            image_filename = f"{uuid.uuid4()}{ext}"
             image_path = os.path.join(IMAGE_SAVE_DIR, image_filename)
             image_file.save(image_path)
 
@@ -954,33 +1083,42 @@ def test_message():
 
             # Click "Photos & videos"
             photos_videos_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "(//span[normalize-space()='Photos & videos'])"))
+                EC.element_to_be_clickable(
+                    (By.XPATH, "(//span[normalize-space()='Photos & videos'])")
+                )
             )
             photos_videos_button.click()
 
             # Wait for file input to appear and upload the image
             file_input = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//input[@accept='image/*,video/mp4,video/3gpp,video/quicktime']"))
+                EC.presence_of_element_located(
+                    (
+                        By.XPATH,
+                        "//input[@accept='image/*,video/mp4,video/3gpp,video/quicktime']",
+                    )
+                )
             )
             file_input.send_keys(os.path.abspath(image_path))
 
             # Wait for the image preview and caption box
             caption_box = WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Add a caption') or @aria-placeholder='Add a caption']"))
+                EC.presence_of_element_located(
+                    (
+                        By.XPATH,
+                        "//*[contains(text(), 'Add a caption') or @aria-placeholder='Add a caption']",
+                    )
+                )
             )
 
             # Find the actual editable caption field
-            caption_input = caption_box.find_element(By.XPATH, ".//ancestor::div[@role='textbox']")
+            caption_input = caption_box.find_element(
+                By.XPATH, ".//ancestor::div[@role='textbox']"
+            )
             caption_input.click()
             time.sleep(1)
 
-            # Insert the caption text (handle line breaks)
-            for line in message.split("\n"):
-                caption_input.send_keys(line)
-                caption_input.send_keys(Keys.SHIFT, Keys.ENTER)
-            # Remove the last extra line break
-            caption_input.send_keys(Keys.BACKSPACE)
-
+            # Type the message as multiline text into the caption field 
+            input_multiline_text(caption_input, message)
             # Click send button
             send_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
@@ -989,23 +1127,27 @@ def test_message():
 
             # Wait for the message to be sent
             WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
+                EC.presence_of_element_located(
+                    (By.XPATH, "//span[@aria-label=' Sent ']")
+                )
             )
 
         else:
-            # Text-only message
+            # TEXT-ONLY FLOW (Revert to original logic)
             # Focus on the input box
-            input_box = chat_box
+            input_box = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located(
+                    (
+                        By.XPATH,
+                        "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']",
+                    )
+                )
+            )
             input_box.click()
             time.sleep(1)  # Small pause to ensure the input is focused
 
-            # Type the message with line breaks
-            for line in message.split("\n"):
-                input_box.send_keys(line)  # Type the line
-                input_box.send_keys(Keys.SHIFT, Keys.ENTER)  # Simulate "Shift + Enter" for a new line
-
-            # Remove the last "Shift + Enter" to avoid an empty line at the end
-            input_box.send_keys(Keys.BACKSPACE)
+            # Send the message as multiline text with dedicated function
+            input_multiline_text(input_box, message)
 
             # Wait for the send button and click it
             send_button = WebDriverWait(driver, 10).until(
@@ -1014,8 +1156,10 @@ def test_message():
             send_button.click()
 
             # Wait for the message to be sent
-            WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//span[@aria-label=' Sent ']")
+                )
             )
 
         return jsonify({"message": "Message sent successfully"}), 200
@@ -1024,9 +1168,20 @@ def test_message():
         try:
             if driver:
                 driver.save_screenshot(screenshot_path)
-            ImageUploader.upload_image_to_s3(screenshot_path, os.getenv("AWS_BUCKET_NAME"))
+            ImageUploader.upload_image_to_s3(
+                screenshot_path, os.getenv("AWS_BUCKET_NAME")
+            )
             screenshot_url = f"https://{os.getenv('AWS_BUCKET_NAME')}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{screenshot_path}"
-            return jsonify({"error": "Failed to send message", "details": str(e), "screenshot_url": screenshot_url}), 500
+            return (
+                jsonify(
+                    {
+                        "error": "Failed to send message",
+                        "details": str(e),
+                        "screenshot_url": screenshot_url,
+                    }
+                ),
+                500,
+            )
         except Exception as screenshot_error:
             return jsonify({"error": "Failed to send message", "details": str(e)}), 500
     finally:
@@ -1043,7 +1198,8 @@ def main():
     except Exception as e:
         print(f"Driver test failed: {e}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Run the app
     main()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
