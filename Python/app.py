@@ -94,6 +94,20 @@ COUNTRY_PREFIXES = {
     "598": "Uruguay",
 }
 
+# Logging directories (ensure these exist or create them)
+IMAGE_SAVE_DIR = "uploaded_images"
+SCREENSHOT_DIR = "screenshots"
+LOGFILE = "send_messages.log"
+
+if not os.path.exists(IMAGE_SAVE_DIR):
+    os.makedirs(IMAGE_SAVE_DIR)
+
+if not os.path.exists(SCREENSHOT_DIR):
+    os.makedirs(SCREENSHOT_DIR)
+
+def log_message(msg):
+    with open(LOGFILE, "a") as f:
+        f.write(f"{datetime.now()} - {msg}\n")
 
 def check_chrome_version():
     """
@@ -577,7 +591,6 @@ def process_numbers():
     finally:
         os.remove(temp_file_path)
 
-
 @app.route('/validate', methods=['POST'])
 def validate_whatsapp_numbers():
     def background_validation():
@@ -665,16 +678,23 @@ def validate_whatsapp_numbers():
 
 @app.route('/send', methods=['POST'])
 def send_messages():
-    data = request.json
-    message = data.get("message")
-    
-    if not message:
-        return jsonify({"error": "Message content is required"}), 400
-    
-    def send_messages_thread(message):
+    # Determine if it's JSON only or multipart form-data with image
+    if 'image' in request.files:
+        # Multipart form-data request with image
+        message = request.form.get("message", "")
+        image_file = request.files['image']
+    else:
+        # JSON request (no image)
+        data = request.json
+        message = data.get("message", "")
+        image_file = None
+
+    if not message and image_file is None:
+        return jsonify({"error": "Message content or image is required"}), 400
+
+    def send_messages_thread(message, image_file):
         driver = None
         try:
-            # Connect to the "messages" collection in MongoDB
             messages_col = db["messages"]
             valid_numbers_col = db["valid_numbers"]
 
@@ -687,6 +707,8 @@ def send_messages():
             valid_numbers_list = list(valid_numbers)
             
             if len(valid_numbers_list) == 0:
+                # No new recipients
+                log_message("No new recipients. All previously messaged.")
                 requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
                     "message": "All valid recipients have already received this message",
                     "total_sent": len(sent_ids),
@@ -694,6 +716,19 @@ def send_messages():
                 })
                 return
             
+            # If image is provided, save it
+            image_path = None
+            if image_file:
+                # Save the image locally
+                ext = os.path.splitext(image_file.filename)[1]
+                if not ext:
+                    ext = ".png"  # Default extension if none provided
+                # Filename based on date
+                image_filename = f"image_{int(time.time())}{ext}"
+                image_path = os.path.join(IMAGE_SAVE_DIR, image_filename)
+                image_file.save(image_path)
+                log_message(f"Saved image to {image_path}")
+
             # Initialize WebDriver
             driver = setup_driver()
             
@@ -707,41 +742,89 @@ def send_messages():
 
                 try:
                     # Wait for the chat interface to load
-                    WebDriverWait(driver, 15).until(
-                        EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+                    chat_box = WebDriverWait(driver, 20).until(
+                        EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox']"))
                     )
 
-                    # Focus on the input box
-                    input_box = WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
-                    )
-                    input_box.click()
-                    time.sleep(1)  # Small pause to ensure the input is focused
+                    if image_path:
+                        # Sending image + caption
+
+                        # Click attachment (plus) button
+                        plus_button = WebDriverWait(driver, 10).until(
+                            EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='plus']"))
+                        )
+                        plus_button.click()
+                        
+                        # Click "Photos & videos"
+                        photos_videos_button = WebDriverWait(driver, 10).until(
+                            EC.element_to_be_clickable((By.XPATH, "(//span[normalize-space()='Photos & videos'])"))
+                        )
+                        photos_videos_button.click()
+
+                        # Wait for file input to appear and upload the image
+                        file_input = WebDriverWait(driver, 10).until(
+                            EC.presence_of_element_located((By.XPATH, "//input[@accept='image/*,video/mp4,video/3gpp,video/quicktime']"))
+                        )
+                        file_input.send_keys(os.path.abspath(image_path))
+
+                        # Wait for image preview and caption box
+                        caption_box = WebDriverWait(driver, 20).until(
+                            EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Add a caption') or @aria-placeholder='Add a caption']"))
+                        )
+
+                        # The caption box might be a parent element, we need the actual editable field
+                        # Try to find the editable div (aria-autocomplete="list")
+                        caption_input = caption_box.find_element(By.XPATH, ".//ancestor::div[@role='textbox']")
+                        
+                        # Insert the caption text (handle line breaks)
+                        caption_input.click()
+                        time.sleep(1)
+                        for line in message.split("\n"):
+                            caption_input.send_keys(line)
+                            caption_input.send_keys(Keys.SHIFT, Keys.ENTER)
+                        # Remove the last extra line break
+                        caption_input.send_keys(Keys.BACKSPACE)
+                        
+                        # Click send button for the image
+                        send_button = WebDriverWait(driver, 10).until(
+                            EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
+                        )
+                        send_button.click()
+
+                        # Wait for confirmation that the message was sent
+                        WebDriverWait(driver, 20).until(
+                            EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
+                        )
+
+                    else:
+                        # Sending text-only message
+                        chat_box.click()
+                        time.sleep(1)  # Small pause to ensure the input is focused
                     
-                    # Type the message with line breaks
-                    for line in message.split("\n"):
-                        input_box.send_keys(line)  # Type the line
-                        input_box.send_keys(Keys.SHIFT, Keys.ENTER)  # Simulate "Shift + Enter" for a new line
-                    
-                    # Remove the last "Shift + Enter" to avoid an empty line at the end
-                    input_box.send_keys(Keys.BACKSPACE)
-                    
-                    # Wait for the send button and click it
-                    send_button = WebDriverWait(driver, 10).until(
-                        EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
-                    )
-                    send_button.click()
-                    
-                    # Wait for the message to be sent
-                    WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
-                    )
+                        # Type the message with line breaks
+                        for line in message.split("\n"):
+                            chat_box.send_keys(line)
+                            chat_box.send_keys(Keys.SHIFT, Keys.ENTER)
+                        
+                        # Remove the last "Shift + Enter" to avoid an empty line at the end
+                        chat_box.send_keys(Keys.BACKSPACE)
+                        
+                        # Send the text message
+                        send_button = WebDriverWait(driver, 10).until(
+                            EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
+                        )
+                        send_button.click()
+                        
+                        # Wait for the message to be sent
+                        WebDriverWait(driver, 20).until(
+                            EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
+                        )
                     
                     # Add the recipient's ID to the list of sent IDs
                     sent_ids.append(recipient_id)
                     send_count += 1
 
-                    # Notify after every 100 numbers
+                    # Notify after every 100 numbers or at the end
                     if (i + 1) % 100 == 0 or (i + 1) == len(valid_numbers_list):
                         requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
                             "message": f"Progress update: {send_count} messages sent",
@@ -749,8 +832,28 @@ def send_messages():
                             "sent_ids": sent_ids
                         })
 
-                except TimeoutException:
-                    print(f"Failed to send message to {phone_number}")
+                except TimeoutException as e:
+                    error_msg = f"Failed to send message to {phone_number}: {str(e)}"
+                    log_message(error_msg)
+                    # Take a screenshot
+                    screenshot_path = os.path.join(SCREENSHOT_DIR, f"error_{phone_number}_{int(time.time())}.png")
+                    driver.save_screenshot(screenshot_path)
+                    requests.post("https://mini-crm-y7v9.onrender.com/api/bot-error", json={
+                        "error": "Message sending failed",
+                        "details": error_msg,
+                        "screenshot": screenshot_path
+                    })
+                except Exception as e:
+                    error_msg = f"Unexpected error for {phone_number}: {str(e)}"
+                    log_message(error_msg)
+                    # Take a screenshot
+                    screenshot_path = os.path.join(SCREENSHOT_DIR, f"error_{phone_number}_{int(time.time())}.png")
+                    driver.save_screenshot(screenshot_path)
+                    requests.post("https://mini-crm-y7v9.onrender.com/api/bot-error", json={
+                        "error": "Message sending failed",
+                        "details": error_msg,
+                        "screenshot": screenshot_path
+                    })
 
             # Update or insert the document in the "messages" collection
             if existing_message:
@@ -773,22 +876,27 @@ def send_messages():
             })
         
         except Exception as e:
-            # Notify on error
-            requests.post("https://mini-crm-y7v9.onrender.com/api/bot-error", json={
-                "error": "Message sending failed",
-                "details": str(e)
-            })
+            # General exception outside of loop
+            error_msg = f"General error: {str(e)}"
+            log_message(error_msg)
+            if driver:
+                screenshot_path = os.path.join(SCREENSHOT_DIR, f"general_error_{int(time.time())}.png")
+                driver.save_screenshot(screenshot_path)
+                requests.post("https://mini-crm-y7v9.onrender.com/api/bot-error", json={
+                    "error": "Message sending failed",
+                    "details": error_msg,
+                    "screenshot": screenshot_path
+                })
         
         finally:
             if driver:
                 driver.quit()
     
     # Start the message sending process in a new thread
-    thread = Thread(target=send_messages_thread, args=(message,))
+    thread = Thread(target=send_messages_thread, args=(message, image_file))
     thread.start()
 
     return jsonify({"message": "Message sending process started"}), 202
-
 # Send to a single number for testing
 @app.route('/test-message', methods=['POST'])
 def test_message():
