@@ -1,10 +1,17 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 
 const Home = () => {
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
+  const location = useLocation();
 
+  const handleLogin = () => {
+    loginWithRedirect({
+      appState: { returnTo: location.pathname },
+    });
+  };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center">
       <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-lg w-full">
@@ -45,7 +52,7 @@ const Home = () => {
             </>
           ) : (
             <button
-              onClick={() => loginWithRedirect()}
+              onClick={handleLogin}
               className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600"
             >
               Log In

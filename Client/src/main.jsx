@@ -30,6 +30,7 @@ import DonationsPage from "./pages/dashboard/Donations.jsx";
 import EmailPage from "./pages/dashboard/Email.jsx";
 import ClientDetailsPage from "./pages/dashboard/clients/ClientDetails.jsx";
 import WhatsAppPage from "./pages/dashboard/Whatsapp.jsx";
+import { useLocation } from 'react-router-dom';
 
 const root = createRoot(document.getElementById("root"));
 
@@ -37,13 +38,18 @@ const NotFound = () => <h1>404 - Page Not Found</h1>;
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ element }) => {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
 
-  // console.log(isAuthenticated);
+  // Wait until Auth0 finishes loading
+  if (isLoading) {
+    return <div>Loading...</div>; // Or a spinner
+  }
 
   if (!isAuthenticated) {
-    loginWithRedirect();
-    return null; // Render nothing until redirect
+    loginWithRedirect({
+      appState: { returnTo: window.location.pathname },
+    });
+    return null; // Prevent rendering anything during redirect
   }
 
   return element;
@@ -98,6 +104,10 @@ const router = createBrowserRouter([
   },
 ]);
 
+const onRedirectCallback = (appState) => {
+  window.location.href = appState?.returnTo || window.location.pathname;
+};
+
 // Root rendering
 root.render(
   <Auth0Provider
@@ -107,6 +117,8 @@ root.render(
       redirect_uri: window.location.origin,
       audience: import.meta.env.VITE_AUTH0_AUDIENCE, // Add if using API access
     }}
+    cacheLocation="localstorage"
+    onRedirectCallback={onRedirectCallback} // Preserve route
   >
     <RouterProvider router={router} />
   </Auth0Provider>

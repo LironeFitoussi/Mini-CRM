@@ -64,7 +64,7 @@ const ClientPage = () => {
         }
 
         const response = await fetch(
-          `http://localhost:3000/api/v1/donators?${params.toString()}`
+          `${import.meta.env.VITE_API_URL}/api/v1/donators?${params.toString()}`
         );
         
         if (!response.ok) {

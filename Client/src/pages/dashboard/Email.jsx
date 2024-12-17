@@ -54,7 +54,7 @@ const EmailPage = () => {
     const fetchDonators = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/v1/donators?page=1&limit=1200"
+          `${import.meta.env.VITE_API_URL}/api/v1/donators?page=1&limit=1200`
         );
         const result = await response.json();
 
@@ -150,7 +150,7 @@ const EmailPage = () => {
   // Handle sending the email (mock action)
   const handleSendEmail = async () => {
     try {
-      await axios.post("http://localhost:3000/api/v1/email/", {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/email/`, {
         from,
         to: toRecipients,
         subject,

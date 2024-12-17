@@ -30,7 +30,7 @@ const ClientDetailsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/donators/${id}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/donators/${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch client data");
         }

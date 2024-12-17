@@ -1,8 +1,16 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useLocation } from 'react-router-dom';
 
 const SignIn = () => {
   const { loginWithRedirect } = useAuth0();
+  const location = useLocation();
+  
+  const handleLogin = () => {
+    loginWithRedirect({
+      appState: { returnTo: location.pathname },
+    });
+  };
 
   return (
     <form>
@@ -30,7 +38,7 @@ const SignIn = () => {
       </div>
       <button
         type="button"
-        onClick={loginWithRedirect}
+        onClick={handleLogin}
         className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
       >
         Sign In
