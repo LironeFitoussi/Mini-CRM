@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -8,23 +8,66 @@ import {
   Typography,
   Divider,
   Modal,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
+
+import axios from "axios";
+
+import ImageUploader from "../../components/ImageUploader";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const EmailPage = () => {
   // Mock data for "From" emails (approved registered emails from the backend)
-  const fromEmails = ["admin@company.com", "support@company.com", "info@company.com"];
+  const fromEmails = [
+    "lironefit@gmail.com",
+    "contact.lesenfantsderachi@gmail.com",
+    "info@company.com",
+  ];
 
   // State variables
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [cc, setCc] = useState("");
-  const [bcc, setBcc] = useState("");
+  // const [cc, setCc] = useState("");
+  // const [bcc, setBcc] = useState("");
+  const [imagePosition, setImagePosition] = useState("top");
   const [subject, setSubject] = useState("");
-  const [body, setBody] = useState("");
+  const [body, setBody] = useState(""); // Will hold HTML from ReactQuill
   const [toRecipients, setToRecipients] = useState([]);
-  const [ccRecipients, setCcRecipients] = useState([]);
-  const [bccRecipients, setBccRecipients] = useState([]);
+  // const [ccRecipients, setCcRecipients] = useState([]);
+  // const [bccRecipients, setBccRecipients] = useState([]);
   const [openPreview, setOpenPreview] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
+
+  // New state for choosing how to populate the 'To' field
+  const [toMode, setToMode] = useState("manual"); // "manual" or "donators"
+
+  // State for fetched donators
+  const [donators, setDonators] = useState([]);
+
+  console.log(body);
+  
+  // Fetch donators on component mount
+  useEffect(() => {
+    const fetchDonators = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/donators?page=1&limit=1200"
+        );
+        const result = await response.json();
+
+        // Adjust based on actual API response structure:
+        const fetchedDonators = result.donators || [];
+        setDonators(fetchedDonators);
+      } catch (error) {
+        console.error("Error fetching donators:", error);
+      }
+    };
+
+    fetchDonators();
+  }, []);
 
   // Fixed header and footer templates
   const emailHeader = `
@@ -32,24 +75,36 @@ const EmailPage = () => {
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 20px;">
   <tr>
     <td align="center">
-      <h1 style="margin: 0; color: #333;">Company Name</h1>
+      <h1 style="margin: 0; color: #333;">Les Enfant de Rachi</h1>
     </td>
   </tr>
 </table>
 `;
 
+  //   const emailFooter = `
+  // <!-- Email Footer -->
+  // <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 20px; margin-top: 20px;">
+  //   <tr>
+  //     <td align="center">
+  //       <p style="margin: 0; color: #777;">&copy; 2024 Cetnre Rachi Natany. All rights reserved.</p>
+  //     </td>
+  //   </tr>
+  // </table>
+  // `;
+
+  // Footer is image from public folder
   const emailFooter = `
 <!-- Email Footer -->
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 20px; margin-top: 20px;">
   <tr>
     <td align="center">
-      <p style="margin: 0; color: #777;">&copy; 2024 Company Name. All rights reserved.</p>
+      <img src="https://image-uploader-lirone-v1.s3.eu-central-1.amazonaws.com/logo%20table%20mail.jpeg" alt="Email Footer" style="max-width: 100%; height: auto;" />
     </td>
   </tr>
 </table>
 `;
 
-  // Handle adding multiple recipients
+  // Handle adding multiple recipients for manual mode
   const handleAddRecipient = (email, setRecipients, recipients) => {
     if (email.trim() && !recipients.includes(email)) {
       setRecipients([...recipients, email]);
@@ -61,27 +116,68 @@ const EmailPage = () => {
     setRecipients(recipients.filter((recipient) => recipient !== email));
   };
 
-  // Handle sending the email (mock action)
-  const handleSendEmail = () => {
-    const fullEmailBody = `${emailHeader}\n${body}\n${emailFooter}`;
+  // Populate toRecipients when toMode changes to "donators"
+  useEffect(() => {
+    if (toMode === "donators") {
+      // Extract all emails from donators
+      const donorEmails = donators.reduce((acc, donor) => {
+        // Gather all email fields from the donor object that start with "email_"
+        const donorEmailsArray = Object.keys(donor)
+          .filter((key) => key.startsWith("email_"))
+          .map((emailKey) => donor[emailKey])
+          .filter(Boolean); // filter out any falsy values
+        return [...acc, ...donorEmailsArray];
+      }, []);
 
-    console.log({
-      from,
-      to: toRecipients,
-      cc: ccRecipients,
-      bcc: bccRecipients,
-      subject,
-      body: fullEmailBody,
-    });
-    alert("Email sent successfully (mock)!");
+      // Remove duplicates if any
+      const uniqueDonorEmails = [...new Set(donorEmails)];
+      setToRecipients(uniqueDonorEmails);
+    } else {
+      // If switching back to manual, clear current toRecipients
+      setToRecipients([]);
+    }
+  }, [toMode, donators]);
+
+  // Combine header, body, image (if present), and footer
+  const fullEmailBody = `
+    ${emailHeader}
+    ${imagePosition === "top" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" /><br/>` : ""}
+    ${body}
+    ${imagePosition === "bottom" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" /><br/>` : ""}
+    ${emailFooter}
+  `;
+
+  // Handle sending the email (mock action)
+  const handleSendEmail = async () => {
+    try {
+      await axios.post("http://localhost:3000/api/v1/email/", {
+        from,
+        to: toRecipients,
+        subject,
+        body: fullEmailBody,
+      });
+
+      alert("Email sent successfully!");
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("Failed to send email. Please try again.");
+    }
   };
 
   // Handle opening and closing the preview modal
   const handleOpenPreview = () => setOpenPreview(true);
   const handleClosePreview = () => setOpenPreview(false);
 
-  // Combine header, body, and footer for preview
-  const fullEmailBody = `${emailHeader}\n${body}\n${emailFooter}`;
+  // Quill modules and formats for basic formatting
+  const quillModules = {
+    toolbar: [
+      ["bold", "italic", "underline"], // Basic inline formatting controls
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["clean"],
+    ],
+  };
+
+  const quillFormats = ["bold", "italic", "underline", "list", "bullet"];
 
   return (
     <Box sx={{ padding: 4, bgcolor: "gray.100", minHeight: "100vh" }}>
@@ -107,86 +203,71 @@ const EmailPage = () => {
         ))}
       </TextField>
 
-      {/* To Email */}
-      <TextField
-        label="To"
-        placeholder="Enter recipient email"
-        value={to}
-        onChange={(e) => setTo(e.target.value)}
-        fullWidth
-        margin="normal"
-        onKeyPress={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            handleAddRecipient(to, setToRecipients, toRecipients);
-            setTo("");
-          }
-        }}
-        helperText="Press Enter to add multiple recipients."
-      />
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-        {toRecipients.map((email) => (
-          <Chip
-            key={email}
-            label={email}
-            onDelete={() => handleRemoveRecipient(email, setToRecipients, toRecipients)}
-          />
-        ))}
-      </Box>
+      {/* To Mode Selection */}
+      <FormControl fullWidth margin="normal">
+        <InputLabel id="toMode-label">To Recipients Mode</InputLabel>
+        <Select
+          labelId="toMode-label"
+          value={toMode}
+          label="To Recipients Mode"
+          onChange={(e) => setToMode(e.target.value)}
+        >
+          <MenuItem value="manual">Manual Entry</MenuItem>
+          <MenuItem value="donators">Donators List</MenuItem>
+        </Select>
+      </FormControl>
 
-      {/* CC Email */}
-      <TextField
-        label="CC"
-        placeholder="Enter CC email"
-        value={cc}
-        onChange={(e) => setCc(e.target.value)}
-        fullWidth
-        margin="normal"
-        onKeyPress={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            handleAddRecipient(cc, setCcRecipients, ccRecipients);
-            setCc("");
-          }
-        }}
-        helperText="Press Enter to add multiple recipients."
-      />
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-        {ccRecipients.map((email) => (
-          <Chip
-            key={email}
-            label={email}
-            onDelete={() => handleRemoveRecipient(email, setCcRecipients, ccRecipients)}
+      {toMode === "manual" && (
+        <>
+          <TextField
+            label="To"
+            placeholder="Enter recipient email"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            fullWidth
+            margin="normal"
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleAddRecipient(to, setToRecipients, toRecipients);
+                setTo("");
+              }
+            }}
+            helperText="Press Enter to add multiple recipients."
           />
-        ))}
-      </Box>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+            {toRecipients.map((email) => (
+              <Chip
+                key={email}
+                label={email}
+                onDelete={() =>
+                  handleRemoveRecipient(email, setToRecipients, toRecipients)
+                }
+              />
+            ))}
+          </Box>
+        </>
+      )}
 
-      {/* BCC Email */}
-      <TextField
-        label="BCC"
-        placeholder="Enter BCC email"
-        value={bcc}
-        onChange={(e) => setBcc(e.target.value)}
-        fullWidth
-        margin="normal"
-        onKeyPress={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            handleAddRecipient(bcc, setBccRecipients, bccRecipients);
-            setBcc("");
-          }
-        }}
-        helperText="Press Enter to add multiple recipients."
-      />
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-        {bccRecipients.map((email) => (
-          <Chip
-            key={email}
-            label={email}
-            onDelete={() => handleRemoveRecipient(email, setBccRecipients, bccRecipients)}
-          />
-        ))}
-      </Box>
+      {toMode === "donators" && (
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body1">Donators selected:</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 1,
+              mt: 1,
+              maxHeight: "15vh",
+              overflowY: "auto",
+            }}
+          >
+            {toRecipients.map((email) => (
+              <Chip key={email} label={email} />
+            ))}
+          </Box>
+        </Box>
+      )}
 
       {/* Subject */}
       <TextField
@@ -197,16 +278,34 @@ const EmailPage = () => {
         margin="normal"
       />
 
-      {/* Email Body */}
-      <TextField
-        label="Body"
+      {/* Email Body (Rich Text Editor) */}
+      <Typography variant="body1" sx={{ mt: 2, mb: 1 }}>
+        Body:
+      </Typography>
+      <ReactQuill
+        theme="snow"
         value={body}
-        onChange={(e) => setBody(e.target.value)}
-        fullWidth
-        margin="normal"
-        multiline
-        rows={6}
+        onChange={setBody}
+        modules={quillModules}
+        formats={quillFormats}
+        style={{ backgroundColor: "#fff", borderRadius: "4px" }}
       />
+
+      {/* Image Position Toggle */}
+      <FormControl fullWidth margin="normal">
+        <InputLabel id="imagePosition-label">Image Position</InputLabel>
+        <Select
+          labelId="imagePosition-label"
+          value={imagePosition}
+          label="Image Position"
+          onChange={(e) => setImagePosition(e.target.value)}
+        >
+          <MenuItem value="top">Top</MenuItem>
+          <MenuItem value="bottom">Bottom</MenuItem>
+        </Select>
+      </FormControl>
+      {/* Image Upload */}
+      <ImageUploader setImageUrl={setImageUrl} />
 
       {/* Action Buttons */}
       <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
@@ -243,9 +342,7 @@ const EmailPage = () => {
             Email Preview
           </Typography>
           <Divider sx={{ mb: 2 }} />
-          <Box
-            dangerouslySetInnerHTML={{ __html: fullEmailBody }}
-          ></Box>
+          <Box dangerouslySetInnerHTML={{ __html: fullEmailBody }}></Box>
         </Box>
       </Modal>
     </Box>

@@ -27,6 +27,7 @@ app.use('/api/v1/whatsapp', require('./routes/whatsappRoutes.js'));
 app.use('/api/v1/donators', require('./routes/donatorsRoutes.js'));
 app.use('/api/v1/contacts', require('./routes/contactsRoutes.js'));
 app.use('/api/v1/donations', require('./routes/donationsRoutes.js'));
+app.use('/api/v1/email', require('./routes/emailsRoutes.js'));
 
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)

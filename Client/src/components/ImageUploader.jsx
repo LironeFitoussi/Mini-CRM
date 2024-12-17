@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const ImageUploader = () => {
+const ImageUploader = ({setImageUrl}) => {
   const [image, setImage] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -37,6 +37,7 @@ const ImageUploader = () => {
       });
 
       setUploadStatus(`Upload successful! URL: ${response.data.url}`);
+      setImageUrl(response.data.url);
     } catch (error) {
       setUploadStatus(`Upload failed: ${error.response?.data?.error || error.message}`);
     } finally {
@@ -46,7 +47,7 @@ const ImageUploader = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
+    <div className="flex flex-col items-center justify-center p-4">
       <div
         className="w-full max-w-md p-6 bg-white border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500"
         onDragOver={(e) => e.preventDefault()}

@@ -39,7 +39,7 @@ const NotFound = () => <h1>404 - Page Not Found</h1>;
 const ProtectedRoute = ({ element }) => {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
 
-  console.log(isAuthenticated);
+  // console.log(isAuthenticated);
 
   if (!isAuthenticated) {
     loginWithRedirect();
