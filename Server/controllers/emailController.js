@@ -1,74 +1,120 @@
+// controllers/sendEmail.js
+
 const nodemailer = require("nodemailer");
 const MailSender = require("../models/MailSender.js");
+const MailJob = require("../models/MailJob.js");
+const splitArray = require("../utils/splitRecipients.js");
+const logger = require("../utils/logger"); // Assuming you have a logger setup
 
 require("dotenv").config();
+
+// Maximum number of recipients per email as per Gmail's limitations
+const MAX_RECIPIENTS_PER_EMAIL = 450;
 
 // Email sending controller
 const sendEmail = async (req, res) => {
   const { from, to, subject, body } = req.body;
-
-  //   if "to" is bigger than 500, split it into multiple arrays of 450
-  if (to.length > 500) {
-    let tos = [];
-    let i = 0;
-    while (i < to.length) {
-      tos.push(to.slice(i, i + 450));
-      i += 450;
-    }
-    tos.forEach(async (tos) => {
-      await sendEmail(from, tos, subject, body);
-    });
-    return res.status(200).json({ message: "Email sent successfully!" });
-  }
-
-  // Get the sender's email from the database based on from field
-  const sender = await MailSender.findOne({ email: from });
-
-  // Create a transporter using SMTP
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: sender.email, // Gmail address
-      pass: sender.password, // Gmail password or app-specific password
-    },
-  });
-
-  // Verify the connection configuration
-  transporter.verify(function (error, success) {
-    if (error) {
-      console.error("Error connecting to SMTP server:", error);
-    } else {
-      console.log("SMTP server is ready to take our messages");
-    }
-  });
 
   // Basic validation
   if (!from || !to || !subject || !body) {
     return res.status(400).json({ message: "All fields are required." });
   }
 
-  // Define email options
-  const mailOptions = {
-    from: sender.email, // sender address
-    to: Array.isArray(to) ? to.join(", ") : to, // list of receivers
-    subject: subject, // Subject line
-    html: body, // html body
-  };
-
   try {
-    // Send email
-    let info = await transporter.sendMail(mailOptions);
-    console.log("Message sent: %s", info.messageId);
-    res
-      .status(200)
-      .json({ message: "Email sent successfully!", messageId: info.messageId });
+    // Get the sender's email from the database based on 'from' field
+    const sender = await MailSender.findOne({ email: from });
+
+    if (!sender) {
+      return res.status(404).json({ message: "Sender not found." });
+    }
+
+    // Ensure 'to' is an array
+    const recipients = Array.isArray(to) ? to : [to];
+
+    // Split recipients into chunks of MAX_RECIPIENTS_PER_EMAIL
+    const recipientChunks = splitArray(recipients, MAX_RECIPIENTS_PER_EMAIL);
+
+    // Array to hold created MailJob documents
+    const createdMailJobs = [];
+
+    for (let i = 0; i < recipientChunks.length; i++) {
+      const chunk = recipientChunks[i];
+
+      // Create a MailJob document
+      const mailJob = new MailJob({
+        recipients: chunk,
+        subject,
+        body,
+        sender: sender._id,
+        is_sent: false, // Initially set to false; will be updated after sending
+      });
+
+      // Save the MailJob document
+      await mailJob.save();
+      createdMailJobs.push(mailJob);
+    }
+
+    // Send the first MailJob immediately
+    if (createdMailJobs.length > 0) {
+      const firstMailJob = createdMailJobs[0];
+
+      // Create a transporter using SMTP
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: sender.email, // Gmail address
+          pass: sender.password, // Gmail app password or app-specific password
+        },
+      });
+
+      // Verify the connection configuration
+      await transporter.verify();
+      logger.info("✅ SMTP server is ready to take our messages");
+
+      // Define email options for the first MailJob
+      const mailOptions = {
+        from: sender.email, // sender address
+        to: firstMailJob.recipients.join(", "), // list of receivers
+        subject: firstMailJob.subject, // Subject line
+        html: firstMailJob.body, // html body
+      };
+
+      try {
+        // Send email
+        let info = await transporter.sendMail(mailOptions);
+        console.log("Email sent to:", JSON.stringify(mailOptions));
+        logger.info("✅ Message sent: %s", info.messageId);
+
+        // Update the first MailJob as sent
+        firstMailJob.is_sent = true;
+        await firstMailJob.save();
+        logger.info(`🗂️ Mail job marked as sent: ${firstMailJob._id}`);
+
+        res.status(200).json({
+          message: "Email sent successfully!",
+          messageId: info.messageId,
+          mailJobsCreated: createdMailJobs.length,
+        });
+      } catch (error) {
+        logger.error("❌ Error sending email:", error);
+        res.status(500).json({
+          message: "Failed to send email.",
+          error: error.toString(),
+        });
+      }
+    } else {
+      res.status(400).json({ message: "No recipients provided." });
+    }
   } catch (error) {
-    console.error("Error sending email:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to send email.", error: error.toString() });
+    logger.error("❌ Error creating mail jobs:", error);
+    res.status(500).json({
+      message: "Failed to create mail jobs.",
+      error: error.toString(),
+    });
   }
 };
+
+module.exports = sendEmail;
 
 const addMailSender = async (req, res) => {
   const { email, name, password } = req.body;

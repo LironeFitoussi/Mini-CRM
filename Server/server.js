@@ -4,8 +4,8 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const uploadRoutes = require("./routes/upload");
 const morgan = require("morgan");
-const axios = require("axios");
-const imageUploader = require("./utils/imageUploader.js");
+const logger = require('./utils/logger'); // Using winston for logging
+const initializeMailCronJob = require('./cronJobs/mailCron');
 const mongoose = require("mongoose");
 
 dotenv.config();
@@ -28,6 +28,9 @@ app.use('/api/v1/donators', require('./routes/donatorsRoutes.js'));
 app.use('/api/v1/contacts', require('./routes/contactsRoutes.js'));
 app.use('/api/v1/donations', require('./routes/donationsRoutes.js'));
 app.use('/api/v1/email', require('./routes/emailsRoutes.js'));
+
+// Initialize Cron Jobs
+initializeMailCronJob();
 
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)

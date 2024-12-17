@@ -1,0 +1,89 @@
+2024-12-17 20:07:41 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:10:48 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:10:51 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:11:07 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:11:33 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:12:56 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:13:25 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-17 20:13:25 [ERROR]: ❌ Error sending email: info is not defined
+2024-12-17 20:14:15 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-17 20:14:15 [ERROR]: ❌ Error sending email: info is not defined
+2024-12-17 20:15:04 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:15:11 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:16:17 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:17:15 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:17:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:17:30
+2024-12-17 20:17:30 [INFO]: 📨 Preparing to send mail job: 6761bf444dbb3acecede19e8
+2024-12-17 20:17:31 [INFO]: ✅ Gmail transporter is ready to send messages
+2024-12-17 20:17:33 [INFO]: ✅ Email sent: <9c7af235-fced-cda1-7d99-fa8a106f27af@gmail.com>
+2024-12-17 20:17:33 [INFO]: 🗂️ Mail job marked as sent: 6761bf444dbb3acecede19e8
+2024-12-17 20:18:47 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:19:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:19:00
+2024-12-17 20:19:00 [INFO]: 📨 Preparing to send mail job: 6761bf764dbb3acecede19eb
+2024-12-17 20:19:01 [INFO]: ✅ Gmail transporter is ready to send messages
+2024-12-17 20:19:01 [ERROR]: ❌ Error processing mail job: info is not defined
+2024-12-17 20:19:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:19:30
+2024-12-17 20:19:30 [INFO]: 📨 Preparing to send mail job: 6761bf764dbb3acecede19eb
+2024-12-17 20:19:31 [INFO]: ✅ Gmail transporter is ready to send messages
+2024-12-17 20:19:31 [ERROR]: ❌ Error processing mail job: info is not defined
+2024-12-17 20:20:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:20:00
+2024-12-17 20:20:00 [INFO]: 📨 Preparing to send mail job: 6761bf764dbb3acecede19eb
+2024-12-17 20:20:01 [INFO]: ✅ Gmail transporter is ready to send messages
+2024-12-17 20:20:01 [ERROR]: ❌ Error processing mail job: info is not defined
+2024-12-17 20:20:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:20:30
+2024-12-17 20:20:31 [INFO]: 📨 Preparing to send mail job: 6761bf764dbb3acecede19eb
+2024-12-17 20:20:31 [INFO]: ✅ Gmail transporter is ready to send messages
+2024-12-17 20:20:31 [ERROR]: ❌ Error processing mail job: info is not defined
+2024-12-17 20:20:51 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:20:59 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:21:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:21:00
+2024-12-17 20:21:00 [INFO]: 📨 Preparing to send mail job: 6761bf764dbb3acecede19eb
+2024-12-17 20:21:01 [INFO]: ✅ Gmail transporter is ready to send messages
+2024-12-17 20:21:01 [INFO]: 🗂️ Mail job marked as sent: 6761bf764dbb3acecede19eb
+2024-12-17 20:21:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:21:30
+2024-12-17 20:21:30 [INFO]: 📨 Preparing to send mail job: 6761bf764dbb3acecede19ed
+2024-12-17 20:21:31 [INFO]: ✅ Gmail transporter is ready to send messages
+2024-12-17 20:21:31 [INFO]: 🗂️ Mail job marked as sent: 6761bf764dbb3acecede19ed
+2024-12-17 20:22:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:22:00
+2024-12-17 20:22:00 [INFO]: 📨 Preparing to send mail job: 6761bf764dbb3acecede19ef
+2024-12-17 20:22:01 [INFO]: ✅ Gmail transporter is ready to send messages
+2024-12-17 20:22:01 [INFO]: 🗂️ Mail job marked as sent: 6761bf764dbb3acecede19ef
+2024-12-17 20:22:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:22:30
+2024-12-17 20:22:31 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:23:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:23:00
+2024-12-17 20:23:00 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:23:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:23:30
+2024-12-17 20:23:30 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:24:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:24:00
+2024-12-17 20:24:00 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:24:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:24:30
+2024-12-17 20:24:30 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:25:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:25:00
+2024-12-17 20:25:00 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:25:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:25:30
+2024-12-17 20:25:30 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:26:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:26:00
+2024-12-17 20:26:00 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:26:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:26:30
+2024-12-17 20:26:30 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:27:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:27:00
+2024-12-17 20:27:00 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:27:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:27:30
+2024-12-17 20:27:31 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:28:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:28:00
+2024-12-17 20:28:00 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:28:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:28:30
+2024-12-17 20:28:30 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:29:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:29:00
+2024-12-17 20:29:00 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:29:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:29:30
+2024-12-17 20:29:30 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:30:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:30:00
+2024-12-17 20:30:00 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:30:30 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:30:30
+2024-12-17 20:30:30 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:30:36 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:30:51 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-17 20:31:00 [INFO]: ⏰ Cron job triggered at 17.12.2024, 20:31:00
+2024-12-17 20:31:00 [INFO]: 📭 No unsent mail jobs found
+2024-12-17 20:31:16 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
