@@ -74,11 +74,19 @@ exports.getAllDonators = async (req, res) => {
   }
 };
 
-
 // Get a single donator by ID
 exports.getDonatorById = async (req, res) => {
   try {
-    const donator = await Donator.findById(req.params.id);
+    // Get Donator by ID and populate phone numbers and associated donations from donations collection
+    const donator = await Donator.findById(req.params.id)
+      .populate("phone_number_1")
+      .populate("phone_number_2")
+      .populate("phone_number_3")
+      .populate({
+        path: "donations",
+        model: "Donation",
+      });
+
     if (!donator) {
       return res.status(404).json({ message: "Donator not found" });
     }
