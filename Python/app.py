@@ -2,7 +2,7 @@ import os
 import time
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import pyperclip
 from bson.objectid import ObjectId
 import requests
@@ -47,7 +47,7 @@ app = Flask(__name__)
 client = MongoClient(
     "mongodb+srv://lironefit:4YrMTTViFjGfG0yf@cluster0.e2j9t.mongodb.net/phone_data?retryWrites=true&w=majority&appName=Cluster0"
 )
-db = client.get_database("test")
+db = client.get_database("phone_data")
 valid_numbers_col = db.valid_numbers
 invalid_numbers_col = db.invalid_numbers
 messages_col = db.messages
@@ -116,6 +116,39 @@ if not os.path.exists(SCREENSHOT_DIR):
 def log_message(msg):
     with open(LOGFILE, "a") as f:
         f.write(f"{datetime.now()} - {msg}\n")
+
+
+def check_message_sent(driver, timeout=10):
+    """
+    Wait up to 10 seconds to verify if a message has a checkmark (sent status).
+    Checks for the current time or one minute later.
+    Args:
+        driver: Selenium WebDriver instance.
+        timeout: Maximum time to wait for the condition (default 10 seconds).
+    Returns:
+        True if the message is sent (checkmark found), False otherwise.
+    """
+    # Normalize current time and 1-minute offset
+    current_time = datetime.now().strftime("%H:%M")
+    one_minute_later = (datetime.now() + timedelta(minutes=1)).strftime("%H:%M")
+
+    # XPath to match the message time
+    time_xpath = f"//span[@dir='auto' and (text()='{current_time}' or text()='{one_minute_later}')]"
+    try:
+        # Wait for up to 'timeout' seconds to find the message with the checkmark
+        WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    f"{time_xpath}/following-sibling::div//span[@data-icon='msg-dblcheck' or @data-icon='msg-check'][last()]",
+                )
+            )
+        )
+        print("✅ Message successfully sent!")
+        return True  # Checkmark found, message is sent
+    except Exception as e:
+        print("⏳ Message is still pending or not found within 10 seconds.")
+        return False
 
 
 def check_chrome_version():
@@ -213,10 +246,12 @@ def setup_driver():
         logging.error(f"Setup Error: {general_error}")
         raise
 
+
 # Define helper function outside of the route so the thread can access it
 def input_multiline_text(input_element, message):
     pyperclip.copy(message)
-    input_element.send_keys(Keys.CONTROL, 'v')
+    input_element.send_keys(Keys.CONTROL, "v")
+
 
 # On App Start, Open Browser to Get Status of WhatsApp
 def init_load():
@@ -244,7 +279,7 @@ def init_load():
     finally:
         driver.quit()
 
-init_load()
+# init_load()
 
 # Phone Number Class
 class PhoneNumber:
@@ -345,6 +380,7 @@ class PhoneNumber:
                 return COUNTRY_PREFIXES[prefix]
         return "Unknown"
 
+
 # Image Uploader Class
 class ImageUploader:
     @staticmethod
@@ -367,6 +403,7 @@ class ImageUploader:
         except Exception as e:
             logging.error(f"Failed to upload image to S3: {str(e)}")
             return None
+
 
 # WhatsApp Automation Class
 class WhatsAppAutomation:
@@ -461,6 +498,7 @@ class WhatsAppAutomation:
             except Exception as screenshot_error:
                 logging.error(f"Failed to capture screenshot: {str(screenshot_error)}")
 
+
 @app.route("/get-qr-code", methods=["GET"])
 def get_qr_code():
     """Generate WhatsApp QR code, upload it to S3, and wait for user login."""
@@ -516,6 +554,7 @@ def get_qr_code():
         logging.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An error occurred during the process."}), 500
 
+
 @app.route("/log-with-code", methods=["GET"])
 def log_with_code():
     """Generate a login code using a phone number, upload it to S3, and wait for user login."""
@@ -524,24 +563,26 @@ def log_with_code():
     phone_number = request.args.get("phone_number")
     if not phone_number:
         return jsonify({"error": "Phone number is required."}), 400
-    
+
     # Remove the leading '0' if present at the start of the number
-    if phone_number.startswith('0'):
+    if phone_number.startswith("0"):
         phone_number = phone_number[1:]
-    
+
     try:
         # Before starting the WebDriver, check if there is a logged-in user
         if STATUS["status"] == "User logged in":
             return jsonify({"message": "User is already logged in."})
-        
+
         # Start WebDriver
         logging.info("Starting WebDriver for code-based login.")
         driver = setup_driver()
         driver.get("https://web.whatsapp.com")
-        
+
         # Wait for the chevron icon to appear and click it
         phone_link = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located((By.XPATH, "(//span[@data-icon='chevron'])[1]"))
+            EC.presence_of_element_located(
+                (By.XPATH, "(//span[@data-icon='chevron'])[1]")
+            )
         )
         phone_link.click()
 
@@ -560,74 +601,88 @@ def log_with_code():
             )
             select_country.click()
             time.sleep(1)
-            
-            # find p 
+
+            # find p
             select_country = WebDriverWait(driver, 15).until(
                 EC.element_to_be_clickable((By.XPATH, "//p"))
             )
-            
+
             select_country.click()
             select_country.send_keys("972")
-            
+
             # Wait for (//img[@alt='🇮🇱'])[1]
             select_country = WebDriverWait(driver, 15).until(
                 EC.element_to_be_clickable((By.XPATH, "(//img[@alt='🇮🇱'])[1]"))
             )
             select_country.click()
-            
-        
+
         # Type the phone number
         phone_input.send_keys(phone_number)
-        
+
         # Click the 'Next' button
         next_button = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located((By.XPATH, "(//div[contains(text(),'Next') or contains(text(),'הבא')])[1]"))
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "(//div[contains(text(),'Next') or contains(text(),'הבא')])[1]",
+                )
+            )
         )
         next_button.click()
-        
+
         # Wait for the code instructions to appear
         code_instructions = WebDriverWait(driver, 15).until(
-            EC.presence_of_element_located((By.XPATH, "//div[@aria-details='link-device-phone-number-code-screen-instructions']"))
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//div[@aria-details='link-device-phone-number-code-screen-instructions']",
+                )
+            )
         )
-        
+
         # Extract the login code
         code = code_instructions.get_attribute("data-link-code")
         logging.info(f"Extracted login code: {code}")
-        
+
         # Take a screenshot of the element containing the code
         code_screenshot_path = "login_code_screenshot.png"
         code_instructions.screenshot(code_screenshot_path)
-        
-        
+
         # Upload the screenshot to S3
         bucket_name = os.getenv("AWS_BUCKET_NAME")
         file_url = ImageUploader.upload_image_to_s3(code_screenshot_path, bucket_name)
-        
+
         if not file_url:
             driver.quit()
             return jsonify({"error": "Failed to upload screenshot to S3."}), 500
-        
+
         # Start a background thread to wait for the user to complete login on their phone
         login_thread = Thread(target=WhatsAppAutomation.wait_for_login, args=(driver,))
         login_thread.start()
-        
+
         # Return the code and a reference to the screenshot
-        return jsonify({
-            "message": "Login code generated successfully.",
-            "code": code,
-            "url": file_url
-        })
-        
+        return jsonify(
+            {
+                "message": "Login code generated successfully.",
+                "code": code,
+                "url": file_url,
+            }
+        )
+
     except TimeoutException as te:
         logging.error(f"Timeout waiting for an element: {str(te)}")
         driver.quit()
-        return jsonify({"error": "Timeout waiting for an element. Please try again."}), 500
+        return (
+            jsonify({"error": "Timeout waiting for an element. Please try again."}),
+            500,
+        )
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
-        if 'driver' in locals():
+        if "driver" in locals():
             driver.quit()
         return jsonify({"error": "An error occurred during the process."}), 500
-       
+
+
 @app.route("/logout", methods=["POST"])
 def logout():
     """Log out the user by deleting the profile directory."""
@@ -701,10 +756,12 @@ def logout():
         logging.error(f"An error occurred: {str(e)}")
         return jsonify({"error": "An error occurred during the process."}), 500
 
+
 @app.route("/status", methods=["GET"])
 def get_status():
     """Get the current status of the WhatsApp user."""
     return jsonify(STATUS)
+
 
 @app.route("/process", methods=["POST"])
 def process_numbers():
@@ -835,6 +892,7 @@ def process_numbers():
     finally:
         os.remove(temp_file_path)
 
+
 @app.route("/validate", methods=["POST"])
 def validate_whatsapp_numbers():
     def background_validation():
@@ -928,13 +986,14 @@ def validate_whatsapp_numbers():
         202,
     )
 
-@app.route('/send', methods=['POST'])
+
+@app.route("/send", methods=["POST"])
 def send_messages():
     # Check if an image is provided (multipart/form-data)
     image_path = None
-    if 'image' in request.files:
+    if "image" in request.files:
         message = request.form.get("message", "")
-        image_file = request.files['image']
+        image_file = request.files["image"]
     else:
         # If not multipart/form-data, assume JSON
         data = request.get_json(silent=True) or {}
@@ -962,24 +1021,35 @@ def send_messages():
 
             # Check if the message already exists in the database
             existing_message = messages_col.find_one({"message": message})
-            sent_ids = [str(_id) for _id in existing_message.get("sent_ids", [])] if existing_message else []
-            log_message(f"Existing message found: {bool(existing_message)}, sent_ids count: {len(sent_ids)}")
+            sent_ids = (
+                [str(_id) for _id in existing_message.get("sent_ids", [])]
+                if existing_message
+                else []
+            )
+            log_message(
+                f"Existing message found: {bool(existing_message)}, sent_ids count: {len(sent_ids)}"
+            )
 
             # Fetch valid numbers that haven't received this message yet
-            valid_numbers = valid_numbers_col.find({
-                "_id": {"$nin": [ObjectId(_id) for _id in sent_ids]},
-                "is_whatsapp": True
-            })
+            valid_numbers = valid_numbers_col.find(
+                {
+                    "_id": {"$nin": [ObjectId(_id) for _id in sent_ids]},
+                    "is_whatsapp": True,
+                }
+            )
             valid_numbers_list = list(valid_numbers)
             log_message(f"Found {len(valid_numbers_list)} recipients to send to.")
 
             if len(valid_numbers_list) == 0:
                 log_message("No new recipients. All previously messaged.")
-                requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
-                    "message": "All valid recipients have already received this message",
-                    "total_sent": len(sent_ids),
-                    "sent_ids": sent_ids
-                })
+                requests.post(
+                    "https://mini-crm-y7v9.onrender.com/api/notify-sendstatus",
+                    json={
+                        "message": "All valid recipients have already received this message",
+                        "total_sent": len(sent_ids),
+                        "sent_ids": sent_ids,
+                    },
+                )
                 return
 
             # Initialize WebDriver
@@ -998,32 +1068,56 @@ def send_messages():
                 try:
                     # Wait for the chat input box to load
                     chat_box = WebDriverWait(driver, 20).until(
-                        EC.presence_of_element_located((By.XPATH, "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']"))
+                        EC.presence_of_element_located(
+                            (
+                                By.XPATH,
+                                "//div[@contenteditable='true' and @role='textbox' and @aria-activedescendant='']",
+                            )
+                        )
                     )
                     log_message(f"Chat interface loaded for {phone_number}")
 
                     if image_path:
                         # IMAGE + CAPTION FLOW
                         plus_button = WebDriverWait(driver, 10).until(
-                            EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='plus']"))
+                            EC.element_to_be_clickable(
+                                (By.XPATH, "//span[@data-icon='plus']")
+                            )
                         )
                         plus_button.click()
 
                         photos_videos_button = WebDriverWait(driver, 10).until(
-                            EC.element_to_be_clickable((By.XPATH, "(//span[normalize-space()='Photos & videos'])"))
+                            EC.element_to_be_clickable(
+                                (
+                                    By.XPATH,
+                                    "(//span[normalize-space()='Photos & videos' or normalize-space()='Photos et vidéos'])[1]",
+                                )
+                            )
                         )
                         photos_videos_button.click()
 
                         file_input = WebDriverWait(driver, 10).until(
-                            EC.presence_of_element_located((By.XPATH, "//input[@accept='image/*,video/mp4,video/3gpp,video/quicktime']"))
+                            EC.presence_of_element_located(
+                                (
+                                    By.XPATH,
+                                    "//input[@accept='image/*,video/mp4,video/3gpp,video/quicktime']",
+                                )
+                            )
                         )
                         file_input.send_keys(os.path.abspath(image_path))
                         log_message(f"Image selected for {phone_number}")
 
                         caption_box = WebDriverWait(driver, 20).until(
-                            EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Add a caption') or @aria-placeholder='Add a caption']"))
+                            EC.presence_of_element_located(
+                                (
+                                    By.XPATH,
+                                    "//*[contains(text(), 'Add a caption') or @aria-placeholder='Add a caption' or contains(text(), 'Ajouter une légende') or @aria-placeholder='Ajouter une légende']",
+                                )
+                            )
                         )
-                        caption_input = caption_box.find_element(By.XPATH, ".//ancestor::div[@role='textbox']")
+                        caption_input = caption_box.find_element(
+                            By.XPATH, ".//ancestor::div[@role='textbox']"
+                        )
                         caption_input.click()
                         time.sleep(1)
 
@@ -1031,14 +1125,35 @@ def send_messages():
                         input_multiline_text(caption_input, message)
 
                         send_button = WebDriverWait(driver, 10).until(
-                            EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
+                            EC.element_to_be_clickable(
+                                (By.XPATH, "//span[@data-icon='send']")
+                            )
                         )
                         send_button.click()
 
-                        WebDriverWait(driver, 20).until(
-                            EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
+                        # 2 Send a message with simple text in french in same conversation with "to acces and clik on the link, please click ok or add this number to your contact" if french
+                        # 2 Send a message with simple text in french in same conversation with "to acces and clik on the link, please click ok or add this number to your contact" if french
+                        chat_box.click()
+                        time.sleep(1)
+                        input_multiline_text(
+                            chat_box,
+                            "*Si vous souhaitez échanger avec le Rav Chemouny, cliquez sur OK ou ajoutez ce numéro à vos contacts.*",
                         )
-                        log_message(f"Image message sent to {phone_number}")
+                        
+                        send_button = WebDriverWait(driver, 10).until(
+                            EC.element_to_be_clickable(
+                                (By.XPATH, "//button[@aria-label='Send' or @aria-label='Envoyer']")
+                            )
+                        )
+                        send_button.click()
+                        
+                        time.sleep(1)
+                        
+                        # Validate that the message was sent using the check_message_sent function
+                        if check_message_sent(driver):
+                            print(f"Image message sent to {phone_number}")
+                        else:
+                            print(f"Failed to send image message to {phone_number}")
 
                     else:
                         # TEXT-ONLY FLOW
@@ -1049,79 +1164,111 @@ def send_messages():
                         input_multiline_text(chat_box, message)
 
                         send_button = WebDriverWait(driver, 10).until(
-                            EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='Send']"))
+                            EC.element_to_be_clickable(
+                                (By.XPATH, "//button[@aria-label='Send']")
+                            )
                         )
                         send_button.click()
 
-                        WebDriverWait(driver, 10).until(
-                            EC.presence_of_element_located((By.XPATH, "//span[@aria-label=' Sent ']"))
-                        )
-                        log_message(f"Text message sent to {phone_number}")
+                        if check_message_sent(driver):
+                            print(f"Image message sent to {phone_number}")
+                        else:
+                            print(f"Failed to send image message to {phone_number}")
 
                     sent_ids.append(recipient_id)
                     send_count += 1
 
                     # Notify progress every 100 messages or at the end
                     if (i + 1) % 100 == 0 or (i + 1) == len(valid_numbers_list):
-                        log_message(f"Progress update: {send_count} messages sent so far.")
-                        requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
-                            "message": f"Progress update: {send_count} messages sent",
-                            "total_sent": send_count,
-                            "sent_ids": sent_ids
-                        })
+                        log_message(
+                            f"Progress update: {send_count} messages sent so far."
+                        )
+                        requests.post(
+                            "https://mini-crm-y7v9.onrender.com/api/notify-sendstatus",
+                            json={
+                                "message": f"Progress update: {send_count} messages sent",
+                                "total_sent": send_count,
+                                "sent_ids": sent_ids,
+                            },
+                        )
 
                 except TimeoutException as e:
                     error_msg = f"Failed to send message to {phone_number}: {str(e)}"
                     log_message(error_msg)
-                    screenshot_path = os.path.join(SCREENSHOT_DIR, f"error_{phone_number}_{int(time.time())}.png")
+                    screenshot_path = os.path.join(
+                        SCREENSHOT_DIR, f"error_{phone_number}_{int(time.time())}.png"
+                    )
                     driver.save_screenshot(screenshot_path)
-                    requests.post("https://mini-crm-y7v9.onrender.com/api/bot-error", json={
-                        "error": "Message sending failed",
-                        "details": error_msg,
-                        "screenshot": screenshot_path
-                    })
+                    requests.post(
+                        "https://mini-crm-y7v9.onrender.com/api/bot-error",
+                        json={
+                            "error": "Message sending failed",
+                            "details": error_msg,
+                            "screenshot": screenshot_path,
+                        },
+                    )
                 except Exception as e:
                     error_msg = f"Unexpected error for {phone_number}: {str(e)}"
                     log_message(error_msg)
-                    screenshot_path = os.path.join(SCREENSHOT_DIR, f"error_{phone_number}_{int(time.time())}.png")
+                    screenshot_path = os.path.join(
+                        SCREENSHOT_DIR, f"error_{phone_number}_{int(time.time())}.png"
+                    )
                     driver.save_screenshot(screenshot_path)
-                    requests.post("https://mini-crm-y7v9.onrender.com/api/bot-error", json={
-                        "error": "Message sending failed",
-                        "details": error_msg,
-                        "screenshot": screenshot_path
-                    })
+                    requests.post(
+                        "https://mini-crm-y7v9.onrender.com/api/bot-error",
+                        json={
+                            "error": "Message sending failed",
+                            "details": error_msg,
+                            "screenshot": screenshot_path,
+                        },
+                    )
 
             # Update or insert the message record
             if existing_message:
                 messages_col.update_one(
                     {"_id": existing_message["_id"]},
-                    {"$set": {"sent_ids": sent_ids, "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')}}
+                    {
+                        "$set": {
+                            "sent_ids": sent_ids,
+                            "timestamp": datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+                        }
+                    },
                 )
             else:
-                messages_col.insert_one({
-                    "message": message,
-                    "sent_ids": sent_ids,
-                    "timestamp": datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-                })
-            
+                messages_col.insert_one(
+                    {
+                        "message": message,
+                        "sent_ids": sent_ids,
+                        "timestamp": datetime.today().strftime("%Y-%m-%d %H:%M:%S"),
+                    }
+                )
+
             log_message("All messages sent successfully.")
-            requests.post("https://mini-crm-y7v9.onrender.com/api/notify-sendstatus", json={
-                "message": "All messages sent successfully",
-                "total_sent": send_count,
-                "sent_ids": sent_ids
-            })
-        
+            requests.post(
+                "https://mini-crm-y7v9.onrender.com/api/notify-sendstatus",
+                json={
+                    "message": "All messages sent successfully",
+                    "total_sent": send_count,
+                    "sent_ids": sent_ids,
+                },
+            )
+
         except Exception as e:
             error_msg = f"General error in thread: {str(e)}"
             log_message(error_msg)
             if driver:
-                screenshot_path = os.path.join(SCREENSHOT_DIR, f"general_error_{int(time.time())}.png")
+                screenshot_path = os.path.join(
+                    SCREENSHOT_DIR, f"general_error_{int(time.time())}.png"
+                )
                 driver.save_screenshot(screenshot_path)
-                requests.post("https://mini-crm-y7v9.onrender.com/api/bot-error", json={
-                    "error": "Message sending failed",
-                    "details": error_msg,
-                    "screenshot": screenshot_path
-                })
+                requests.post(
+                    "https://mini-crm-y7v9.onrender.com/api/bot-error",
+                    json={
+                        "error": "Message sending failed",
+                        "details": error_msg,
+                        "screenshot": screenshot_path,
+                    },
+                )
         finally:
             if driver:
                 driver.quit()
@@ -1163,7 +1310,7 @@ def test_message():
         driver.get(url)
 
         # Wait for the chat interface to load
-        WebDriverWait(driver, 20).until(
+        chat_box = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located(
                 (
                     By.XPATH,
@@ -1194,7 +1341,10 @@ def test_message():
             # Click "Photos & videos"
             photos_videos_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable(
-                    (By.XPATH, "(//span[normalize-space()='Photos & videos'])")
+                    (
+                        By.XPATH,
+                        "(//span[normalize-space()='Photos & videos' or normalize-space()='Photos et vidéos'])[1]",
+                    )
                 )
             )
             photos_videos_button.click()
@@ -1215,7 +1365,7 @@ def test_message():
                 EC.presence_of_element_located(
                     (
                         By.XPATH,
-                        "//*[contains(text(), 'Add a caption') or @aria-placeholder='Add a caption']",
+                        "//*[contains(text(), 'Add a caption') or @aria-placeholder='Add a caption' or contains(text(), 'Ajouter une légende') or @aria-placeholder='Ajouter une légende']",
                     )
                 )
             )
@@ -1227,24 +1377,17 @@ def test_message():
             caption_input.click()
             time.sleep(1)
 
-            # Type the message as multiline text into the caption field 
+            # Type the message as multiline text into the caption field
             input_multiline_text(caption_input, message)
+
             # Click send button
             send_button = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//span[@data-icon='send']"))
             )
             send_button.click()
 
-            # Wait for the message to be sent
-            WebDriverWait(driver, 20).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//span[@aria-label=' Sent ']")
-                )
-            )
-
         else:
-            # TEXT-ONLY FLOW (Revert to original logic)
-            # Focus on the input box
+            # TEXT-ONLY FLOW
             input_box = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located(
                     (
@@ -1256,7 +1399,7 @@ def test_message():
             input_box.click()
             time.sleep(1)  # Small pause to ensure the input is focused
 
-            # Send the message as multiline text with dedicated function
+            # Send the message as multiline text
             input_multiline_text(input_box, message)
 
             # Wait for the send button and click it
@@ -1265,14 +1408,28 @@ def test_message():
             )
             send_button.click()
 
-            # Wait for the message to be sent
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//span[@aria-label=' Sent ']")
-                )
+        # 2 Send a message with simple text in french in same conversation with "to acces and clik on the link, please click ok or add this number to your contact" if french
+        chat_box.click()
+        time.sleep(1)
+        input_multiline_text(
+            chat_box,
+            "*Si vous souhaitez échanger avec le Rav Chemouny, cliquez sur OK ou ajoutez ce numéro à vos contacts.*",
+        )
+        
+        send_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//button[@aria-label='Send' or @aria-label='Envoyer']")
             )
+        )
+        send_button.click()
+        
+        time.sleep(1)
 
-        return jsonify({"message": "Message sent successfully"}), 200
+        # Validate that the message was sent using the check_message_sent function
+        if check_message_sent(driver):
+            return jsonify({"message": "Message sent successfully"}), 200
+        else:
+            return jsonify({"error": "Message failed to send or timed out"}), 500
 
     except Exception as e:
         try:
@@ -1298,6 +1455,7 @@ def test_message():
         if driver:
             driver.quit()
 
+
 def main():
     try:
         driver = setup_driver()
@@ -1307,6 +1465,7 @@ def main():
         # driver.quit()
     except Exception as e:
         print(f"Driver test failed: {e}")
+
 
 if __name__ == "__main__":
     # Run the app
