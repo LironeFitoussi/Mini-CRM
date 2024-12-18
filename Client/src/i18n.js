@@ -17,10 +17,10 @@ i18n
     debug: process.env.NODE_ENV === "development",
 
     // Fallback language in case the user language detection fails
-    fallbackLng: "en",
+    fallbackLng: "fr",
 
     // Supported languages
-    supportedLngs: ["en", "es", "fr", "de"], // Add your supported languages here
+    supportedLngs: ["fr", "en"], // Add your supported languages here
 
     // Options for language detection
     detection: {

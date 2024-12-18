@@ -17,7 +17,7 @@ const pages = [
   { name: "home", path: "/" },
   { name: "dashboard", path: "/dashboard" },
   { name: "profile", path: "/profile" },
-  { name: "login", path: "/login" },
+  // { name: "login", path: "/login" },
 ];
 
 const Header = () => {
@@ -32,27 +32,26 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "primary.main" }}>
+    <AppBar position="static" sx={{ backgroundColor: "primary.main", height: "5vh"}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          {/* Logo for larger screens */}
-          <Typography
-            variant="h6"
-            noWrap
-            component={Link}
-            to="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontWeight: 700,
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
-          </Typography>
+                <Typography
+                variant="h6"
+                noWrap
+                component={Link}
+                to="/"
+                sx={{
+                  mr: 2,
+                  display: { xs: "none", md: "flex" },
+                  fontWeight: 700,
+                  color: "inherit",
+                  textDecoration: "none",
+                }}
+                >
+                <img src="/logo.gif" alt="" style={{ maxHeight: "60px" }} />
+                </Typography>
 
-          {/* Hamburger Menu for small screens */}
+                {/* Hamburger Menu for small screens */}
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
