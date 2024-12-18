@@ -101,3 +101,38 @@
 2024-12-18 11:34:38 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2024-12-18 11:35:24 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2024-12-18 11:37:31 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-18 13:12:27 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-18 13:13:06 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-18 13:13:08 [INFO]: ✅ Message sent: %s
+2024-12-18 13:13:08 [INFO]: 🗂️ Mail job marked as sent: 6762ae416cd2a2cdf0fe4821
+2024-12-18 13:16:33 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-18 13:16:34 [INFO]: ✅ Message sent: %s
+2024-12-18 13:16:34 [INFO]: 🗂️ Mail job marked as sent: 6762af106cd2a2cdf0fe4825
+2024-12-18 13:17:12 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-18 13:17:13 [INFO]: ✅ Message sent: %s
+2024-12-18 13:17:13 [INFO]: 🗂️ Mail job marked as sent: 6762af376cd2a2cdf0fe4829
+2024-12-18 13:18:06 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-18 13:18:16 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-18 13:18:17 [INFO]: ✅ Message sent: %s
+2024-12-18 13:18:17 [INFO]: 🗂️ Mail job marked as sent: 6762af77cec7ad1cfe3f0fac
+2024-12-18 13:18:32 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-18 13:18:33 [INFO]: ✅ Message sent: %s
+2024-12-18 13:18:33 [INFO]: 🗂️ Mail job marked as sent: 6762af87cec7ad1cfe3f0fb0
+2024-12-18 13:19:08 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-18 13:19:19 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-18 13:19:21 [INFO]: ✅ Message sent: %s
+2024-12-18 13:19:21 [INFO]: 🗂️ Mail job marked as sent: 6762afb7605ff1b5eb6305fd
+2024-12-18 13:20:14 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-18 13:20:18 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-18 13:20:24 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-18 13:20:25 [INFO]: ✅ Message sent: %s
+2024-12-18 13:20:25 [INFO]: 🗂️ Mail job marked as sent: 6762aff7671e8187a27ca1ab
+2024-12-18 13:23:05 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-18 13:23:09 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-18 13:23:11 [INFO]: ✅ Message sent: %s
+2024-12-18 13:23:11 [INFO]: 🗂️ Mail job marked as sent: 6762b09d3054cea0b7d06de0
+2024-12-18 13:24:13 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-18 13:24:16 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-18 13:24:18 [INFO]: ✅ Message sent: %s
+2024-12-18 13:24:18 [INFO]: 🗂️ Mail job marked as sent: 6762b0e02f4bd822303bbf39
+2024-12-18 13:24:57 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM

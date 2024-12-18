@@ -48,7 +48,7 @@ const EmailPage = () => {
   const [donators, setDonators] = useState([]);
 
   console.log(body);
-  
+
   // Fetch donators on component mount
   useEffect(() => {
     const fetchDonators = async () => {
@@ -80,17 +80,6 @@ const EmailPage = () => {
   </tr>
 </table>
 `;
-
-  //   const emailFooter = `
-  // <!-- Email Footer -->
-  // <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 20px; margin-top: 20px;">
-  //   <tr>
-  //     <td align="center">
-  //       <p style="margin: 0; color: #777;">&copy; 2024 Cetnre Rachi Natany. All rights reserved.</p>
-  //     </td>
-  //   </tr>
-  // </table>
-  // `;
 
   // Footer is image from public folder
   const emailFooter = `
@@ -140,12 +129,12 @@ const EmailPage = () => {
 
   // Combine header, body, image (if present), and footer
   const fullEmailBody = `
-    ${emailHeader}
-    ${imagePosition === "top" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" /><br/>` : ""}
-    ${body}
-    ${imagePosition === "bottom" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" /><br/>` : ""}
-    ${emailFooter}
-  `;
+  ${emailHeader}
+  ${imagePosition === "top" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" /><br/>` : ""}
+  ${body}
+  ${imagePosition === "bottom" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" /><br/>` : ""}
+  ${emailFooter}
+`;
 
   // Handle sending the email (mock action)
   const handleSendEmail = async () => {
@@ -168,16 +157,47 @@ const EmailPage = () => {
   const handleOpenPreview = () => setOpenPreview(true);
   const handleClosePreview = () => setOpenPreview(false);
 
-  // Quill modules and formats for basic formatting
+  // Quill modules and formats for basic formatting including hyperlinks
   const quillModules = {
     toolbar: [
       ["bold", "italic", "underline"], // Basic inline formatting controls
+      ["link"], // Add the link button
       [{ list: "ordered" }, { list: "bullet" }],
       ["clean"],
     ],
+    // Optional: Custom handlers can be added here
+    // handlers: {
+    //   link: function (value) {
+    //     if (value) {
+    //       const href = prompt("Enter the URL");
+    //       if (href) {
+    //         const range = this.quill.getSelection();
+    //         this.quill.format("link", href);
+    //         // Add target="_blank" and rel="noopener noreferrer" to the link
+    //         setTimeout(() => {
+    //           const editor = this.quill.root;
+    //           const link = editor.querySelector(`a[href="${href}"]`);
+    //           if (link) {
+    //             link.setAttribute("target", "_blank");
+    //             link.setAttribute("rel", "noopener noreferrer");
+    //           }
+    //         }, 100);
+    //       }
+    //     } else {
+    //       this.quill.format("link", false);
+    //     }
+    //   },
+    // },
   };
 
-  const quillFormats = ["bold", "italic", "underline", "list", "bullet"];
+  const quillFormats = [
+    "bold",
+    "italic",
+    "underline",
+    "link", // Allow link formatting
+    "list",
+    "bullet",
+  ];
 
   return (
     <Box sx={{ padding: 4, bgcolor: "gray.100", minHeight: "100vh" }}>

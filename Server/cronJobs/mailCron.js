@@ -46,7 +46,7 @@ const initializeMailCronJob = () => {
 
       // Define email options
       const mailOptions = {
-        from: sender.email, // Sender address
+        from: `Rav Benyamin Chemouny <${sender.email}>`,
         to: mailJob.recipients.join(", "), // List of receivers
         subject: mailJob.subject, // Subject line
         html: mailJob.body, // HTML body

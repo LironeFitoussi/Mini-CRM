@@ -71,9 +71,9 @@ const sendEmail = async (req, res) => {
       await transporter.verify();
       logger.info("✅ SMTP server is ready to take our messages");
 
-      // Define email options for the first MailJob
+      // Define email options for the first MailJob with dynamic from field
       const mailOptions = {
-        from: sender.email, // sender address
+        from: `Rav Benyamin Chemouny <${sender.email}>`, // Dynamically set sender name and email
         to: firstMailJob.recipients.join(", "), // list of receivers
         subject: firstMailJob.subject, // Subject line
         html: firstMailJob.body, // html body
@@ -113,6 +113,7 @@ const sendEmail = async (req, res) => {
     });
   }
 };
+
 
 module.exports = sendEmail;
 
