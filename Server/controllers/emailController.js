@@ -11,6 +11,18 @@ require("dotenv").config();
 // Maximum number of recipients per email as per Gmail's limitations
 const MAX_RECIPIENTS_PER_EMAIL = 400;
 
+function manipulateAnchors(htmlString) {
+  // Match all anchor tags using a regular expression
+  return htmlString.replace(/<a\s+([^>]*?)>(.*?)<\/a>/gi, (match, attributes, innerText) => {
+      // Extract the href attribute from the anchor tag
+      const hrefMatch = attributes.match(/href=['"](.*?)['"]/i);
+      const href = hrefMatch ? hrefMatch[1] : '#';
+
+      // Create the modified structure
+      return `<a rel="nofollow" href="https://${href}" style="color: blue; text-decoration: underline;" ${attributes}>${innerText}</a>`;
+  });
+}
+
 // Email sending controller
 const sendEmail = async (req, res) => {
   const { from, to, subject, body } = req.body;
@@ -44,7 +56,7 @@ const sendEmail = async (req, res) => {
       const mailJob = new MailJob({
         recipients: chunk,
         subject,
-        body,
+        body:  manipulateAnchors(body), // Manipulate anchor tags in the email body
         sender: sender._id,
         is_sent: false, // Initially set to false; will be updated after sending
       });

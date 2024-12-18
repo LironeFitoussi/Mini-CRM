@@ -3,7 +3,7 @@ import React from "react";
 import { Box } from "@mui/material";
 
 const CustomToolbar = () => (
-  <Box id="toolbar" sx={{ border: "1px solid #ccc", borderRadius: "4px", mb: 1 }}>
+  <Box id="toolbar" sx={{ border: "1px solid #ccc", borderRadius: "4px", mb: 1, padding: "5px" }}>
     {/* Standard Quill toolbar options */}
     <span className="ql-formats">
       <button className="ql-bold" title="Bold"></button>
