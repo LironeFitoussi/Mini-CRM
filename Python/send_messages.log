@@ -1,0 +1,398 @@
+2024-12-18 12:01:23.372032 - Thread started for sending messages.
+2024-12-18 12:01:23.450994 - Existing message found: True, sent_ids count: 190
+2024-12-18 12:02:13.592299 - Thread started for sending messages.
+2024-12-18 12:02:13.671822 - Existing message found: True, sent_ids count: 190
+2024-12-18 12:02:14.200858 - Found 5749 recipients to send to.
+2024-12-18 12:02:14.200858 - Initializing WebDriver.
+2024-12-18 12:02:16.801756 - WebDriver initialized.
+2024-12-18 12:02:16.802758 - Navigating to https://web.whatsapp.com/send?phone=972505169247
+2024-12-18 12:02:19.634445 - General error in thread: Message: move target out of bounds
+  (Session info: chrome=131.0.6778.140)
+Stacktrace:
+	GetHandleVerifier [0x003A34A3+25059]
+	(No symbol) [0x0032CEA4]
+	(No symbol) [0x0020BD39]
+	(No symbol) [0x00292844]
+	(No symbol) [0x00271EFC]
+	(No symbol) [0x0028B51E]
+	(No symbol) [0x00271C96]
+	(No symbol) [0x00243FAC]
+	(No symbol) [0x00244F3D]
+	GetHandleVerifier [0x00695613+3113811]
+	GetHandleVerifier [0x006AA2DA+3199002]
+	GetHandleVerifier [0x006A2AB2+3168242]
+	GetHandleVerifier [0x00443310+680016]
+	(No symbol) [0x003357ED]
+	(No symbol) [0x00332A98]
+	(No symbol) [0x00332C35]
+	(No symbol) [0x00325890]
+	BaseThreadInitThunk [0x76DD7BA9+25]
+	RtlInitializeExceptionChain [0x77D8C0CB+107]
+	RtlClearBits [0x77D8C04F+191]
+
+2024-12-18 12:02:22.431862 - WebDriver closed in thread.
+2024-12-18 12:03:13.213456 - Thread started for sending messages.
+2024-12-18 12:03:13.295457 - Existing message found: True, sent_ids count: 190
+2024-12-18 12:03:13.836179 - Found 5749 recipients to send to.
+2024-12-18 12:03:13.836179 - Initializing WebDriver.
+2024-12-18 12:03:16.515689 - WebDriver initialized.
+2024-12-18 12:03:16.516689 - Navigating to https://web.whatsapp.com/send?phone=972505169247
+2024-12-18 12:03:25.284520 - Chat interface loaded for 972505169247
+2024-12-18 12:03:26.677054 - Image selected for 972505169247
+2024-12-18 12:03:31.672359 - Navigating to https://web.whatsapp.com/send?phone=33662113749
+2024-12-18 12:03:41.231742 - Chat interface loaded for 33662113749
+2024-12-18 12:03:41.972526 - Image selected for 33662113749
+2024-12-18 12:03:45.920328 - Navigating to https://web.whatsapp.com/send?phone=33611922968
+2024-12-18 12:03:56.407860 - Chat interface loaded for 33611922968
+2024-12-18 12:03:57.142829 - Image selected for 33611922968
+2024-12-18 12:04:11.174704 - Navigating to https://web.whatsapp.com/send?phone=972527959923
+2024-12-18 12:04:19.618833 - Chat interface loaded for 972527959923
+2024-12-18 12:04:20.333901 - Image selected for 972527959923
+2024-12-18 12:04:24.291969 - Navigating to https://web.whatsapp.com/send?phone=33614291689
+2024-12-18 12:04:30.829859 - Chat interface loaded for 33614291689
+2024-12-18 12:04:31.803435 - Image selected for 33614291689
+2024-12-18 12:04:40.800971 - Navigating to https://web.whatsapp.com/send?phone=972584190512
+2024-12-18 12:04:49.259237 - Chat interface loaded for 972584190512
+2024-12-18 12:04:49.994612 - Image selected for 972584190512
+2024-12-18 12:04:54.288412 - Navigating to https://web.whatsapp.com/send?phone=12143541874
+2024-12-18 12:05:00.916799 - Chat interface loaded for 12143541874
+2024-12-18 12:05:02.276516 - Image selected for 12143541874
+2024-12-18 12:05:06.165845 - Navigating to https://web.whatsapp.com/send?phone=13057467307
+2024-12-18 12:05:13.706210 - Chat interface loaded for 13057467307
+2024-12-18 12:05:14.412558 - Image selected for 13057467307
+2024-12-18 12:05:18.339803 - Navigating to https://web.whatsapp.com/send?phone=13107395504
+2024-12-18 12:05:25.068337 - Chat interface loaded for 13107395504
+2024-12-18 12:05:26.384804 - Image selected for 13107395504
+2024-12-18 12:05:30.302327 - Navigating to https://web.whatsapp.com/send?phone=15142905150
+2024-12-18 12:05:37.333211 - Chat interface loaded for 15142905150
+2024-12-18 12:05:38.671227 - Image selected for 15142905150
+2024-12-18 12:05:47.655355 - Navigating to https://web.whatsapp.com/send?phone=15145038824
+2024-12-18 12:06:20.688573 - Thread started for sending messages.
+2024-12-18 12:06:20.773427 - Existing message found: True, sent_ids count: 200
+2024-12-18 12:06:21.305297 - Found 5739 recipients to send to.
+2024-12-18 12:06:21.305297 - Initializing WebDriver.
+2024-12-18 12:06:23.957579 - WebDriver initialized.
+2024-12-18 12:06:23.958580 - Navigating to https://web.whatsapp.com/send?phone=15145038824
+2024-12-18 12:06:32.600779 - Chat interface loaded for 15145038824
+2024-12-18 12:06:33.380193 - Image selected for 15145038824
+2024-12-18 12:06:37.743024 - Navigating to https://web.whatsapp.com/send?phone=15145738154
+2024-12-18 12:06:46.216298 - Chat interface loaded for 15145738154
+2024-12-18 12:06:46.929349 - Image selected for 15145738154
+2024-12-18 12:06:50.950579 - Navigating to https://web.whatsapp.com/send?phone=15146216918
+2024-12-18 12:10:05.542689 - Thread started for sending messages.
+2024-12-18 12:10:05.623686 - Existing message found: True, sent_ids count: 202
+2024-12-18 12:10:06.148577 - Found 5737 recipients to send to.
+2024-12-18 12:10:06.149573 - Initializing WebDriver.
+2024-12-18 12:10:08.728281 - WebDriver initialized.
+2024-12-18 12:10:08.729282 - Navigating to https://web.whatsapp.com/send?phone=15146216918
+2024-12-18 12:10:21.461024 - Chat interface loaded for 15146216918
+2024-12-18 12:10:21.847359 - Image selected for 15146216918
+2024-12-18 12:10:26.435110 - Navigating to https://web.whatsapp.com/send?phone=15148870080
+2024-12-18 12:10:35.905305 - Chat interface loaded for 15148870080
+2024-12-18 12:10:36.651368 - Image selected for 15148870080
+2024-12-18 12:10:40.610001 - Navigating to https://web.whatsapp.com/send?phone=15148925465
+2024-12-18 12:10:49.096360 - Chat interface loaded for 15148925465
+2024-12-18 12:10:49.856843 - Image selected for 15148925465
+2024-12-18 12:10:54.027101 - Navigating to https://web.whatsapp.com/send?phone=15166681537
+2024-12-18 12:11:03.538568 - Chat interface loaded for 15166681537
+2024-12-18 12:11:04.302774 - Image selected for 15166681537
+2024-12-18 12:11:08.579533 - Navigating to https://web.whatsapp.com/send?phone=18182566988
+2024-12-18 12:11:18.097107 - Chat interface loaded for 18182566988
+2024-12-18 12:11:18.823370 - Image selected for 18182566988
+2024-12-18 12:11:27.849433 - Navigating to https://web.whatsapp.com/send?phone=212600431650
+2024-12-18 12:11:34.935539 - Chat interface loaded for 212600431650
+2024-12-18 12:11:36.029403 - Image selected for 212600431650
+2024-12-18 12:11:39.936333 - Navigating to https://web.whatsapp.com/send?phone=33603000032
+2024-12-18 12:12:28.349573 - Thread started for sending messages.
+2024-12-18 12:12:28.428097 - Existing message found: True, sent_ids count: 208
+2024-12-18 12:12:28.934836 - Found 5731 recipients to send to.
+2024-12-18 12:12:28.935838 - Initializing WebDriver.
+2024-12-18 12:12:31.485804 - WebDriver initialized.
+2024-12-18 12:12:31.485804 - Navigating to https://web.whatsapp.com/send?phone=33603000032
+2024-12-18 12:12:41.377770 - Chat interface loaded for 33603000032
+2024-12-18 12:12:42.505453 - Image selected for 33603000032
+2024-12-18 12:12:48.047710 - Navigating to https://web.whatsapp.com/send?phone=33603987933
+2024-12-18 12:12:54.068523 - Chat interface loaded for 33603987933
+2024-12-18 12:12:55.210828 - Image selected for 33603987933
+2024-12-18 12:13:00.146265 - Navigating to https://web.whatsapp.com/send?phone=33606540700
+2024-12-18 12:13:09.591641 - Chat interface loaded for 33606540700
+2024-12-18 12:13:10.327156 - Image selected for 33606540700
+2024-12-18 12:13:15.246377 - Navigating to https://web.whatsapp.com/send?phone=33607173945
+2024-12-18 12:13:22.150338 - Chat interface loaded for 33607173945
+2024-12-18 12:13:23.474005 - Image selected for 33607173945
+2024-12-18 12:13:28.720717 - Navigating to https://web.whatsapp.com/send?phone=33608500058
+2024-12-18 12:13:35.527076 - Chat interface loaded for 33608500058
+2024-12-18 12:13:36.815558 - Image selected for 33608500058
+2024-12-18 12:13:50.906064 - Navigating to https://web.whatsapp.com/send?phone=33609554603
+2024-12-18 12:14:00.447662 - Chat interface loaded for 33609554603
+2024-12-18 12:14:01.183878 - Image selected for 33609554603
+2024-12-18 12:14:06.175031 - Navigating to https://web.whatsapp.com/send?phone=33610078600
+2024-12-18 12:14:14.704133 - Chat interface loaded for 33610078600
+2024-12-18 12:14:15.418249 - Image selected for 33610078600
+2024-12-18 12:14:20.362636 - Navigating to https://web.whatsapp.com/send?phone=33610274581
+2024-12-18 12:14:31.078509 - Chat interface loaded for 33610274581
+2024-12-18 12:14:31.888146 - Image selected for 33610274581
+2024-12-18 12:14:36.863462 - Navigating to https://web.whatsapp.com/send?phone=33611745039
+2024-12-18 12:14:47.393720 - Chat interface loaded for 33611745039
+2024-12-18 12:14:48.105812 - Image selected for 33611745039
+2024-12-18 12:14:53.028463 - Navigating to https://web.whatsapp.com/send?phone=33612116565
+2024-12-18 12:15:03.536128 - Chat interface loaded for 33612116565
+2024-12-18 12:15:04.276057 - Image selected for 33612116565
+2024-12-18 12:15:16.529144 - Navigating to https://web.whatsapp.com/send?phone=33612118865
+2024-12-18 12:15:25.107278 - Chat interface loaded for 33612118865
+2024-12-18 12:15:25.842897 - Image selected for 33612118865
+2024-12-18 12:15:30.839468 - Navigating to https://web.whatsapp.com/send?phone=33612771797
+2024-12-18 12:15:36.968433 - Chat interface loaded for 33612771797
+2024-12-18 12:15:38.042510 - Image selected for 33612771797
+2024-12-18 12:15:43.024184 - Navigating to https://web.whatsapp.com/send?phone=33612823222
+2024-12-18 12:15:52.528866 - Chat interface loaded for 33612823222
+2024-12-18 12:15:53.272461 - Image selected for 33612823222
+2024-12-18 12:15:58.219863 - Navigating to https://web.whatsapp.com/send?phone=33614303100
+2024-12-18 12:16:06.630839 - Chat interface loaded for 33614303100
+2024-12-18 12:16:07.343309 - Image selected for 33614303100
+2024-12-18 12:16:12.450604 - Navigating to https://web.whatsapp.com/send?phone=33614420567
+2024-12-18 12:16:21.017510 - Chat interface loaded for 33614420567
+2024-12-18 12:16:21.803131 - Image selected for 33614420567
+2024-12-18 12:16:34.291870 - Navigating to https://web.whatsapp.com/send?phone=33614662274
+2024-12-18 12:16:44.777362 - Chat interface loaded for 33614662274
+2024-12-18 12:16:45.515293 - Image selected for 33614662274
+2024-12-18 12:16:50.586285 - Navigating to https://web.whatsapp.com/send?phone=33614724647
+2024-12-18 12:16:59.105916 - Chat interface loaded for 33614724647
+2024-12-18 12:16:59.909441 - Image selected for 33614724647
+2024-12-18 12:17:05.200025 - Navigating to https://web.whatsapp.com/send?phone=33615775300
+2024-12-18 12:17:12.039552 - Chat interface loaded for 33615775300
+2024-12-18 12:17:13.572445 - Image selected for 33615775300
+2024-12-18 12:17:19.414491 - Navigating to https://web.whatsapp.com/send?phone=33615824496
+2024-12-18 12:17:28.233360 - Chat interface loaded for 33615824496
+2024-12-18 12:17:28.991375 - Image selected for 33615824496
+2024-12-18 12:17:34.300302 - Navigating to https://web.whatsapp.com/send?phone=33616011420
+2024-12-18 12:17:41.356440 - Chat interface loaded for 33616011420
+2024-12-18 12:17:42.806132 - Image selected for 33616011420
+2024-12-18 12:17:55.391984 - Navigating to https://web.whatsapp.com/send?phone=33616136200
+2024-12-18 12:18:02.466753 - Chat interface loaded for 33616136200
+2024-12-18 12:18:03.579615 - Image selected for 33616136200
+2024-12-18 12:18:08.612609 - Navigating to https://web.whatsapp.com/send?phone=33617929532
+2024-12-18 12:18:15.498132 - Chat interface loaded for 33617929532
+2024-12-18 12:18:16.920535 - Image selected for 33617929532
+2024-12-18 12:18:22.371391 - Navigating to https://web.whatsapp.com/send?phone=33617967324
+2024-12-18 12:18:32.902573 - Chat interface loaded for 33617967324
+2024-12-18 12:18:33.652081 - Image selected for 33617967324
+2024-12-18 12:18:38.943589 - Navigating to https://web.whatsapp.com/send?phone=33619357858
+2024-12-18 12:18:46.279121 - Chat interface loaded for 33619357858
+2024-12-18 12:18:47.568452 - Image selected for 33619357858
+2024-12-18 12:18:52.867386 - Navigating to https://web.whatsapp.com/send?phone=33620011436
+2024-12-18 12:19:01.446121 - Chat interface loaded for 33620011436
+2024-12-18 12:19:02.348352 - Image selected for 33620011436
+2024-12-18 12:19:14.750350 - Navigating to https://web.whatsapp.com/send?phone=33620420742
+2024-12-18 12:19:23.206068 - Chat interface loaded for 33620420742
+2024-12-18 12:19:23.949351 - Image selected for 33620420742
+2024-12-18 12:19:29.000967 - Navigating to https://web.whatsapp.com/send?phone=33622330040
+2024-12-18 12:19:47.632292 - Thread started for sending messages.
+2024-12-18 12:19:47.711579 - Existing message found: True, sent_ids count: 234
+2024-12-18 12:19:48.232920 - Found 5705 recipients to send to.
+2024-12-18 12:19:48.233463 - Initializing WebDriver.
+2024-12-18 12:19:50.878030 - WebDriver initialized.
+2024-12-18 12:19:50.879031 - Navigating to https://web.whatsapp.com/send?phone=33622330040
+2024-12-18 12:20:01.520523 - Chat interface loaded for 33622330040
+2024-12-18 12:20:02.316924 - Image selected for 33622330040
+2024-12-18 12:20:07.815968 - Navigating to https://web.whatsapp.com/send?phone=33622849122
+2024-12-18 12:20:14.499332 - Chat interface loaded for 33622849122
+2024-12-18 12:20:15.821860 - Image selected for 33622849122
+2024-12-18 12:20:21.114514 - Navigating to https://web.whatsapp.com/send?phone=33622931738
+2024-12-18 12:20:29.642489 - Chat interface loaded for 33622931738
+2024-12-18 12:20:30.357301 - Image selected for 33622931738
+2024-12-18 12:20:35.275343 - Navigating to https://web.whatsapp.com/send?phone=33623516417
+2024-12-18 12:20:45.730699 - Chat interface loaded for 33623516417
+2024-12-18 12:20:46.484056 - Image selected for 33623516417
+2024-12-18 12:20:51.501679 - Navigating to https://web.whatsapp.com/send?phone=33624452255
+2024-12-18 12:20:58.537012 - Chat interface loaded for 33624452255
+2024-12-18 12:20:59.606282 - Image selected for 33624452255
+2024-12-18 12:21:12.298002 - Navigating to https://web.whatsapp.com/send?phone=33626532538
+2024-12-18 12:21:19.304596 - Chat interface loaded for 33626532538
+2024-12-18 12:21:20.270053 - Image selected for 33626532538
+2024-12-18 12:21:25.598275 - Navigating to https://web.whatsapp.com/send?phone=33627803935
+2024-12-18 12:21:36.042881 - Chat interface loaded for 33627803935
+2024-12-18 12:21:36.777642 - Image selected for 33627803935
+2024-12-18 12:21:42.178884 - Navigating to https://web.whatsapp.com/send?phone=33631316314
+2024-12-18 12:21:48.221107 - Chat interface loaded for 33631316314
+2024-12-18 12:21:49.333211 - Image selected for 33631316314
+2024-12-18 12:21:54.377715 - Navigating to https://web.whatsapp.com/send?phone=33631321644
+2024-12-18 12:22:01.058685 - Chat interface loaded for 33631321644
+2024-12-18 12:22:02.344496 - Image selected for 33631321644
+2024-12-18 12:22:07.762490 - Navigating to https://web.whatsapp.com/send?phone=33631721484
+2024-12-18 12:22:14.491107 - Chat interface loaded for 33631721484
+2024-12-18 12:22:15.982917 - Image selected for 33631721484
+2024-12-18 12:22:27.919059 - Navigating to https://web.whatsapp.com/send?phone=33632254434
+2024-12-18 12:22:37.452120 - Chat interface loaded for 33632254434
+2024-12-18 12:22:38.156824 - Image selected for 33632254434
+2024-12-18 12:22:43.056297 - Navigating to https://web.whatsapp.com/send?phone=33646497434
+2024-12-18 12:22:51.499443 - Chat interface loaded for 33646497434
+2024-12-18 12:22:52.210029 - Image selected for 33646497434
+2024-12-18 12:22:57.151401 - Navigating to https://web.whatsapp.com/send?phone=33650410163
+2024-12-18 12:23:04.068405 - Chat interface loaded for 33650410163
+2024-12-18 12:23:05.186496 - Image selected for 33650410163
+2024-12-18 12:23:10.549286 - Navigating to https://web.whatsapp.com/send?phone=33650930213
+2024-12-18 12:23:17.585034 - Chat interface loaded for 33650930213
+2024-12-18 12:23:18.914042 - Image selected for 33650930213
+2024-12-18 12:23:23.931406 - Navigating to https://web.whatsapp.com/send?phone=33651152682
+2024-12-18 12:23:30.592981 - Chat interface loaded for 33651152682
+2024-12-18 12:23:31.988602 - Image selected for 33651152682
+2024-12-18 12:23:44.245587 - Navigating to https://web.whatsapp.com/send?phone=33651578107
+2024-12-18 12:23:50.831472 - Chat interface loaded for 33651578107
+2024-12-18 12:23:52.184595 - Image selected for 33651578107
+2024-12-18 12:23:57.522089 - Navigating to https://web.whatsapp.com/send?phone=33651598405
+2024-12-18 12:24:07.041029 - Chat interface loaded for 33651598405
+2024-12-18 12:24:07.751818 - Image selected for 33651598405
+2024-12-18 12:24:12.707800 - Navigating to https://web.whatsapp.com/send?phone=33651638285
+2024-12-18 12:24:21.252902 - Chat interface loaded for 33651638285
+2024-12-18 12:24:21.988281 - Image selected for 33651638285
+2024-12-18 12:24:27.072916 - Navigating to https://web.whatsapp.com/send?phone=33651978758
+2024-12-18 12:24:35.589595 - Chat interface loaded for 33651978758
+2024-12-18 12:24:36.303331 - Image selected for 33651978758
+2024-12-18 12:24:41.270497 - Navigating to https://web.whatsapp.com/send?phone=33651992721
+2024-12-18 12:24:49.804477 - Chat interface loaded for 33651992721
+2024-12-18 12:24:50.513946 - Image selected for 33651992721
+2024-12-18 12:25:21.572583 - Navigating to https://web.whatsapp.com/send?phone=33652077375
+2024-12-18 12:25:37.872605 - General error in thread: HTTPConnectionPool(host='localhost', port=54735): Max retries exceeded with url: /session/e01d35148e16a0bffdf58b9d1e5afc11/url (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000021CE95968D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2024-12-18 12:26:28.513705 - Thread started for sending messages.
+2024-12-18 12:26:28.595707 - Existing message found: True, sent_ids count: 254
+2024-12-18 12:26:29.124482 - Found 5685 recipients to send to.
+2024-12-18 12:26:29.124482 - Initializing WebDriver.
+2024-12-18 12:26:31.709909 - WebDriver initialized.
+2024-12-18 12:26:31.710912 - Navigating to https://web.whatsapp.com/send?phone=33652077375
+2024-12-18 12:26:41.316732 - Chat interface loaded for 33652077375
+2024-12-18 12:26:42.137357 - Image selected for 33652077375
+2024-12-18 12:26:47.675596 - Navigating to https://web.whatsapp.com/send?phone=33659435242
+2024-12-18 12:26:57.172351 - Chat interface loaded for 33659435242
+2024-12-18 12:26:57.887100 - Image selected for 33659435242
+2024-12-18 12:27:02.935035 - Navigating to https://web.whatsapp.com/send?phone=33659664381
+2024-12-18 12:27:11.432172 - Chat interface loaded for 33659664381
+2024-12-18 12:27:12.203317 - Image selected for 33659664381
+2024-12-18 12:27:17.155787 - Navigating to https://web.whatsapp.com/send?phone=33660026304
+2024-12-18 12:27:24.204283 - Chat interface loaded for 33660026304
+2024-12-18 12:27:25.485880 - Image selected for 33660026304
+2024-12-18 12:27:30.561877 - Navigating to https://web.whatsapp.com/send?phone=33660222491
+2024-12-18 12:27:40.088632 - Chat interface loaded for 33660222491
+2024-12-18 12:27:40.836039 - Image selected for 33660222491
+2024-12-18 12:27:54.044144 - Navigating to https://web.whatsapp.com/send?phone=33660387707
+2024-12-18 12:28:00.820799 - Chat interface loaded for 33660387707
+2024-12-18 12:28:02.181524 - Image selected for 33660387707
+2024-12-18 12:28:07.179118 - Navigating to https://web.whatsapp.com/send?phone=33660851931
+2024-12-18 12:28:17.749882 - Chat interface loaded for 33660851931
+2024-12-18 12:28:18.495743 - Image selected for 33660851931
+2024-12-18 12:28:23.845161 - Navigating to https://web.whatsapp.com/send?phone=33661473421
+2024-12-18 12:28:30.644747 - Chat interface loaded for 33661473421
+2024-12-18 12:28:32.138934 - Image selected for 33661473421
+2024-12-18 12:28:37.207454 - Navigating to https://web.whatsapp.com/send?phone=33662153659
+2024-12-18 12:28:44.649012 - Chat interface loaded for 33662153659
+2024-12-18 12:28:45.491336 - Image selected for 33662153659
+2024-12-18 12:28:50.520388 - Navigating to https://web.whatsapp.com/send?phone=33662343053
+2024-12-18 12:28:57.611438 - Chat interface loaded for 33662343053
+2024-12-18 12:28:58.900842 - Image selected for 33662343053
+2024-12-18 12:29:10.888411 - Navigating to https://web.whatsapp.com/send?phone=33662834745
+2024-12-18 12:29:18.437203 - Chat interface loaded for 33662834745
+2024-12-18 12:29:19.207866 - Image selected for 33662834745
+2024-12-18 12:29:24.216119 - Navigating to https://web.whatsapp.com/send?phone=33663111136
+2024-12-18 12:29:33.726431 - Chat interface loaded for 33663111136
+2024-12-18 12:29:34.465013 - Image selected for 33663111136
+2024-12-18 12:29:39.515895 - Navigating to https://web.whatsapp.com/send?phone=33663134063
+2024-12-18 12:29:46.633776 - Chat interface loaded for 33663134063
+2024-12-18 12:29:47.988759 - Image selected for 33663134063
+2024-12-18 12:29:53.339288 - Navigating to https://web.whatsapp.com/send?phone=33663892402
+2024-12-18 12:30:02.745703 - Chat interface loaded for 33663892402
+2024-12-18 12:30:03.493670 - Image selected for 33663892402
+2024-12-18 12:30:08.684401 - Navigating to https://web.whatsapp.com/send?phone=33664199598
+2024-12-18 12:30:15.959361 - Chat interface loaded for 33664199598
+2024-12-18 12:30:17.231488 - Image selected for 33664199598
+2024-12-18 12:30:37.202611 - Navigating to https://web.whatsapp.com/send?phone=33664589592
+2024-12-18 12:30:46.767619 - Chat interface loaded for 33664589592
+2024-12-18 12:30:47.484857 - Image selected for 33664589592
+2024-12-18 12:30:52.471811 - Navigating to https://web.whatsapp.com/send?phone=33664706419
+2024-12-18 12:30:59.534521 - Chat interface loaded for 33664706419
+2024-12-18 12:31:00.561694 - Image selected for 33664706419
+2024-12-18 12:31:05.953099 - Navigating to https://web.whatsapp.com/send?phone=33664842224
+2024-12-18 12:31:14.508329 - Chat interface loaded for 33664842224
+2024-12-18 12:31:15.259264 - Image selected for 33664842224
+2024-12-18 12:31:20.241999 - Navigating to https://web.whatsapp.com/send?phone=33665614161
+2024-12-18 12:31:29.736609 - Chat interface loaded for 33665614161
+2024-12-18 12:31:30.490435 - Image selected for 33665614161
+2024-12-18 12:31:35.460930 - Navigating to https://web.whatsapp.com/send?phone=33666344400
+2024-12-18 12:31:42.440139 - Chat interface loaded for 33666344400
+2024-12-18 12:31:43.757710 - Image selected for 33666344400
+2024-12-18 12:32:12.441144 - Navigating to https://web.whatsapp.com/send?phone=33666590022
+2024-12-18 12:32:19.144058 - Chat interface loaded for 33666590022
+2024-12-18 12:32:20.177741 - Image selected for 33666590022
+2024-12-18 12:32:25.734046 - Navigating to https://web.whatsapp.com/send?phone=33671969044
+2024-12-18 12:32:33.359797 - Chat interface loaded for 33671969044
+2024-12-18 12:32:34.114384 - Image selected for 33671969044
+2024-12-18 12:32:39.109047 - Navigating to https://web.whatsapp.com/send?phone=33674740162
+2024-12-18 12:32:46.556528 - Chat interface loaded for 33674740162
+2024-12-18 12:32:47.303406 - Image selected for 33674740162
+2024-12-18 12:32:52.503312 - Navigating to https://web.whatsapp.com/send?phone=33676631138
+2024-12-18 12:33:03.028549 - Chat interface loaded for 33676631138
+2024-12-18 12:33:03.752442 - Image selected for 33676631138
+2024-12-18 12:33:08.839554 - Navigating to https://web.whatsapp.com/send?phone=33683779147
+2024-12-18 12:33:18.339077 - Chat interface loaded for 33683779147
+2024-12-18 12:33:19.121642 - Image selected for 33683779147
+2024-12-18 12:33:31.765970 - Navigating to https://web.whatsapp.com/send?phone=33684340518
+2024-12-18 12:33:39.201031 - Chat interface loaded for 33684340518
+2024-12-18 12:33:40.026275 - Image selected for 33684340518
+2024-12-18 12:33:45.038521 - Navigating to https://web.whatsapp.com/send?phone=33684630747
+2024-12-18 12:33:55.527209 - Chat interface loaded for 33684630747
+2024-12-18 12:33:56.301423 - Image selected for 33684630747
+2024-12-18 12:34:11.555181 - Navigating to https://web.whatsapp.com/send?phone=33687223445
+2024-12-18 12:34:18.574687 - Chat interface loaded for 33687223445
+2024-12-18 12:34:19.772812 - Image selected for 33687223445
+2024-12-18 12:34:24.632556 - Navigating to https://web.whatsapp.com/send?phone=33695289752
+2024-12-18 12:34:54.447383 - Failed to send message to 33695289752: Message: 
+Stacktrace:
+	GetHandleVerifier [0x003A34A3+25059]
+	(No symbol) [0x0032CEA4]
+	(No symbol) [0x0020BEC3]
+	(No symbol) [0x0024FD86]
+	(No symbol) [0x0024FFCB]
+	(No symbol) [0x0028D952]
+	(No symbol) [0x00271F44]
+	(No symbol) [0x0028B51E]
+	(No symbol) [0x00271C96]
+	(No symbol) [0x00243FAC]
+	(No symbol) [0x00244F3D]
+	GetHandleVerifier [0x00695613+3113811]
+	GetHandleVerifier [0x006AA2DA+3199002]
+	GetHandleVerifier [0x006A2AB2+3168242]
+	GetHandleVerifier [0x00443310+680016]
+	(No symbol) [0x003357ED]
+	(No symbol) [0x00332A98]
+	(No symbol) [0x00332C35]
+	(No symbol) [0x00325890]
+	BaseThreadInitThunk [0x76DD7BA9+25]
+	RtlInitializeExceptionChain [0x77D8C0CB+107]
+	RtlClearBits [0x77D8C04F+191]
+
+2024-12-18 12:34:55.203414 - Navigating to https://web.whatsapp.com/send?phone=33698234598
+2024-12-18 12:35:24.902552 - Failed to send message to 33698234598: Message: 
+Stacktrace:
+	GetHandleVerifier [0x003A34A3+25059]
+	(No symbol) [0x0032CEA4]
+	(No symbol) [0x0020BEC3]
+	(No symbol) [0x0024FD86]
+	(No symbol) [0x0024FFCB]
+	(No symbol) [0x0028D952]
+	(No symbol) [0x00271F44]
+	(No symbol) [0x0028B51E]
+	(No symbol) [0x00271C96]
+	(No symbol) [0x00243FAC]
+	(No symbol) [0x00244F3D]
+	GetHandleVerifier [0x00695613+3113811]
+	GetHandleVerifier [0x006AA2DA+3199002]
+	GetHandleVerifier [0x006A2AB2+3168242]
+	GetHandleVerifier [0x00443310+680016]
+	(No symbol) [0x003357ED]
+	(No symbol) [0x00332A98]
+	(No symbol) [0x00332C35]
+	(No symbol) [0x00325890]
+	BaseThreadInitThunk [0x76DD7BA9+25]
+	RtlInitializeExceptionChain [0x77D8C0CB+107]
+	RtlClearBits [0x77D8C04F+191]
+
+2024-12-18 12:35:25.534296 - Navigating to https://web.whatsapp.com/send?phone=33761026811

@@ -9,7 +9,7 @@ const logger = require("../utils/logger"); // Assuming you have a logger setup
 require("dotenv").config();
 
 // Maximum number of recipients per email as per Gmail's limitations
-const MAX_RECIPIENTS_PER_EMAIL = 450;
+const MAX_RECIPIENTS_PER_EMAIL = 400;
 
 // Email sending controller
 const sendEmail = async (req, res) => {

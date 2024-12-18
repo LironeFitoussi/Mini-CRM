@@ -194,96 +194,96 @@ def check_chrome_version():
         return "Unable to determine"
 
 
-# def setup_driver():
-#     """
-#     Advanced WebDriver setup with extensive error handling and logging
-#     """
-#     logging.basicConfig(level=logging.INFO)
-
-#     try:
-#         # Check Chrome version
-#         chrome_version = check_chrome_version()
-#         logging.info(f"Detected Chrome Version: {chrome_version}")
-
-#         # Configure Chrome options
-#         chrome_options = Options()
-
-#         # User profile directory for session persistence
-#         chrome_options.add_argument(
-#             f"--user-data-dir={os.path.abspath(PROFILE_DIRECTORY)}"
-#         )
-
-#         # Optional: Specify a particular profile within the user-data-dir
-#         # chrome_options.add_argument("--profile-directory=Default")
-
-#         # Aggressive troubleshooting options
-#         # chrome_options.add_argument("--headless")
-#         chrome_options.add_argument("--no-sandbox")
-#         chrome_options.add_argument("--disable-dev-shm-usage")
-#         chrome_options.add_argument("--disable-gpu")
-#         chrome_options.add_argument("--verbose")
-#         chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
-
-#         # Optional: Uncomment to debug
-#         # chrome_options.add_argument("--remote-debugging-port=9222")
-
-#         try:
-#             # Use ChromeDriverManager with specific Chrome type
-#             service = Service(
-#                 ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()
-#             )
-
-#             # Initialize the WebDriver with extended timeout
-#             driver = webdriver.Chrome(service=service, options=chrome_options)
-
-#             return driver
-
-#         except Exception as detailed_error:
-#             logging.error(f"WebDriver Initialization Failed: {detailed_error}")
-#             logging.error(f"Detailed Error Type: {type(detailed_error)}")
-#             raise
-
-#     except Exception as general_error:
-#         logging.error(f"Setup Error: {general_error}")
-#         raise
-
 def setup_driver():
     """
-    Advanced WebDriver setup to use the actual Chrome app with the user's profile.
+    Advanced WebDriver setup with extensive error handling and logging
     """
-
     logging.basicConfig(level=logging.INFO)
 
     try:
-        logging.info("Starting WebDriver setup...")
+        # Check Chrome version
+        chrome_version = check_chrome_version()
+        logging.info(f"Detected Chrome Version: {chrome_version}")
 
         # Configure Chrome options
         chrome_options = Options()
 
-        # Set binary location to the actual Chrome browser
-        chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        # User profile directory for session persistence
+        chrome_options.add_argument(
+            f"--user-data-dir={os.path.abspath(PROFILE_DIRECTORY)}"
+        )
 
-        # Use the user's existing Chrome profile
-        chrome_options.add_argument("--user-data-dir=C:\\Users\\liron\\AppData\\Local\\Google\\Chrome\\User Data")
-        chrome_options.add_argument("--profile-directory=Default")  # Replace "Default" if you use a different profile name
+        # Optional: Specify a particular profile within the user-data-dir
+        # chrome_options.add_argument("--profile-directory=Default")
 
-        # Other troubleshooting options
+        # Aggressive troubleshooting options
+        # chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--verbose")
         chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-        # Use ChromeDriverManager to manage the driver
-        service = Service(ChromeDriverManager().install())
+        # Optional: Uncomment to debug
+        # chrome_options.add_argument("--remote-debugging-port=9222")
 
-        # Initialize WebDriver
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-        logging.info("WebDriver setup complete.")
-        return driver
+        try:
+            # Use ChromeDriverManager with specific Chrome type
+            service = Service(
+                ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()
+            )
 
-    except Exception as e:
-        logging.error(f"Error during WebDriver setup: {e}")
+            # Initialize the WebDriver with extended timeout
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+
+            return driver
+
+        except Exception as detailed_error:
+            logging.error(f"WebDriver Initialization Failed: {detailed_error}")
+            logging.error(f"Detailed Error Type: {type(detailed_error)}")
+            raise
+
+    except Exception as general_error:
+        logging.error(f"Setup Error: {general_error}")
         raise
+
+# def setup_driver():
+#     """
+#     Advanced WebDriver setup to use the actual Chrome app with the user's profile.
+#     """
+
+#     logging.basicConfig(level=logging.INFO)
+
+#     try:
+#         logging.info("Starting WebDriver setup...")
+
+#         # Configure Chrome options
+#         chrome_options = Options()
+
+#         # Set binary location to the actual Chrome browser
+#         chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+
+#         # Use the user's existing Chrome profile
+#         chrome_options.add_argument("--user-data-dir=C:\\Users\\liron\\AppData\\Local\\Google\\Chrome\\User Data")
+#         chrome_options.add_argument("--profile-directory=Default")  # Replace "Default" if you use a different profile name
+
+#         # Other troubleshooting options
+#         chrome_options.add_argument("--no-sandbox")
+#         chrome_options.add_argument("--disable-dev-shm-usage")
+#         chrome_options.add_argument("--disable-gpu")
+#         chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
+
+#         # Use ChromeDriverManager to manage the driver
+#         service = Service(ChromeDriverManager().install())
+
+#         # Initialize WebDriver
+#         driver = webdriver.Chrome(service=service, options=chrome_options)
+#         logging.info("WebDriver setup complete.")
+#         return driver
+
+#     except Exception as e:
+#         logging.error(f"Error during WebDriver setup: {e}")
+#         raise
 
 # Define helper function outside of the route so the thread can access it
 def input_multiline_text(input_element, message):
@@ -317,7 +317,7 @@ def init_load():
     finally:
         driver.quit()
 
-init_load()
+# init_load()
 
 # Phone Number Class
 class PhoneNumber:
@@ -662,7 +662,7 @@ def log_with_code():
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "(//div[contains(text(),'Next') or contains(text(),'הבא')])[1]",
+                    "(//div[contains(text(),'Next') or contains(text(),'הבא') or contains(text(), 'Suivant')])[1]",
                 )
             )
         )
@@ -1074,7 +1074,7 @@ def send_messages():
                 f"Existing message found: {bool(existing_message)}, sent_ids count: {len(sent_ids)}"
             )
 
-            time.sleep(25)
+            # time.sleep(25)
             # Fetch valid numbers that haven't received this message yet
             valid_numbers = valid_numbers_col.find(
                 {
@@ -1116,20 +1116,20 @@ def send_messages():
                 num_movements = 10
                 max_offset = 100  # Maximum pixels to move in any direction
 
-                # Perform random mouse movements
-                for _ in range(num_movements):
-                    # Generate random x and y offsets between -max_offset and +max_offset
-                    x_offset = random.randint(-max_offset, max_offset)
-                    y_offset = random.randint(-max_offset, max_offset)
+                # # Perform random mouse movements
+                # for _ in range(num_movements):
+                #     # Generate random x and y offsets between -max_offset and +max_offset
+                #     x_offset = random.randint(-max_offset, max_offset)
+                #     y_offset = random.randint(-max_offset, max_offset)
                     
-                    # Move the mouse by the random offset
-                    actions.move_by_offset(x_offset, y_offset).perform()
+                #     # Move the mouse by the random offset
+                #     actions.move_by_offset(x_offset, y_offset).perform()
                     
-                    # Optional: Print the movement for debugging
-                    print(f"Moved mouse by ({x_offset}, {y_offset})")
+                #     # Optional: Print the movement for debugging
+                #     print(f"Moved mouse by ({x_offset}, {y_offset})")
                     
-                    # Pause briefly to simulate natural movement
-                    time.sleep(0.1)
+                #     # Pause briefly to simulate natural movement
+                #     time.sleep(0.1)
                     
 
                 # Wait Random Time between 5 to 10 seconds
@@ -1252,13 +1252,67 @@ def send_messages():
                         {"$set": {"sent_ids": sent_ids}},
                     )
                     
-                    # Each 5 Messages Sent, open two new tabs wait 5 seconds and close them
+                    print(send_count)
                     if send_count % 5 == 0:
-                        driver.execute_script("window.open('https://www.guitarart.co.il/chords');")
-                        driver.execute_script("window.open('https://pg-sql.com/');")
+                        # Store the original window handle
+                        original_handle = driver.current_window_handle
+
+                        # List to keep track of new window handles
+                        new_handles = []
+
+                        # URLs to open
+                        urls = [
+                            'https://www.guitarart.co.il/chords',
+                            'https://pg-sql.com/'
+                        ]
+
+                        # Open each URL in a new tab
+                        for url in urls:
+                            # Open a new tab
+                            driver.switch_to.new_window('tab')
+                            # Navigate to the desired URL
+                            driver.get(url)
+                            # Store the new window handle
+                            new_handles.append(driver.current_window_handle)
+
+                        # Wait for 5 seconds
                         time.sleep(5)
-                        driver.execute_script("window.close();")
-                        driver.execute_script("window.close();")
+
+                        # Close each new tab
+                        for handle in new_handles:
+                            driver.switch_to.window(handle)
+                            driver.close()
+
+                        # Switch back to the original window
+                        driver.switch_to.window(original_handle)
+
+                    # Add a short delay if necessary to prevent rapid looping
+                    time.sleep(1)  # Adjust as needed
+                        
+                    # At Count 20, open facebook, scroll down a bit, wait for 10 seconds and close it
+                    if send_count % 20 == 0:
+                        # Open Facebook
+                        driver.get("https://aditstore.com.br/")
+                        time.sleep(5)
+                        driver.execute_script("""
+                            var scrollHeight = document.body.scrollHeight;
+                            var scrollStep = Math.PI / (60 * 1); // 1 second of scrolling
+                            var cosParameter = scrollHeight / 2;
+                            var scrollCount = 0;
+                            var scrollMargin;
+                            function step() {
+                                setTimeout(function() {
+                                    if (scrollCount < 60) {
+                                        scrollCount++;
+                                        scrollMargin = cosParameter - cosParameter * Math.cos(scrollStep * scrollCount);
+                                        window.scrollTo(0, scrollMargin);
+                                        step();
+                                    }
+                                }, 15);
+                            }
+                            step();
+                        """)
+                        time.sleep(10)
                         
                     # Notify progress every 100 messages or at the end
                     if (i + 1) % 100 == 0 or (i + 1) == len(valid_numbers_list):
