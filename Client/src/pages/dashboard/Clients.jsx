@@ -17,10 +17,12 @@ import {
 
 import { useNavigate, Outlet, useParams } from "react-router-dom";
 import debounce from "lodash.debounce";
+import { useTranslation } from 'react-i18next';
 
 const ClientPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { t } = useTranslation();
 
   // State variables
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,7 +110,7 @@ const ClientPage = () => {
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Clients
+        {t("donators")}
       </Typography>
 
       {/* Search Input */}
@@ -142,10 +144,18 @@ const ClientPage = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>First Name</TableCell>
-                <TableCell>Last Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Phone Number</TableCell>
+                <TableCell>
+                  {t("fName")}
+                </TableCell>
+                <TableCell>
+                  {t("lName")}
+                </TableCell>
+                <TableCell>
+                  {t("email")}
+                </TableCell>
+                <TableCell>
+                  {t("phone")}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

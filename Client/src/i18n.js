@@ -49,6 +49,7 @@ i18n
         translation: {
           // General
           welcome: "Welcome",
+          dashboardWelcome: "Welcome to the Dashboard",
           home: "Home",
           dashboard: "Dashboard",
           profile: "Profile",
@@ -278,6 +279,7 @@ i18n
       },
       fr: {
         translation: {
+            dashboardWelcome: "Bienvenue sur le tableau de bord",
           // General
           welcome: "Bienvenue",
           home: "Accueil",

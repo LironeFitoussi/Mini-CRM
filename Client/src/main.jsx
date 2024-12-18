@@ -5,14 +5,12 @@ import { createRoot } from "react-dom/client";
 import {
   Auth0Provider,
   useAuth0,
-  withAuthenticationRequired,
 } from "@auth0/auth0-react";
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 
-import axios from "axios";
 import App from "./App";
 import "./index.css";
 
@@ -24,6 +22,7 @@ import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import Dashboard from "./pages/Dashboard";
+import NotAuthorized from "./pages/NotAuthorized";
 
 // Dashboard Subpages
 import Overview from "./pages/dashboard/Overview.jsx";
@@ -37,11 +36,17 @@ const root = createRoot(document.getElementById("root"));
 
 const NotFound = () => <h1>404 - Page Not Found</h1>;
 
-// Protected Route Wrapper
-const ProtectedRoute = ({ element }) => {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+// Define allowed emails
+const allowedEmails = [
+  'lironefit@gmail.com',
+  'user2@example.com',
+  // Add more authorized emails here
+];
 
-  // Wait until Auth0 finishes loading
+// Protected Route Wrapper with Email-Based Authorization
+const ProtectedRoute = ({ element }) => {
+  const { isAuthenticated, isLoading, loginWithRedirect, user } = useAuth0();
+
   if (isLoading) {
     return <div>Loading...</div>; // Or a spinner
   }
@@ -53,6 +58,10 @@ const ProtectedRoute = ({ element }) => {
     return null; // Prevent rendering anything during redirect
   }
 
+  if (!allowedEmails.includes(user.email)) {
+    return <NotAuthorized />;
+  }
+
   return element;
 };
 
@@ -62,13 +71,14 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />, // Base layout component
     children: [
-      { path: "/", element: <Home /> }, // Home route
+      { path: "/", element: <Home /> }, // Home route (unprotected)
       {
         path: "/dashboard",
         element: <ProtectedRoute element={<Dashboard />} />, // Protected route for dashboard
         children: [
           {
-            path: "overview",
+            // Default route for dashboard
+            index: true,
             element: <ProtectedRoute element={<Overview />} />, // Overview route
           },
           {
@@ -99,7 +109,7 @@ const router = createBrowserRouter([
         path: "/profile",
         element: <ProtectedRoute element={<Profile />} />, // Protected route for profile
       },
-      { path: "/login", element: <LoginPage /> }, // Login page
+      { path: "/login", element: <LoginPage /> }, // Login page (unprotected)
       { path: "*", element: <NotFound /> }, // Catch-all route for 404s
     ],
   },
@@ -117,6 +127,7 @@ root.render(
     authorizationParams={{
       redirect_uri: window.location.origin,
       audience: import.meta.env.VITE_AUTH0_AUDIENCE, // Add if using API access
+      scope: 'openid profile email', // Ensure 'email' scope is included
     }}
     cacheLocation="localstorage"
     onRedirectCallback={onRedirectCallback} // Preserve route

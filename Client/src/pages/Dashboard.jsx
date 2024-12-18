@@ -1,8 +1,10 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 // Components
 import Sidebar from "../components/Molecules/Sidebar.jsx";
 const Dashboard = () => {
+  const { t } = useTranslation();
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -12,12 +14,14 @@ const Dashboard = () => {
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
         <header className="flex items-center justify-between px-6 py-4 bg-white shadow">
-          <div className="text-lg font-semibold">Welcome to the Dashboard</div>
-          <div>
+          <div className="text-lg font-semibold">
+            <h1>{t("dashboardWelcome")}</h1>
+          </div>
+          {/* <div>
             <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
               Add New
             </button>
-          </div>
+          </div> */}
         </header>
 
         {/* Main Content */}

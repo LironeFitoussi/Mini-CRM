@@ -20,7 +20,7 @@ const Sidebar = () => {
           <ul>
             <li>
               <Link
-                to="overview"
+                to="/dashboard"
                 className="block px-4 py-2 hover:bg-gray-700 transition"
               >
                 {t("overview")}
