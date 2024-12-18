@@ -70,16 +70,16 @@ const EmailPage = () => {
   }, []);
 
   // Fixed header and footer templates
-  const emailHeader = `
-<!-- Email Header -->
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 20px;">
-  <tr>
-    <td align="center">
-      <h1 style="margin: 0; color: #333;">Les Enfant de Rachi</h1>
-    </td>
-  </tr>
-</table>
-`;
+//   const emailHeader = `
+// <!-- Email Header -->
+// <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 20px;">
+//   <tr>
+//     <td align="center">
+//       <h1 style="margin: 0; color: #333;">Les Enfant de Rachi</h1>
+//     </td>
+//   </tr>
+// </table>
+// `;
 
   // Footer is image from public folder
   const emailFooter = `
@@ -129,7 +129,7 @@ const EmailPage = () => {
 
   // Combine header, body, image (if present), and footer
   const fullEmailBody = `
-  ${emailHeader}
+  // ${emailHeader}
   ${imagePosition === "top" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" /><br/>` : ""}
   ${body}
   ${imagePosition === "bottom" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" /><br/>` : ""}
