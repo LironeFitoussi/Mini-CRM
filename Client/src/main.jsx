@@ -1,3 +1,5 @@
+// src/index.js
+
 import React from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -8,14 +10,14 @@ import {
 import {
   createBrowserRouter,
   RouterProvider,
-  Route,
-  Outlet,
-  Navigate,
 } from "react-router-dom";
 
 import axios from "axios";
 import App from "./App";
 import "./index.css";
+
+// Import i18n configuration
+import './i18n.js';
 
 // Page components
 import Profile from "./pages/Profile";
@@ -23,14 +25,13 @@ import Home from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import Dashboard from "./pages/Dashboard";
 
-// Dahsboard Subpages
+// Dashboard Subpages
 import Overview from "./pages/dashboard/Overview.jsx";
 import ClientPage from "./pages/dashboard/Clients.jsx";
 import DonationsPage from "./pages/dashboard/Donations.jsx";
 import EmailPage from "./pages/dashboard/Email.jsx";
 import ClientDetailsPage from "./pages/dashboard/clients/ClientDetails.jsx";
 import WhatsAppPage from "./pages/dashboard/Whatsapp.jsx";
-import { useLocation } from 'react-router-dom';
 
 const root = createRoot(document.getElementById("root"));
 

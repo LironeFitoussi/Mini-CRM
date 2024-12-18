@@ -1,11 +1,18 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Home = () => {
+  const { t, i18n } = useTranslation();
+
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
   const location = useLocation();
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
 
   const handleLogin = () => {
     loginWithRedirect({
@@ -23,6 +30,14 @@ const Home = () => {
             ? `Hello, ${user?.name}! Explore your dashboard and profile below.`
             : "Please log in to access your account."}
         </p>
+
+        {/* <div>
+          <h1>{t("welcome")}</h1>
+          <button onClick={() => changeLanguage("en")}>English</button>
+          <button onClick={() => changeLanguage("es")}>Español</button>
+          <button onClick={() => changeLanguage("fr")}>Français</button>
+          <button onClick={() => changeLanguage("de")}>Deutsch</button>
+        </div> */}
 
         <div className="flex justify-center gap-4">
           {isAuthenticated ? (

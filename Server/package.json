@@ -30,6 +30,7 @@
     "nodemailer": "^6.9.16",
     "phone": "^3.1.56",
     "progress": "^2.0.3",
+    "react-i18next": "^15.2.0",
     "winston": "^3.17.0"
   }
 }

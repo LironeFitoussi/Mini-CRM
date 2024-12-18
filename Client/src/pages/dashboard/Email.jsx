@@ -95,7 +95,7 @@ const EmailPage = () => {
   // Footer is image from public folder
   const emailFooter = `
 <!-- Email Footer -->
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f5f5f5; padding: 20px; margin-top: 20px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding: 10px; margin-top: 20px;">
   <tr>
     <td align="center">
       <img src="https://image-uploader-lirone-v1.s3.eu-central-1.amazonaws.com/logo%20table%20mail.jpeg" alt="Email Footer" style="max-width: 100%; height: auto;" />

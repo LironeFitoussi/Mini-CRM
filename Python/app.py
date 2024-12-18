@@ -1,4 +1,5 @@
 import os
+import random
 import time
 import logging
 import uuid
@@ -193,59 +194,96 @@ def check_chrome_version():
         return "Unable to determine"
 
 
+# def setup_driver():
+#     """
+#     Advanced WebDriver setup with extensive error handling and logging
+#     """
+#     logging.basicConfig(level=logging.INFO)
+
+#     try:
+#         # Check Chrome version
+#         chrome_version = check_chrome_version()
+#         logging.info(f"Detected Chrome Version: {chrome_version}")
+
+#         # Configure Chrome options
+#         chrome_options = Options()
+
+#         # User profile directory for session persistence
+#         chrome_options.add_argument(
+#             f"--user-data-dir={os.path.abspath(PROFILE_DIRECTORY)}"
+#         )
+
+#         # Optional: Specify a particular profile within the user-data-dir
+#         # chrome_options.add_argument("--profile-directory=Default")
+
+#         # Aggressive troubleshooting options
+#         # chrome_options.add_argument("--headless")
+#         chrome_options.add_argument("--no-sandbox")
+#         chrome_options.add_argument("--disable-dev-shm-usage")
+#         chrome_options.add_argument("--disable-gpu")
+#         chrome_options.add_argument("--verbose")
+#         chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
+
+#         # Optional: Uncomment to debug
+#         # chrome_options.add_argument("--remote-debugging-port=9222")
+
+#         try:
+#             # Use ChromeDriverManager with specific Chrome type
+#             service = Service(
+#                 ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()
+#             )
+
+#             # Initialize the WebDriver with extended timeout
+#             driver = webdriver.Chrome(service=service, options=chrome_options)
+
+#             return driver
+
+#         except Exception as detailed_error:
+#             logging.error(f"WebDriver Initialization Failed: {detailed_error}")
+#             logging.error(f"Detailed Error Type: {type(detailed_error)}")
+#             raise
+
+#     except Exception as general_error:
+#         logging.error(f"Setup Error: {general_error}")
+#         raise
+
 def setup_driver():
     """
-    Advanced WebDriver setup with extensive error handling and logging
+    Advanced WebDriver setup to use the actual Chrome app with the user's profile.
     """
+
     logging.basicConfig(level=logging.INFO)
 
     try:
-        # Check Chrome version
-        chrome_version = check_chrome_version()
-        logging.info(f"Detected Chrome Version: {chrome_version}")
+        logging.info("Starting WebDriver setup...")
 
         # Configure Chrome options
         chrome_options = Options()
 
-        # User profile directory for session persistence
-        chrome_options.add_argument(
-            f"--user-data-dir={os.path.abspath(PROFILE_DIRECTORY)}"
-        )
+        # Set binary location to the actual Chrome browser
+        chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
 
-        # Optional: Specify a particular profile within the user-data-dir
-        # chrome_options.add_argument("--profile-directory=Default")
+        # Use the user's existing Chrome profile
+        chrome_options.add_argument("--user-data-dir=C:\\Users\\liron\\AppData\\Local\\Google\\Chrome\\User Data")
+        chrome_options.add_argument("--profile-directory=Default")  # Replace "Default" if you use a different profile name
 
-        # Aggressive troubleshooting options
-        # chrome_options.add_argument("--headless")
+        # Other troubleshooting options
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--verbose")
         chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-        # Optional: Uncomment to debug
-        # chrome_options.add_argument("--remote-debugging-port=9222")
+        # Use ChromeDriverManager to manage the driver
+        service = Service(ChromeDriverManager().install())
 
-        try:
-            # Use ChromeDriverManager with specific Chrome type
-            service = Service(
-                ChromeDriverManager(chrome_type=ChromeType.GOOGLE).install()
-            )
+        # Initialize WebDriver
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        logging.info("WebDriver setup complete.")
+        return driver
 
-            # Initialize the WebDriver with extended timeout
-            driver = webdriver.Chrome(service=service, options=chrome_options)
-
-            return driver
-
-        except Exception as detailed_error:
-            logging.error(f"WebDriver Initialization Failed: {detailed_error}")
-            logging.error(f"Detailed Error Type: {type(detailed_error)}")
-            raise
-
-    except Exception as general_error:
-        logging.error(f"Setup Error: {general_error}")
+    except Exception as e:
+        logging.error(f"Error during WebDriver setup: {e}")
         raise
-
 
 # Define helper function outside of the route so the thread can access it
 def input_multiline_text(input_element, message):
@@ -279,7 +317,7 @@ def init_load():
     finally:
         driver.quit()
 
-# init_load()
+init_load()
 
 # Phone Number Class
 class PhoneNumber:
@@ -1021,6 +1059,12 @@ def send_messages():
 
             # Check if the message already exists in the database
             existing_message = messages_col.find_one({"message": message})
+            
+            if not existing_message:
+                # Save the message to the database
+                existing_message = messages_col.insert_one({"message": message, "sent_ids": []})
+                log_message("New message saved to the database.")
+            
             sent_ids = (
                 [str(_id) for _id in existing_message.get("sent_ids", [])]
                 if existing_message
@@ -1030,6 +1074,7 @@ def send_messages():
                 f"Existing message found: {bool(existing_message)}, sent_ids count: {len(sent_ids)}"
             )
 
+            time.sleep(25)
             # Fetch valid numbers that haven't received this message yet
             valid_numbers = valid_numbers_col.find(
                 {
@@ -1065,6 +1110,30 @@ def send_messages():
                 log_message(f"Navigating to {url}")
                 driver.get(url)
 
+                actions = ActionChains(driver)
+
+                # Define the number of random movements and the maximum offset
+                num_movements = 10
+                max_offset = 100  # Maximum pixels to move in any direction
+
+                # Perform random mouse movements
+                for _ in range(num_movements):
+                    # Generate random x and y offsets between -max_offset and +max_offset
+                    x_offset = random.randint(-max_offset, max_offset)
+                    y_offset = random.randint(-max_offset, max_offset)
+                    
+                    # Move the mouse by the random offset
+                    actions.move_by_offset(x_offset, y_offset).perform()
+                    
+                    # Optional: Print the movement for debugging
+                    print(f"Moved mouse by ({x_offset}, {y_offset})")
+                    
+                    # Pause briefly to simulate natural movement
+                    time.sleep(0.1)
+                    
+
+                # Wait Random Time between 5 to 10 seconds
+                time.sleep(random.randint(5, 10))
                 try:
                     # Wait for the chat input box to load
                     chat_box = WebDriverWait(driver, 20).until(
@@ -1132,7 +1201,6 @@ def send_messages():
                         send_button.click()
 
                         # 2 Send a message with simple text in french in same conversation with "to acces and clik on the link, please click ok or add this number to your contact" if french
-                        # 2 Send a message with simple text in french in same conversation with "to acces and clik on the link, please click ok or add this number to your contact" if french
                         chat_box.click()
                         time.sleep(1)
                         input_multiline_text(
@@ -1177,9 +1245,25 @@ def send_messages():
 
                     sent_ids.append(recipient_id)
                     send_count += 1
-
+                    
+                    # Update the sent count in the database
+                    messages_col.update_one(
+                        {"_id": existing_message["_id"]},
+                        {"$set": {"sent_ids": sent_ids}},
+                    )
+                    
+                    # Each 5 Messages Sent, open two new tabs wait 5 seconds and close them
+                    if send_count % 5 == 0:
+                        driver.execute_script("window.open('https://www.guitarart.co.il/chords');")
+                        driver.execute_script("window.open('https://pg-sql.com/');")
+                        time.sleep(5)
+                        driver.execute_script("window.close();")
+                        driver.execute_script("window.close();")
+                        
                     # Notify progress every 100 messages or at the end
                     if (i + 1) % 100 == 0 or (i + 1) == len(valid_numbers_list):
+                        # Sleep for 15 minutes after every 100 messages
+                        time.sleep(900)
                         log_message(
                             f"Progress update: {send_count} messages sent so far."
                         )

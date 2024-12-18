@@ -10,17 +10,19 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const pages = [
-  { name: "Home", path: "/" },
-  { name: "Dashboard", path: "/dashboard" },
-  { name: "Profile", path: "/profile" },
-  { name: "Login", path: "/login" },
+  { name: "home", path: "/" },
+  { name: "dashboard", path: "/dashboard" },
+  { name: "profile", path: "/profile" },
+  { name: "login", path: "/login" },
 ];
 
 const Header = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
-
+  const { t } = useTranslation();
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -127,10 +129,12 @@ const Header = () => {
                   textDecoration: "none",
                 }}
               >
-                {page.name}
+                {t(page.name)}
               </Button>
             ))}
           </Box>
+          <LanguageSwitcher />
+
         </Toolbar>
       </Container>
     </AppBar>
