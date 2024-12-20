@@ -6,7 +6,7 @@ import Sidebar from "../components/Molecules/Sidebar.jsx";
 const Dashboard = () => {
   const { t } = useTranslation();
   return (
-    <div className="flex bg-gray-100" style={{ height: "95vh" }}>
+    <div className="flex bg-gray-100" style={{ height: "90vh" }}>
       {/* Sidebar */}
       <Sidebar />
 
