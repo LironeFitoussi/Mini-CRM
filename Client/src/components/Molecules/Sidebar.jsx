@@ -28,7 +28,7 @@ const Sidebar = () => {
             </li>
             <li>
               <Link
-                to="clients"
+                to="donators"
                 className="block px-4 py-2 hover:bg-gray-700 transition"
               >
                 {t("donators")}

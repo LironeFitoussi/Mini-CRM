@@ -23,6 +23,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
   console.log("Connected to MongoDB");
 });
 
+app.use("/api/v1/users", require("./routes/usersRoutes.js"));
 app.use("/api/v1/whatsapp", require("./routes/whatsappRoutes.js"));
 app.use("/api/v1/donators", require("./routes/donatorsRoutes.js"));
 app.use("/api/v1/contacts", require("./routes/contactsRoutes.js"));
