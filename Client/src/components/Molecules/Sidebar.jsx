@@ -58,6 +58,14 @@ const Sidebar = () => {
                 WhatsApp
               </Link>
             </li>
+            <li>
+              <Link
+                to="users"
+                className="block px-4 py-2 hover:bg-gray-700 transition"
+              >
+                {t("users")}
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>

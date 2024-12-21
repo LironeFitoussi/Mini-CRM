@@ -20,7 +20,7 @@ const router = createBrowserRouter(routes);
 
 // Root rendering
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <Auth0Provider
         domain={import.meta.env.VITE_AUTH0_DOMAIN}
@@ -36,5 +36,5 @@ root.render(
         <RouterProvider router={router} />
       </Auth0Provider>
     </QueryClientProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

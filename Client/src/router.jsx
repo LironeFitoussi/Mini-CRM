@@ -16,6 +16,7 @@ import ClientDetailsPage from "./pages/dashboard/clients/ClientDetails.jsx"; // 
 import DonationsPage from "./pages/dashboard/Donations.jsx";
 import EmailPage from "./pages/dashboard/Email.jsx";
 import WhatsAppPage from "./pages/dashboard/WhatsApp.jsx"; // Added import
+import UsersPage from "./pages/dashboard/Users.jsx";
 
 const router = [
   {
@@ -83,6 +84,14 @@ const router = [
               </ProtectedRoute>
             ), // WhatsApp route
           },
+          {
+            path: "users",
+            element: (
+              <ProtectedRoute level="admin">
+                <UsersPage />
+              </ProtectedRoute>
+            ), // Users route (admin only)
+          }
         ],
       },
       {

@@ -32,10 +32,15 @@ const UserController = {
 
   // Get a single user by email
   getUserByEmail: async (req, res) => {
-    const { email } = req.params;
+    const { email } = req.query;
+    
+    if (!email) {
+      return res.status(400).json({ error: "Email is required." });
+    }
+    
     try {
       const user = await User
-        .findOne({ email })
+        .findOne({ email: email })
         .select("-__v -createdAt -updatedAt");
       if (!user) {
         return res.status(404).json({ error: "User not found." });

@@ -5,9 +5,10 @@ const { getAllUsers, getUserById, getUserByEmail, createUser, updateUserById, de
 
 router.get('/', getAllUsers);
 
+router.get('/me', getUserByEmail);
+
 router.get('/:id', getUserById);
 
-router.get('/me/:email', getUserByEmail);
 
 router.post('/', createUser);
 
