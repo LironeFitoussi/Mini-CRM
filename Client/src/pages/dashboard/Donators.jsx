@@ -19,7 +19,7 @@ import { useNavigate, Outlet, useParams } from "react-router-dom";
 import debounce from "lodash.debounce";
 import { useTranslation } from 'react-i18next';
 
-const ClientPage = () => {
+const DontaorsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { t } = useTranslation();
@@ -211,4 +211,4 @@ const ClientPage = () => {
   );
 };
 
-export default ClientPage;
+export default DontaorsPage;

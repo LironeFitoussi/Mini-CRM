@@ -3,7 +3,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-import Dashboard from "./pages/Dashboard";
 // Uncomment the next line if you want to load translations from external JSON files
 // import HttpApi from 'i18next-http-backend';
 
@@ -47,6 +46,7 @@ i18n
     resources: {
       en: {
         translation: {
+          totalDonators: "Total Donators",
           // General
           welcome: "Welcome",
           dashboardWelcome: "Welcome to the Dashboard",
@@ -279,7 +279,8 @@ i18n
       },
       fr: {
         translation: {
-            dashboardWelcome: "Bienvenue sur le tableau de bord",
+          totalDonators: "Total Donateurs",
+          dashboardWelcome: "Bienvenue sur le tableau de bord",
           // General
           welcome: "Bienvenue",
           home: "Accueil",

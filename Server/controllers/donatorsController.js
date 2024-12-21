@@ -74,6 +74,16 @@ exports.getAllDonators = async (req, res) => {
   }
 };
 
+// Get Total Donators
+exports.getTotalDonators = async (req, res) => {
+  try {
+    const totalDonators = await Donator.countDocuments();
+    res.status(200).json(totalDonators);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get a single donator by ID
 exports.getDonatorById = async (req, res) => {
   try {
@@ -157,6 +167,7 @@ exports.bulkCreateDonators = async (req, res) => {
     // Use Promise.all to handle asynchronous operations
     const contacts = await Promise.all(sheetData.map(async (row, index) => {
       let contact = {
+        allo_dons_id: row.A || "", // Ensure it's a string
         fullName: row.B || "",
         email: row.E || "",
         phoneNumber: row.F || "",
