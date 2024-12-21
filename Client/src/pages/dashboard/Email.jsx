@@ -47,7 +47,7 @@ const EmailPage = () => {
   // State for fetched donators
   const [donators, setDonators] = useState([]);
 
-  console.log(body);
+  // console.log(body);
 
   // Fetch donators on component mount
   useEffect(() => {

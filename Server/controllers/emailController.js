@@ -94,7 +94,7 @@ const sendEmail = async (req, res) => {
       try {
         // Send email
         let info = await transporter.sendMail(mailOptions);
-        console.log("Email sent to:", JSON.stringify(mailOptions));
+        // console.log("Email sent to:", JSON.stringify(mailOptions));
         logger.info("✅ Message sent: %s", info.messageId);
 
         // Update the first MailJob as sent

@@ -20,7 +20,7 @@ app.use("/api/upload", uploadRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI).then(() => {
-  console.log("Connected to MongoDB");
+  // console.log("Connected to MongoDB");
 });
 
 app.use("/api/v1/users", require("./routes/usersRoutes.js"));

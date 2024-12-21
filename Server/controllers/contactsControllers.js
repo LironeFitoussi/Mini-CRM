@@ -11,7 +11,7 @@ exports.getAllContacts = async (req, res) => {
     const limit = parseInt(query.limit) || 10; // Default to 10 items per page if not provided
     const skip = (page - 1) * limit;
 
-    console.log("params", query);
+    // console.log("params", query);
 
     // Fetch valid_numbers collection (query) from the database (MongoDB) with pagination
     const contacts = await Contact.find().skip(skip).limit(limit);
@@ -19,7 +19,7 @@ exports.getAllContacts = async (req, res) => {
     // Get total count of documents
     const totalDocuments = await Contact.countDocuments();
 
-    console.log(totalDocuments);
+    // console.log(totalDocuments);
 
     // Send the paginated data and metadata as a response
     res.status(200).json({

@@ -165,7 +165,7 @@ const DontaorsPage = () => {
                     key={client._id}
                     hover
                     sx={{ cursor: "pointer" }}
-                    onClick={() => navigate(`/dashboard/clients/${client._id}`)}
+                    onClick={() => navigate(`/dashboard/donators/${client._id}`)}
                   >
                     <TableCell>{client.fName || "N/A"}</TableCell>
                     <TableCell>{client.lName || "N/A"}</TableCell>

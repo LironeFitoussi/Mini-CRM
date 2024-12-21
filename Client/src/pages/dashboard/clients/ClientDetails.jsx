@@ -83,7 +83,7 @@ const ClientDetailsPage = () => {
     );
   }
 
-  console.log(client);
+  // console.log(client);
   const { fName, lName, company, email_1, phone_number_1, donations = [] } = client;
 
   // Calculate analytics

@@ -144,7 +144,7 @@ const getAllDonationTypes = async (req, res) => {
   try {
     const allDonations = await Donation.find();
 
-    console.log(allDonations);
+    // console.log(allDonations);
 
     // Reduce the array of donations to an array of objects with unique donation types and total amounts
     const donationSummary = allDonations.reduce((acc, donation) => {

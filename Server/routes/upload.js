@@ -9,7 +9,7 @@ const upload = multer({ storage });
 
 // File upload route with retry logic
 router.post("/", upload.single("image"), async (req, res) => {
-  console.log("Received a request to upload a file");
+  // console.log("Received a request to upload a file");
   const maxAttempts = 3;
   let attempt = 0;
   let success = false;

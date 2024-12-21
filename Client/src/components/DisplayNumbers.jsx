@@ -10,7 +10,7 @@ const DisplayNumbers = () => {
     const [filter, setFilter] = useState('unknown');
     const [limit, setLimit] = useState(50);
 
-    console.log(filter);
+    // console.log(filter);
     
     const fetchContacts = async (page, filter, limit) => {
         try {
@@ -18,7 +18,7 @@ const DisplayNumbers = () => {
             const response = await axios.get(
                 `${import.meta.env.VITE_API_URL}/api/contacts?is_whatsapp=${filter}&page=${page}&limit=${limit}`
             );
-            console.log(response.data);
+            // console.log(response.data);
 
             setContacts(response.data.contacts);
             setCurrentPage(response.data.currentPage);

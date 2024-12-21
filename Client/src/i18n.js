@@ -13,7 +13,7 @@ i18n
   .use(initReactI18next) // Passes i18n instance to react-i18next
   .init({
     // Debug mode (set to true during development)
-    debug: process.env.NODE_ENV === "development",
+    // debug: process.env.NODE_ENV === "development",
 
     // Fallback language in case the user language detection fails
     fallbackLng: "fr",

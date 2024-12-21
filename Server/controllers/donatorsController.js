@@ -220,7 +220,7 @@ exports.bulkCreateDonators = async (req, res) => {
       let savedDonator;
       try {
         savedDonator = await donator.save();
-        console.log(`Row ${index + 1}: Saved Donator:`, savedDonator);
+        // console.log(`Row ${index + 1}: Saved Donator:`, savedDonator);
       } catch (saveError) {
         console.error(`Row ${index + 1}: Error saving Donator:`, saveError);
         throw saveError; // Propagate the error to be caught by the outer catch

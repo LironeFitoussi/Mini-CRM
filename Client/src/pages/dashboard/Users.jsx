@@ -15,13 +15,13 @@ const fetchUsers = async () => {
   const { data } = await axios.get(
     import.meta.env.VITE_API_URL + "/api/v1/users"
   );
-  console.log(data);
+//   console.log(data);
   return data;
 };
 
 const deleteUsers = async (ids) => {
   await axios.delete(import.meta.env.VITE_API_URL + "/api/v1/users/", { ids });
-  console.log("Users deleted successfully");
+//   console.log("Users deleted successfully");
 };
 
 const Users = () => {
@@ -57,7 +57,7 @@ const Users = () => {
   const handleSubmit = async () => {
     try {
       await axios.post(import.meta.env.VITE_API_URL + "/api/v1/users", formValues);
-      console.log("User added successfully");
+    //   console.log("User added successfully");
       queryClient.invalidateQueries(["users"]); // Revalidate the "users" query
       handleCloseModal();
     } catch (err) {

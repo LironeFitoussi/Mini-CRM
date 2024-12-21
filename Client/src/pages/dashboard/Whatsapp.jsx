@@ -31,10 +31,10 @@ const WhatsAppPage = () => {
 
   // Handle sending WhatsApp message (mock action)
   const handleSendMessage = () => {
-    console.log({
-      recipients,
-      message,
-    });
+    // console.log({
+    //   recipients,
+    //   message,
+    // });
     alert("WhatsApp message sent successfully (mock)!");
   };
 
