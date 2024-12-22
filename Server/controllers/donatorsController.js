@@ -95,6 +95,12 @@ exports.getDonatorById = async (req, res) => {
       .populate({
         path: "donations",
         model: "Donation",
+      })
+      .populate({
+        path: "tasks",
+        model: "Task",
+        // Select only the fields we need
+        select: "title description due_date status",
       });
 
     if (!donator) {

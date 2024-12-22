@@ -10,14 +10,14 @@ import NotFound from "./pages/NotFound.jsx";
 import ProtectedRoute from "./components/Atoms/Protected.jsx";
 
 // Dashboard subpages
-import Overview from "./pages/dashboard/Overview.jsx";
-import DontaorsPage from "./pages/dashboard/Donators.jsx"; // Added import
-import ClientDetailsPage from "./pages/dashboard/clients/ClientDetails.jsx"; // Added import
-import DonationsPage from "./pages/dashboard/Donations.jsx";
-import EmailPage from "./pages/dashboard/Email.jsx";
-import WhatsAppPage from "./pages/dashboard/WhatsAppPage.jsx"; // Added import
-import UsersPage from "./pages/dashboard/Users.jsx";
-import TasksPage from "./pages/dashboard/TasksPage.jsx";
+const Overview = React.lazy(() => import("./pages/dashboard/Overview.jsx"));
+const DontaorsPage = React.lazy(() => import("./pages/dashboard/Donators.jsx")); // Added import
+const ClientDetailsPage = React.lazy(() => import("./pages/dashboard/clients/ClientDetails.jsx")); // Added import
+const DonationsPage = React.lazy(() => import("./pages/dashboard/Donations.jsx"));
+const EmailPage = React.lazy(() => import("./pages/dashboard/Email.jsx"));
+const WhatsAppPage = React.lazy(() => import("./pages/dashboard/WhatsAppPage.jsx")); // Added import
+const UsersPage = React.lazy(() => import("./pages/dashboard/Users.jsx"));
+const TasksPage = React.lazy(() => import("./pages/dashboard/TasksPage.jsx"));
 
 const router = [
   {

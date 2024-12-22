@@ -62,6 +62,12 @@ donatorSchema.virtual("donations", {
   foreignField: "donator_id", // The field in Donation that points to Donator
 });
 
+// Virtual field for tasks
+donatorSchema.virtual("tasks", {
+  ref: "Task", // The model to use
+  localField: "_id", // The field in Donator
+  foreignField: "donator", // The field in Task that points to Donator
+});
 
 const Donator = mongoose.model("Donator", donatorSchema);
 

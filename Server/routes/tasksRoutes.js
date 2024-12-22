@@ -25,10 +25,16 @@ router.get('/:id', taskController.getTaskById);
 // @access  Protected
 router.post('/', /* protect, */ taskController.createTask);
 
+// @route   PUT /api/tasks/:id/status
+// @desc    Update task status
+// @access  Protected
+router.patch('/:id/status', /* protect, */ taskController.updateTaskStatus);
+
 // @route   PUT /api/tasks/:id
 // @desc    Update task
 // @access  Protected
 router.put('/:id', /* protect, */ taskController.updateTask);
+
 
 // @route   DELETE /api/tasks/:id
 // @desc    Delete task

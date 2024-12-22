@@ -46,6 +46,8 @@ const ClientDetailsPage = () => {
     fetchData();
   }, [id]);
 
+  console.log(client);
+  
   if (loading) {
     return (
       <Box sx={{ padding: 4, textAlign: "center" }}>

@@ -208,6 +208,60 @@ exports.updateTask = async (req, res) => {
 };
 
 /**
+ * @desc    Update task status
+ * @route   PUT /api/tasks/:id/status
+ * @access  Protected (assuming only authorized users can update tasks)
+ */
+
+exports.updateTaskStatus = async (req, res) => {
+    try {
+        const taskId = req.params.id;
+        const { status } = req.body;
+
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(taskId)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid Task ID'
+            });
+        }
+
+        // Find the task
+        let task = await Task.findById(taskId);
+
+        if (!task) {
+            return res.status(404).json({
+                success: false,
+                message: 'Task not found'
+            });
+        }
+
+        // Optionally, check if the user is authorized to update the task
+        // Example: if (task.user.toString() !== req.user.id) { ... }
+
+        // Update status
+        task.status = status;
+
+        const updatedTask = await task.save();
+
+        // Populate the refs before sending response
+        await updatedTask
+        // .populate('user', 'name email').populate('donator', 'name email');
+
+        res.status(200).json({
+            success: true,
+            data: updatedTask
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+}
+
+/**
  * @desc    Delete a task
  * @route   DELETE /api/tasks/:id
  * @access  Protected (assuming only authorized users can delete tasks)
