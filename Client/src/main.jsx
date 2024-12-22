@@ -18,6 +18,12 @@ const onRedirectCallback = (appState) => {
 
 const router = createBrowserRouter(routes);
 
+// console.log(import.meta.env.VITE_AUTH0_DOMAIN);
+// console.log(import.meta.env.VITE_AUTH0_CLIENT_ID);
+// console.log(import.meta.env.VITE_AUTH0_AUDIENCE);
+// console.log(import.meta.env.VITE_API_URL);
+
+
 // Root rendering
 root.render(
   // <React.StrictMode>

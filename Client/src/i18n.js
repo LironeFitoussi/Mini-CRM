@@ -86,6 +86,8 @@ i18n
           donators: "Donators",
           donations: "Donations",
           email: "Email",
+          task: "Task",
+
           // Navigation
           navigationHome: "Home",
           navigationCustomers: "Customers",
@@ -151,6 +153,7 @@ i18n
           contactDetails: "Contact Details",
           contactFirstName: "First Name",
           contactLastName: "Last Name",
+          contactEmail: "Email",
           contactPosition: "Position",
           contactMobile: "Mobile",
           contactFax: "Fax",
@@ -201,6 +204,9 @@ i18n
           userManagementUserDetails: "User Details",
           userManagementRoleName: "Role Name",
           userManagementAssignRole: "Assign Role",
+          userManagementUserRoleUser: "User",
+          userManagementUserRoleAdmin: "Admin",
+          deleteConfirmation: "Are you sure you want to delete this user?",
 
           // Settings
           settingsTitle: "Settings",
@@ -319,6 +325,7 @@ i18n
           donators: "Donateurs",
           donations: "Dons",
           email: "Email",
+          task: "Tâche",
           // Navigation
           navigationHome: "Accueil",
           navigationCustomers: "Clients",
@@ -384,6 +391,7 @@ i18n
           contactDetails: "Détails du contact",
           contactFirstName: "Prénom",
           contactLastName: "Nom de famille",
+          contactEmail: "Email",
           contactPosition: "Poste",
           contactMobile: "Mobile",
           contactFax: "Fax",
@@ -434,6 +442,9 @@ i18n
           userManagementUserDetails: "Détails de l'utilisateur",
           userManagementRoleName: "Nom du rôle",
           userManagementAssignRole: "Attribuer un rôle",
+          userManagementUserRoleUser: "Utilisateur",
+          userManagementUserRoleAdmin: "Administrateur",
+          deleteConfirmation: "Êtes-vous sûr de vouloir supprimer cet utilisateur?",
 
           // Settings
           settingsTitle: "Paramètres",

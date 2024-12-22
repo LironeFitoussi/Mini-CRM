@@ -44,9 +44,9 @@ const ProtectedRoute = ({ level, children }) => {
   }
 
   if (isAuthenticated && userdata?.role !== "guest") {
-    // if (level === "admin" && (userdata?.role !== "admin" || userdata?.role !== "developer")) {
-    //   return <Navigate to="/unauthorized" state={{ from: location }} replace />;
-    // }
+    if (level === "admin" && (userdata?.role !== "admin" && userdata?.role !== "developer")) {
+      return <Navigate to="/unauthorized" state={{ from: location }} replace />;
+    }
     return children;
   } else if (isAuthenticated && userdata?.role === "guest") {
     return <Navigate to="/unauthorized" state={{ from: location }} replace />;

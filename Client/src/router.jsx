@@ -17,6 +17,7 @@ import DonationsPage from "./pages/dashboard/Donations.jsx";
 import EmailPage from "./pages/dashboard/Email.jsx";
 import WhatsAppPage from "./pages/dashboard/WhatsAppPage.jsx"; // Added import
 import UsersPage from "./pages/dashboard/Users.jsx";
+import TasksPage from "./pages/dashboard/TasksPage.jsx";
 
 const router = [
   {
@@ -27,7 +28,7 @@ const router = [
       {
         path: "dashboard",
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute level="user">
             <Dashboard />
           </ProtectedRoute>
         ),
@@ -37,7 +38,7 @@ const router = [
             // Default route for dashboard
             index: true,
             element: (
-              <ProtectedRoute>
+              <ProtectedRoute level="user">
                 <Overview />
               </ProtectedRoute>
             ), // Overview route
@@ -45,7 +46,7 @@ const router = [
           {
             path: "donators",
             element: (
-              <ProtectedRoute>
+              <ProtectedRoute level="user">
                 <DontaorsPage />
               </ProtectedRoute>
             ), // Clients route
@@ -53,7 +54,7 @@ const router = [
               {
                 path: ":id",
                 element: (
-                  <ProtectedRoute>
+                  <ProtectedRoute level="user">
                     <ClientDetailsPage />
                   </ProtectedRoute>
                 ), // Client Details subpage
@@ -61,9 +62,17 @@ const router = [
             ],
           },
           {
+            path: "tasks",
+            element: (
+              <ProtectedRoute level="user">
+                <TasksPage />
+              </ProtectedRoute>
+            ), // Tasks route
+          },
+          {
             path: "donations",
             element: (
-              <ProtectedRoute>
+              <ProtectedRoute level="user">
                 <DonationsPage />
               </ProtectedRoute>
             ), // Donations route
@@ -71,7 +80,7 @@ const router = [
           {
             path: "email",
             element: (
-              <ProtectedRoute>
+              <ProtectedRoute level="user">
                 <EmailPage />
               </ProtectedRoute>
             ), // Email route
@@ -79,7 +88,7 @@ const router = [
           {
             path: "whatsapp",
             element: (
-              <ProtectedRoute>
+              <ProtectedRoute level="user">
                 <WhatsAppPage />
               </ProtectedRoute>
             ), // WhatsApp route

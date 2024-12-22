@@ -8,6 +8,8 @@ const UserController = {
       const users = await User.find();
       res.status(200).json(users);
     } catch (error) {
+      console.error(error);
+      
       res
         .status(500)
         .json({ error: "An error occurred while retrieving users." });
@@ -56,7 +58,23 @@ const UserController = {
   // Create a new user
   createUser: async (req, res) => {
     const { fName, lName, email, role } = req.body;
+    console.log(req.body);
+    
+    if (!fName || !lName || !email || !role) {
+      return res
+        .status(400)
+        .json({ error: "First name, last name, email, and role are required." });
+    }
+
     try {
+      // Check if the email already exists
+      const existingUser = await User.findOne({
+        email: email,
+      });
+      if (existingUser) {
+        return res.status(400).json({ error: "Email already exists." });
+      }
+      
       const newUser = new User({ fName, lName, email, role });
       await newUser.save();
       res.status(201).json(newUser);
@@ -103,6 +121,25 @@ const UserController = {
       res
         .status(500)
         .json({ error: "An error occurred while deleting the user." });
+    }
+  },
+
+  // Delete multiple users by ID
+  deleteUsers: async (req, res) => {    
+    const { ids } = req.body;
+    if (!ids || !ids.length) {
+      return res.status(400).json({ error: "User IDs are required." });
+    }
+    try {
+      const deletedUsers = await User.deleteMany({ _id: { $in: ids } });
+      if (!deletedUsers.deletedCount) {
+        return res.status(404).json({ error: "Users not found." });
+      }
+      res.status(200).json({ message: "Users deleted successfully." });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "An error occurred while deleting the users." });
     }
   },
 };

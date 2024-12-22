@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const TaksSchema = new Schema({
+const TaskSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -16,6 +16,15 @@ const TaksSchema = new Schema({
         type: String,
         required: true
     },
+    status: {
+        type: String,
+        enum: ['pending', 'completed'],
+        default: 'pending'
+    },
+    dueDate: {
+        type: Date,
+        required: true
+    },
     donator: {
         type: Schema.Types.ObjectId,
         ref: 'Donator',
@@ -27,4 +36,11 @@ const TaksSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('Taks', TaksSchema);
+// Aggregate middleware to populate user and donator details
+TaskSchema.pre('find', function (next) {
+    this.populate('user', 'fName email');
+    this.populate('donator', 'fName email');
+    next();
+});
+
+module.exports = mongoose.model('Task', TaskSchema);

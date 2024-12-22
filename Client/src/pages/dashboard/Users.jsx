@@ -1,67 +1,103 @@
+// Users.js
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-} from "@mui/material";
+import { Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
+
+import UsersTable from "../../components/Molecules/UsersTable";
+import AddUserModal from "../../components/Modals/AddUserModal";
+import EditUserModal from "../../components/Modals/EditUserModal";
+import DeleteUserModal from "../../components/Modals/DeleteUserModal";
 
 const fetchUsers = async () => {
   const { data } = await axios.get(
     import.meta.env.VITE_API_URL + "/api/v1/users"
   );
-//   console.log(data);
   return data;
 };
 
 const deleteUsers = async (ids) => {
-  await axios.delete(import.meta.env.VITE_API_URL + "/api/v1/users/", { ids });
-//   console.log("Users deleted successfully");
+  await axios.delete(import.meta.env.VITE_API_URL + "/api/v1/users/", {
+    data: { ids },
+  });
 };
 
 const Users = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { data, error, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   const [formValues, setFormValues] = useState({
     fName: "",
     lName: "",
     email: "",
-    role: "",
+    role: "user",
   });
+
   const [selectedRows, setSelectedRows] = useState([]);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
+  const handleOpenAddModal = () => {
+    setIsAddModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setFormValues({ fName: "", lName: "", email: "", role: "" }); // Reset form
+  const handleCloseAddModal = () => {
+    setIsAddModalOpen(false);
+    setFormValues({ fName: "", lName: "", email: "", role: "" });
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues((prev) => ({ ...prev, [name]: value }));
+  const handleOpenEditModal = () => {
+    if (selectedRows.length !== 1) {
+      alert("Please select exactly one user to edit.");
+      return;
+    }
+    const userToEdit = data.find((user) => user._id === selectedRows[0]);
+    if (userToEdit) {
+      setFormValues({
+        fName: userToEdit.fName,
+        lName: userToEdit.lName,
+        email: userToEdit.email,
+        role: userToEdit.role,
+      });
+      setIsEditModalOpen(true);
+    }
   };
 
-  const handleSubmit = async () => {
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setFormValues({ fName: "", lName: "", email: "", role: "" });
+  };
+
+  const handleAddUser = async (newUser) => {
     try {
-      await axios.post(import.meta.env.VITE_API_URL + "/api/v1/users", formValues);
-    //   console.log("User added successfully");
-      queryClient.invalidateQueries(["users"]); // Revalidate the "users" query
-      handleCloseModal();
+      await axios.post(
+        import.meta.env.VITE_API_URL + "/api/v1/users",
+        newUser
+      );
+      queryClient.invalidateQueries(["users"]);
+      handleCloseAddModal();
     } catch (err) {
-      console.error("Error adding user", err);
+      console.error("Error adding user", err.response?.data || err);
+    }
+  };
+
+  const handleEditUser = async (updatedUser) => {
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/v1/users/${selectedRows[0]}`,
+        updatedUser
+      );
+      queryClient.invalidateQueries(["users"]);
+      handleCloseEditModal();
+    } catch (err) {
+      console.error("Error editing user", err.response?.data || err);
     }
   };
 
@@ -73,10 +109,18 @@ const Users = () => {
 
     try {
       await deleteUsers(selectedRows);
-      queryClient.invalidateQueries(["users"]); // Revalidate the "users" query
+      queryClient.invalidateQueries(["users"]);
+      setIsDeleteModalOpen(false);
+      setSelectedRows([]);
     } catch (err) {
       console.error("Error deleting users", err);
     }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // console.log(name, value);
+    setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
   if (isLoading) return <div className="text-center mt-10">Loading...</div>;
@@ -86,102 +130,69 @@ const Users = () => {
   // Filter out invalid rows to ensure data integrity
   const validData = data?.filter((row) => row && row._id) || [];
 
-  const columns = [
-    { field: "_id", headerName: "ID", width: 90 },
-    {
-      field: "fName",
-      headerName: "First Name",
-      width: 150,
-    },
-    {
-      field: "lName",
-      headerName: "Last Name",
-      width: 150,
-    },
-    { field: "email", headerName: "Email", width: 200 },
-    { field: "role", headerName: "Role", width: 130 },
-  ];
-
   return (
     <div className="h-screen p-4">
-      <div>
-        <h1 className="text-2xl font-bold mb-4">Users</h1>
+      <h1 className="text-2xl font-bold mb-4">{t("userManagementUsers")}</h1>
+
+      <div className="bg-white p-4 rounded-lg shadow-md">
+        <UsersTable
+          rows={validData}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+        />
+      </div>
+
+      <div className="mt-4">
         <Button
           variant="contained"
           color="primary"
-          onClick={handleOpenModal}
+          onClick={handleOpenAddModal}
           style={{ marginRight: "10px" }}
         >
-          Add User
+          {t("userManagementAddUser")}
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => setIsDeleteModalOpen(true)}
+          style={{ marginRight: "10px" }}
+        >
+          {t("userManagementDeleteUser")}
         </Button>
         <Button
           variant="contained"
           color="secondary"
-          onClick={handleDelete}
+          onClick={handleOpenEditModal}
+          style={{ marginRight: "10px" }}
         >
-          Delete Selected Users
+          {t("userManagementEditUser")}
         </Button>
-      </div>
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <DataGrid
-          rows={validData}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          checkboxSelection
-          onSelectionModelChange={(newSelection) => {
-            setSelectedRows(newSelection);
-          }}
-          getRowId={(row) => row._id} // Use _id as the unique row identifier
-        />
       </div>
 
       {/* Add User Modal */}
-      <Dialog open={isModalOpen} onClose={handleCloseModal}>
-        <DialogTitle>Add User</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="normal"
-            label="First Name"
-            name="fName"
-            value={formValues.fName}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            margin="normal"
-            label="Last Name"
-            name="lName"
-            value={formValues.lName}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            margin="normal"
-            label="Email"
-            name="email"
-            value={formValues.email}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            margin="normal"
-            label="Role"
-            name="role"
-            value={formValues.role}
-            onChange={handleChange}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} color="primary">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <AddUserModal
+        open={isAddModalOpen}
+        onClose={handleCloseAddModal}
+        formValues={formValues}
+        handleChange={handleChange}
+        handleSubmit={handleAddUser}
+      />
+
+      {/* Delete User Modal */}
+      <DeleteUserModal
+        open={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={handleDelete}
+      />
+
+      {/* Edit User Modal */}
+      <EditUserModal
+        open={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        formValues={formValues}
+        handleChange={handleChange}
+        handleSubmit={handleEditUser}
+      />
     </div>
   );
 };
