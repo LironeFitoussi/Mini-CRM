@@ -15,7 +15,7 @@ import DontaorsPage from "./pages/dashboard/Donators.jsx"; // Added import
 import ClientDetailsPage from "./pages/dashboard/clients/ClientDetails.jsx"; // Added import
 import DonationsPage from "./pages/dashboard/Donations.jsx";
 import EmailPage from "./pages/dashboard/Email.jsx";
-import WhatsAppPage from "./pages/dashboard/WhatsApp.jsx"; // Added import
+import WhatsAppPage from "./pages/dashboard/WhatsAppPage.jsx"; // Added import
 import UsersPage from "./pages/dashboard/Users.jsx";
 
 const router = [
