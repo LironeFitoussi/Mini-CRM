@@ -290,7 +290,6 @@ def input_multiline_text(input_element, message):
     pyperclip.copy(message)
     input_element.send_keys(Keys.CONTROL, "v")
 
-
 # On App Start, Open Browser to Get Status of WhatsApp
 def init_load():
     # Step 1: Start WebDriver
@@ -1070,6 +1069,7 @@ def send_messages():
                 if existing_message
                 else []
             )
+            
             log_message(
                 f"Existing message found: {bool(existing_message)}, sent_ids count: {len(sent_ids)}"
             )
@@ -1102,7 +1102,9 @@ def send_messages():
             driver = setup_driver()
             log_message("WebDriver initialized.")
             send_count = 0
-
+            # Time When the Loop Starts
+            start_time = time.time()
+            
             for i, entry in enumerate(valid_numbers_list):
                 recipient_id = str(entry["_id"])
                 phone_number = entry["phoneNumber"]
@@ -1188,7 +1190,6 @@ def send_messages():
                             By.XPATH, ".//ancestor::div[@role='textbox']"
                         )
                         caption_input.click()
-                        time.sleep(1)
 
                         # Type caption as multiline text
                         input_multiline_text(caption_input, message)
@@ -1314,48 +1315,17 @@ def send_messages():
                         """)
                         time.sleep(300)
                        
-                    # if send_count % 35 == 0:
-                    #     # Open Facebook and scroll down and up  in rnado intrations during 5 minutes
-                    #     driver.get("https://www.facebook.com/")
-                    #     time.sleep(5)
-                    #     driver.execute_script("""
-                    #         var scrollHeight = document.body.scrollHeight;
-                    #         var scrollStep = Math.PI / (60 * 1); // 1 second of scrolling
-                    #         var cosParameter = scrollHeight / 2;
-                    #         var scrollCount = 0;
-                    #         var scrollMargin;
-                    #         function step() {
-                    #             setTimeout(function() {
-                    #                 if (scrollCount < 60) {
-                    #                     scrollCount++;
-                    #                     scrollMargin = cosParameter - cosParameter * Math.cos(scrollStep * scrollCount);
-                    #                     window.scrollTo(0, scrollMargin);
-                    #                     step();
-                    #                 }
-                    #             }, 15);
-                    #         }
-                    #         step();
-                    #     """)
-                    #     time.sleep(300)
-                    #     driver.execute_script("""
-                    #         var scrollHeight = document.body.scrollHeight;
-                    #         var scrollStep = Math.PI / (60 * 1); // 1 second of scrolling
-                    #         var cosParameter = scrollHeight / 2;
-                    #         var scrollCount = 0;
-                    #         var scrollMargin;
-                    #         function step() {
-                    #             setTimeout(function() {
-                    #                 if (scrollCount < 60) {
-                    #                     scrollCount++;
-                    #                     scrollMargin = cosParameter - cosParameter * Math.cos(scrollStep * scrollCount);
-                    #                     window.scrollTo(0, scrollMargin);
-                    #                     step();
-                    #                 }
-                    #             }, 15);
-                    #         }
-                    #         step();
-                    #     """)
-                    #     time.sleep(300)
+                    # at count 50, check if time taken is more less than an hour, if yes, wait for the remaining time
+                    if send_count % 50 == 0:
+                        # Calculate the time taken so far
+                        time_taken = time.time() - start_time
+                        if time_taken < 3600:
+                            # Wait for the remaining time
+                            time.sleep(3600 - time_taken)
+
+                            # Reset the start time
+                            start_time = time.time()
+                
                         
                     # Notify progress every 100 messages or at the end
                     if (i + 1) % 100 == 0 or (i + 1) == len(valid_numbers_list):
