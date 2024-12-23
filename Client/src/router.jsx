@@ -12,12 +12,19 @@ import ProtectedRoute from "./components/Atoms/Protected.jsx";
 // Dashboard subpages
 const Overview = React.lazy(() => import("./pages/dashboard/Overview.jsx"));
 const DontaorsPage = React.lazy(() => import("./pages/dashboard/Donators.jsx")); // Added import
-const ClientDetailsPage = React.lazy(() => import("./pages/dashboard/clients/ClientDetails.jsx")); // Added import
-const DonationsPage = React.lazy(() => import("./pages/dashboard/Donations.jsx"));
+const ClientDetailsPage = React.lazy(() =>
+  import("./pages/dashboard/clients/ClientDetails.jsx")
+); // Added import
+const DonationsPage = React.lazy(() =>
+  import("./pages/dashboard/Donations.jsx")
+);
 const EmailPage = React.lazy(() => import("./pages/dashboard/Email.jsx"));
-const WhatsAppPage = React.lazy(() => import("./pages/dashboard/WhatsAppPage.jsx")); // Added import
+const WhatsAppPage = React.lazy(() =>
+  import("./pages/dashboard/WhatsAppPage.jsx")
+); // Added import
 const UsersPage = React.lazy(() => import("./pages/dashboard/Users.jsx"));
 const TasksPage = React.lazy(() => import("./pages/dashboard/TasksPage.jsx"));
+const SmsPage = React.lazy(() => import("./pages/dashboard/Sms.jsx")); // Added import
 
 const router = [
   {
@@ -32,7 +39,7 @@ const router = [
             <Dashboard />
           </ProtectedRoute>
         ),
-         // Protected route for dashboard
+        // Protected route for dashboard
         children: [
           {
             // Default route for dashboard
@@ -100,7 +107,15 @@ const router = [
                 <UsersPage />
               </ProtectedRoute>
             ), // Users route (admin only)
-          }
+          },
+          {
+            path: "sms",
+            element: (
+              <ProtectedRoute level="user">
+                <SmsPage />
+              </ProtectedRoute>
+            ), // SMS route
+          },
         ],
       },
       {

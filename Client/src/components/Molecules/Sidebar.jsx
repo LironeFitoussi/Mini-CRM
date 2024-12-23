@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 
+import LanguageSwitcher from "./LanguageSwitcher";
 const Sidebar = () => {
   const { t } = useTranslation();
   const { logout } = useAuth0();
@@ -70,30 +71,41 @@ const Sidebar = () => {
                 WhatsApp
               </Link>
             </li>
-            {userdata.role === "admin" || userdata.role === "developer" ? (
-              <li>
+            <li>
               <Link
-                to="users"
+                to="sms"
                 className="block px-4 py-2 hover:bg-gray-700 transition"
               >
-                {t("userManagementUsers")}
+                SMS
               </Link>
             </li>
+            {userdata.role === "admin" || userdata.role === "developer" ? (
+              <li>
+                <Link
+                  to="users"
+                  className="block px-4 py-2 hover:bg-gray-700 transition"
+                >
+                  {t("userManagementUsers")}
+                </Link>
+              </li>
             ) : null}
+            <div>
+              <LanguageSwitcher />
+            </div>
           </ul>
         </nav>
       </div>
       <div>
-        <ul>
-          <li>
+        <div className="mt-4 flex flex-col gap-2 justify-center align-middle text-center mb-6">
+          <div className="flex justify-center">
             <button
-              className="block px-4 py-2 w-full text-left hover:bg-gray-700 transition"
+              className="block px-4 py-2 text-left hover:bg-gray-700 transition bg-red-500 rounded-sm w-min"
               onClick={() => logout({ returnTo: window.location.origin })}
             >
               {t("logout")}
             </button>
-          </li>
-        </ul>
+          </div>
+        </div>
       </div>
     </aside>
   );

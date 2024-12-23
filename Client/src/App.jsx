@@ -10,7 +10,7 @@ const App = () => {
   const [error, setError] = useState(null); // State to handle errors
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
       <Outlet />
       {qrCodeSrc ? (
         <div>
