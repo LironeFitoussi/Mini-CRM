@@ -10,10 +10,11 @@ import {
   Paper,
   TablePagination,
   TextField,
+  MenuItem,
   CircularProgress,
   Alert,
   Typography,
-  TableSortLabel, // Import TableSortLabel for sortable headers
+  TableSortLabel,
 } from "@mui/material";
 import debounce from "lodash.debounce";
 import {
@@ -50,6 +51,9 @@ const DonationsPage = () => {
   const [errorSummary, setErrorSummary] = useState(null);
   const [totalDonations, setTotalDonations] = useState(0);
 
+  // Year state
+  const [year, setYear] = useState(new Date().getFullYear());
+
   // Debounce the search input to avoid excessive API calls
   const debouncedChangeHandler = useCallback(
     debounce((value) => {
@@ -65,6 +69,12 @@ const DonationsPage = () => {
     debouncedChangeHandler(value);
   };
 
+  // Update year state and reset page or do any other necessary actions
+  const handleYearChange = (e) => {
+    setYear(e.target.value);
+    setPage(0);
+  };
+
   // Function to handle sorting
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -73,7 +83,7 @@ const DonationsPage = () => {
     setPage(0); // Reset to first page on sort change
   };
 
-  // Fetch paginated donations from the API with search and sorting
+  // Fetch paginated donations from the API with search, sorting, (and optionally year)
   useEffect(() => {
     const fetchDonations = async () => {
       setLoadingDonations(true);
@@ -85,11 +95,14 @@ const DonationsPage = () => {
           page: page + 1, // API uses 1-based indexing
           limit: rowsPerPage,
           sortField: orderBy, // Add sortField parameter
-          sortOrder: order, // Add sortOrder parameter
+          sortOrder: order,   // Add sortOrder parameter
         });
         if (debouncedSearch) {
           params.append("search", debouncedSearch);
         }
+        // If your API supports filtering donations by year, append it
+        // (Remove if not applicable)
+        params.append("year", year);
 
         const response = await fetch(
           `${import.meta.env.VITE_API_URL}/api/v1/donations?${params.toString()}`
@@ -119,7 +132,8 @@ const DonationsPage = () => {
     };
 
     fetchDonations();
-  }, [page, rowsPerPage, debouncedSearch, order, orderBy]); // Include order and orderBy in dependencies
+    // Add 'year' to dependency array if the donations need to be filtered by year
+  }, [page, rowsPerPage, debouncedSearch, order, orderBy, year]);
 
   // Fetch summary data (total amount and donation types) from the API
   useEffect(() => {
@@ -129,7 +143,7 @@ const DonationsPage = () => {
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/v1/donations/all-types`
+          `${import.meta.env.VITE_API_URL}/api/v1/donations/all-types?year=${year}`
         );
 
         if (!response.ok) {
@@ -160,8 +174,9 @@ const DonationsPage = () => {
       }
     };
 
+    // Refetch summary whenever `year` changes
     fetchSummary();
-  }, []); // Empty dependency array to fetch once on mount
+  }, [year]);
 
   // Handle page change
   const handleChangePage = (event, newPage) => {
@@ -199,6 +214,24 @@ const DonationsPage = () => {
       <Typography variant="h4" component="h1" gutterBottom>
         Donations Tracker
       </Typography>
+
+      {/* Year Dropdown */}
+      <TextField
+        select
+        label="Year"
+        value={year}
+        onChange={handleYearChange}
+        variant="outlined"
+        margin="normal"
+        fullWidth
+      >
+        {/* TODO: Get actual exisitng years  */}
+        {[2020, 2021, 2022, 2023, 2024, "All Time"].map((yr) => (
+          <MenuItem key={yr} value={yr}>
+            {yr}
+          </MenuItem>
+        ))}
+      </TextField>
 
       {/* Search Input */}
       <TextField
@@ -250,7 +283,11 @@ const DonationsPage = () => {
             >
               <Typography variant="h6">Total Donations</Typography>
               <Typography variant="h4" color="primary">
-                €{totalDonations.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                €
+                {totalDonations.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </Typography>
             </Box>
 
@@ -369,8 +406,9 @@ const DonationsPage = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {/* Donor ID Column with Sorting */}
-                  <TableCell sortDirection={orderBy === "donator_id" ? order : false}>
+                  <TableCell
+                    sortDirection={orderBy === "donator_id" ? order : false}
+                  >
                     <TableSortLabel
                       active={orderBy === "donator_id"}
                       direction={orderBy === "donator_id" ? order : "asc"}
@@ -380,7 +418,6 @@ const DonationsPage = () => {
                     </TableSortLabel>
                   </TableCell>
 
-                  {/* Amount Column with Sorting */}
                   <TableCell sortDirection={orderBy === "amount" ? order : false}>
                     <TableSortLabel
                       active={orderBy === "amount"}
@@ -391,7 +428,6 @@ const DonationsPage = () => {
                     </TableSortLabel>
                   </TableCell>
 
-                  {/* Date Column with Sorting */}
                   <TableCell sortDirection={orderBy === "date" ? order : false}>
                     <TableSortLabel
                       active={orderBy === "date"}
@@ -402,7 +438,6 @@ const DonationsPage = () => {
                     </TableSortLabel>
                   </TableCell>
 
-                  {/* Type Column with Sorting */}
                   <TableCell sortDirection={orderBy === "type" ? order : false}>
                     <TableSortLabel
                       active={orderBy === "type"}
@@ -413,7 +448,6 @@ const DonationsPage = () => {
                     </TableSortLabel>
                   </TableCell>
 
-                  {/* Method Column with Sorting */}
                   <TableCell sortDirection={orderBy === "method" ? order : false}>
                     <TableSortLabel
                       active={orderBy === "method"}
@@ -424,7 +458,6 @@ const DonationsPage = () => {
                     </TableSortLabel>
                   </TableCell>
 
-                  {/* Notes Column (Optional Sorting) */}
                   <TableCell sortDirection={orderBy === "notes" ? order : false}>
                     <TableSortLabel
                       active={orderBy === "notes"}
