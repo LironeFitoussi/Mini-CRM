@@ -121,7 +121,7 @@ const router = [
       {
         path: "profile",
         element: (
-          <ProtectedRoute>
+          <ProtectedRoute level="guest">
             <Profile />
           </ProtectedRoute>
         ), // Protected route for profile
