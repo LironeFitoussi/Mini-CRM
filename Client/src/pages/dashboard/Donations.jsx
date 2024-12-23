@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { Link } from "react-router-dom"; // <-- 1) Import Link here
 import {
   Box,
   Table,
@@ -83,7 +84,7 @@ const DonationsPage = () => {
     setPage(0); // Reset to first page on sort change
   };
 
-  // Fetch paginated donations from the API with search, sorting, (and optionally year)
+  // Fetch paginated donations from the API
   useEffect(() => {
     const fetchDonations = async () => {
       setLoadingDonations(true);
@@ -94,14 +95,13 @@ const DonationsPage = () => {
         const params = new URLSearchParams({
           page: page + 1, // API uses 1-based indexing
           limit: rowsPerPage,
-          sortField: orderBy, // Add sortField parameter
-          sortOrder: order,   // Add sortOrder parameter
+          sortField: orderBy,
+          sortOrder: order,
         });
         if (debouncedSearch) {
           params.append("search", debouncedSearch);
         }
-        // If your API supports filtering donations by year, append it
-        // (Remove if not applicable)
+        // Append year if your API supports it
         params.append("year", year);
 
         const response = await fetch(
@@ -132,10 +132,9 @@ const DonationsPage = () => {
     };
 
     fetchDonations();
-    // Add 'year' to dependency array if the donations need to be filtered by year
   }, [page, rowsPerPage, debouncedSearch, order, orderBy, year]);
 
-  // Fetch summary data (total amount and donation types) from the API
+  // Fetch summary data (total amount and donation types)
   useEffect(() => {
     const fetchSummary = async () => {
       setLoadingSummary(true);
@@ -174,7 +173,6 @@ const DonationsPage = () => {
       }
     };
 
-    // Refetch summary whenever `year` changes
     fetchSummary();
   }, [year]);
 
@@ -186,7 +184,7 @@ const DonationsPage = () => {
   // Handle rows per page change
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page whenever rows per page changes
+    setPage(0);
   };
 
   // Prepare data for Donation Types chart
@@ -225,7 +223,6 @@ const DonationsPage = () => {
         margin="normal"
         fullWidth
       >
-        {/* TODO: Get actual exisitng years  */}
         {[2020, 2021, 2022, 2023, 2024, "All Time"].map((yr) => (
           <MenuItem key={yr} value={yr}>
             {yr}
@@ -246,7 +243,6 @@ const DonationsPage = () => {
 
       {/* Summary Section */}
       <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap", mt: 4 }}>
-        {/* Loading Indicator for Summary */}
         {loadingSummary && (
           <Box
             sx={{
@@ -260,17 +256,14 @@ const DonationsPage = () => {
           </Box>
         )}
 
-        {/* Error Message for Summary */}
         {errorSummary && (
           <Alert severity="error" sx={{ my: 2, width: "100%" }}>
             {errorSummary} — Please try again later.
           </Alert>
         )}
 
-        {/* Display Summary Only When Not Loading and No Error */}
         {!loadingSummary && !errorSummary && (
           <>
-            {/* Total Donations */}
             <Box
               sx={{
                 flex: 1,
@@ -337,14 +330,12 @@ const DonationsPage = () => {
         )}
       </Box>
 
-      {/* Loading Indicator for Donations */}
       {loadingDonations && (
         <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
           <CircularProgress />
         </Box>
       )}
 
-      {/* Error Message for Donations */}
       {errorDonations && (
         <Alert severity="error" sx={{ my: 2 }}>
           {errorDonations} — Please try again later.
@@ -417,7 +408,6 @@ const DonationsPage = () => {
                       Donor ID
                     </TableSortLabel>
                   </TableCell>
-
                   <TableCell sortDirection={orderBy === "amount" ? order : false}>
                     <TableSortLabel
                       active={orderBy === "amount"}
@@ -427,7 +417,6 @@ const DonationsPage = () => {
                       Amount (€)
                     </TableSortLabel>
                   </TableCell>
-
                   <TableCell sortDirection={orderBy === "date" ? order : false}>
                     <TableSortLabel
                       active={orderBy === "date"}
@@ -437,7 +426,6 @@ const DonationsPage = () => {
                       Date
                     </TableSortLabel>
                   </TableCell>
-
                   <TableCell sortDirection={orderBy === "type" ? order : false}>
                     <TableSortLabel
                       active={orderBy === "type"}
@@ -447,7 +435,6 @@ const DonationsPage = () => {
                       Type
                     </TableSortLabel>
                   </TableCell>
-
                   <TableCell sortDirection={orderBy === "method" ? order : false}>
                     <TableSortLabel
                       active={orderBy === "method"}
@@ -457,7 +444,6 @@ const DonationsPage = () => {
                       Method
                     </TableSortLabel>
                   </TableCell>
-
                   <TableCell sortDirection={orderBy === "notes" ? order : false}>
                     <TableSortLabel
                       active={orderBy === "notes"}
@@ -473,7 +459,15 @@ const DonationsPage = () => {
                 {donations.length > 0 ? (
                   donations.map((donation) => (
                     <TableRow key={donation._id}>
-                      <TableCell>{donation.donator_id}</TableCell>
+                      {/* 2) Donor ID wrapped in Link */}
+                      <TableCell>
+                        <Link
+                          to={`/dashboard/donators/${donation.donator_id}`}
+                          style={{ textDecoration: "none", color: "#1976d2" }}
+                        >
+                          {donation.donator_id}
+                        </Link>
+                      </TableCell>
                       <TableCell>
                         {donation.amount.toLocaleString(undefined, {
                           style: "currency",
