@@ -44,19 +44,46 @@ const getAllDonations = async (req, res) => {
     // Build the search filter
     let filter = {};
     if (search) {
-      // Define fields to search through
-      const searchFields = ['donator_id', 'type', 'method', 'notes'];
-  
-      // Create a regex for case-insensitive partial matching
+      // Define fields to search through for strings
+      const searchFields = ['type', 'method'];
       const regex = new RegExp(search, 'i');
-  
+    
+      // Check if the search input is a valid date
+      const parsedDate = new Date(search);
+      const isValidDate = !isNaN(parsedDate.getTime());
+    
+      // Check if the search input is a valid number
+      const parsedNumber = parseFloat(search);
+      const isValidNumber = !isNaN(parsedNumber);
+    
       // Construct the $or filter
       filter = {
-        $or: searchFields.map((field) => ({
-          [field]: regex,
-        })),
+        $or: [
+          ...searchFields.map((field) => ({
+            [field]: regex,
+          })),
+          ...(isValidDate
+            ? [
+                {
+                  date: {
+                    $gte: new Date(parsedDate.setHours(0, 0, 0, 0)), // Start of the day
+                    $lt: new Date(parsedDate.setHours(23, 59, 59, 999)), // End of the day
+                  },
+                },
+              ]
+            : []),
+          ...(isValidNumber
+            ? [
+                {
+                  amount: parsedNumber, // Exact match for the amount field
+                },
+              ]
+            : []),
+        ],
       };
     }
+    
+    
   
     try {
       // Fetch donations with applied filters, sorting, and pagination
@@ -140,6 +167,7 @@ const deleteDonation = async (req, res) => {
   }
 };
 
+// Get all donation types
 const getAllDonationTypes = async (req, res) => {
   try {
     const allDonations = await Donation.find();
@@ -174,6 +202,7 @@ const getAllDonationTypes = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 module.exports = {
   getAllDonations,

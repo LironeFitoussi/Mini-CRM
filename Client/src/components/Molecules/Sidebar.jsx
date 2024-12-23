@@ -15,7 +15,7 @@ const Sidebar = () => {
   // console.log(userdata);
 
   return (
-    <aside className="w-64 bg-gray-800 text-white flex flex-col justify-between">
+    <aside className=" bg-gray-800 text-white flex flex-col justify-between min-w-36">
       <div>
         <div className="p-4 text-center text-xl font-bold border-b border-gray-700">
           My Dashboard

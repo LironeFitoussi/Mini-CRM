@@ -4,11 +4,13 @@ const router = express.Router();
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
-const { getAllDonators, getDonatorById, createDonator, updateDonator, deleteDonator, bulkCreateDonators, getTotalDonators } = require("../controllers/donatorsController");
+const { getAllDonators, getDonatorById, createDonator, updateDonator, deleteDonator, bulkCreateDonators, getTotalDonators, getDonatorTasks } = require("../controllers/donatorsController");
 
 router.get("/", getAllDonators);
 
 router.get("/total", getTotalDonators);
+
+router.get("/:id/tasks", getDonatorTasks);
 
 router.get("/:id", getDonatorById);
 

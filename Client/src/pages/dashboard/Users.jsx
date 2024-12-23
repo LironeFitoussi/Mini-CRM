@@ -14,7 +14,9 @@ const fetchUsers = async () => {
   const { data } = await axios.get(
     import.meta.env.VITE_API_URL + "/api/v1/users"
   );
-  return data;
+  // console.log(data);
+  
+  return data.users;
 };
 
 const deleteUsers = async (ids) => {

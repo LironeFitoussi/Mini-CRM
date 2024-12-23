@@ -1,5 +1,6 @@
 const Donation = require("../models/Donation.js");
 const Donator = require("../models/Donator.js");
+const Task = require("../models/Task.js");
 const parseDonations = require("../helpers/parseDonations.js");
 
 // Import EXCEL to JSON converter
@@ -250,3 +251,13 @@ exports.bulkCreateDonators = async (req, res) => {
   }
 };
 
+// Get Tasks for Donator
+exports.getDonatorTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find({ donator: req.params.id });
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error("Error fetching tasks:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -16,6 +16,9 @@ import {
 } from "@mui/material";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
+// Components
+import DonatorTasks from "../../../components/Molecules/DonatorTasks";
+
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#d3d3d3", "#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 const ClientDetailsPage = () => {
@@ -213,6 +216,7 @@ const ClientDetailsPage = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <DonatorTasks donatorId={id} />
       </Box>
 
       {/* Back Button */}
