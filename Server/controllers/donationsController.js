@@ -2,116 +2,152 @@ const Donation = require("../models/Donation.js");
 
 // Get all donations
 const getAllDonations = async (req, res) => {
-    // Extract query parameters with default values
-    const {
-      page = 1,
-      limit = 10,
-      sortField = 'date', // Default sort field
-      sortOrder = 'asc',   // Default sort order
-      search = '',         // Search query
-    } = req.query;
-  
-    // Parse page and limit to integers
-    const pageNumber = parseInt(page, 10);
-    const limitNumber = parseInt(limit, 10);
-  
-    // Define allowed fields for sorting to prevent injection
-    const allowedSortFields = [
-      'donator_id',
-      'amount',
-      'date',
-      'type',
-      'method',
-      'notes',
-      'currency',
-      'createdAt',
-      'updatedAt',
-    ];
-  
-    // Validate sortField
-    const sortFieldValidated = allowedSortFields.includes(sortField)
-      ? sortField
-      : 'date'; // Fallback to default if invalid
-  
-    // Validate sortOrder
-    const sortOrderValidated = sortOrder.toLowerCase() === 'desc' ? -1 : 1;
-  
-    // Build the sort object for Mongoose
-    const sortOptions = {
-      [sortFieldValidated]: sortOrderValidated,
-    };
-  
-    // Build the search filter
-    let filter = {};
-    if (search) {
-      // Define fields to search through for strings
-      const searchFields = ['type', 'method'];
-      const regex = new RegExp(search, 'i');
-    
-      // Check if the search input is a valid date
-      const parsedDate = new Date(search);
-      const isValidDate = !isNaN(parsedDate.getTime());
-    
-      // Check if the search input is a valid number
-      const parsedNumber = parseFloat(search);
-      const isValidNumber = !isNaN(parsedNumber);
-    
-      // Construct the $or filter
-      filter = {
-        $or: [
-          ...searchFields.map((field) => ({
-            [field]: regex,
-          })),
-          ...(isValidDate
-            ? [
-                {
-                  date: {
-                    $gte: new Date(parsedDate.setHours(0, 0, 0, 0)), // Start of the day
-                    $lt: new Date(parsedDate.setHours(23, 59, 59, 999)), // End of the day
-                  },
-                },
-              ]
-            : []),
-          ...(isValidNumber
-            ? [
-                {
-                  amount: parsedNumber, // Exact match for the amount field
-                },
-              ]
-            : []),
-        ],
-      };
-    }
-    
-    
-  
-    try {
-      // Fetch donations with applied filters, sorting, and pagination
-      const donations = await Donation.find(filter)
-        .sort(sortOptions)
-        .limit(limitNumber)
-        .skip((pageNumber - 1) * limitNumber)
-        .exec();
-  
-      // Count the total number of documents that match the filter
-      const count = await Donation.countDocuments(filter);
-  
-      // Calculate total pages
-      const totalPages = Math.ceil(count / limitNumber);
-  
-      // Respond with the paginated, sorted, and filtered donations
-      res.status(200).json({
-        donations,
-        totalPages,
-        currentPage: pageNumber,
-        totalDonations: count, // Optional: Useful for frontend pagination
-      });
-    } catch (error) {
-      console.error('Error fetching donations:', error.message);
-      res.status(500).json({ message: error.message });
-    }
+  // Extract query parameters with default values
+  const {
+    page = 1,
+    limit = 10,
+    sortField = 'date', // Default sort field
+    sortOrder = 'asc',  // Default sort order
+    search = '',
+    year = new Date().getFullYear(), // Default year to current if not specified
+  } = req.query;
+
+  // Parse page and limit to integers
+  const pageNumber = parseInt(page, 10);
+  const limitNumber = parseInt(limit, 10);
+
+  // Define allowed fields for sorting to prevent injection
+  const allowedSortFields = [
+    'donator_id',
+    'amount',
+    'date',
+    'type',
+    'method',
+    'notes',
+    'currency',
+    'createdAt',
+    'updatedAt',
+  ];
+
+  // Validate sortField
+  const sortFieldValidated = allowedSortFields.includes(sortField)
+    ? sortField
+    : 'date'; // Fallback to default if invalid
+
+  // Validate sortOrder
+  const sortOrderValidated = sortOrder.toLowerCase() === 'desc' ? -1 : 1;
+
+  // Build the sort object for Mongoose
+  const sortOptions = {
+    [sortFieldValidated]: sortOrderValidated,
   };
-  
+
+  // Build the search filter
+  let filter = {};
+
+  if (search) {
+    // Define fields to search through for strings
+    const searchFields = ['type', 'method'];
+    const regex = new RegExp(search, 'i');
+
+    // Check if the search input is a valid date
+    const parsedDate = new Date(search);
+    const isValidDate = !isNaN(parsedDate.getTime());
+
+    // Check if the search input is a valid number
+    const parsedNumber = parseFloat(search);
+    const isValidNumber = !isNaN(parsedNumber);
+
+    // Construct the $or filter
+    filter = {
+      $or: [
+        ...searchFields.map((field) => ({
+          [field]: regex,
+        })),
+        ...(isValidDate
+          ? [
+              {
+                date: {
+                  $gte: new Date(parsedDate.setHours(0, 0, 0, 0)),   // Start of the day
+                  $lt: new Date(parsedDate.setHours(23, 59, 59, 999)), // End of the day
+                },
+              },
+            ]
+          : []),
+        ...(isValidNumber
+          ? [
+              {
+                amount: parsedNumber, // Exact match for the amount field
+              },
+            ]
+          : []),
+      ],
+    };
+  }
+
+  /**
+   * ---------------------------------------------------------------------
+   *  YEAR FILTER LOGIC
+   * ---------------------------------------------------------------------
+   * If 'year' is passed as 'all', we skip filtering by year.
+   * Otherwise, we filter donations that fall within that entire calendar year.
+   * The default is the current year if not otherwise specified.
+   */
+  if (year.toString().toLowerCase() !== 'all') {
+    const numericYear = parseInt(year, 10);
+    // Only apply if it's a valid number
+    if (!isNaN(numericYear)) {
+      const startOfYear = new Date(numericYear, 0, 1, 0, 0, 0, 0);      // Jan 1, 00:00
+      const endOfYear = new Date(numericYear, 11, 31, 23, 59, 59, 999); // Dec 31, 23:59:59.999
+
+      // If the filter currently has an $or (from search), we wrap that in an $and
+      // so that both the $or conditions and the year filter must be satisfied.
+      if (filter.$or) {
+        filter = {
+          $and: [
+            filter, // i.e., { $or: [...] }
+            { date: { $gte: startOfYear, $lte: endOfYear } },
+          ],
+        };
+      } else {
+        // Otherwise, just add a direct date filter
+        filter.date = {
+          $gte: startOfYear,
+          $lte: endOfYear,
+        };
+      }
+    }
+  }
+  /**
+   * ---------------------------------------------------------------------
+   */
+
+  try {
+    // Fetch donations with applied filters, sorting, and pagination
+    const donations = await Donation.find(filter)
+      .sort(sortOptions)
+      .limit(limitNumber)
+      .skip((pageNumber - 1) * limitNumber)
+      .exec();
+
+    // Count the total number of documents that match the filter
+    const count = await Donation.countDocuments(filter);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(count / limitNumber);
+
+    // Respond with the paginated, sorted, and filtered donations
+    res.status(200).json({
+      donations,
+      totalPages,
+      currentPage: pageNumber,
+      totalDonations: count, // Useful for frontend pagination
+    });
+  } catch (error) {
+    console.error('Error fetching donations:', error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 // Get donation by ID
 const getDonationById = async (req, res) => {
@@ -168,15 +204,36 @@ const deleteDonation = async (req, res) => {
 };
 
 // Get all donation types
+// Get all donation types
 const getAllDonationTypes = async (req, res) => {
+  const { year = new Date().getFullYear() } = req.query;
+
+  // Build the year filter
+  let filter = {};
+
+  // If year is not "all", filter by that year
+  if (year.toString().toLowerCase() !== "all") {
+    const numericYear = parseInt(year, 10);
+    if (!isNaN(numericYear)) {
+      const startOfYear = new Date(numericYear, 0, 1, 0, 0, 0, 0);
+      const endOfYear = new Date(numericYear, 11, 31, 23, 59, 59, 999);
+
+      filter = {
+        date: {
+          $gte: startOfYear,
+          $lte: endOfYear,
+        },
+      };
+    }
+  }
+
   try {
-    const allDonations = await Donation.find();
+    // Fetch all donations (filtered by year if applicable)
+    const allDonations = await Donation.find(filter);
 
-    // console.log(allDonations);
-
-    // Reduce the array of donations to an array of objects with unique donation types and total amounts
+    // Reduce the donations array to unique donation types with total amounts
     const donationSummary = allDonations.reduce((acc, donation) => {
-      // Find the existing donation type in the accumulator
+      // Find if this type/currency already exists in the accumulator
       const existingType = acc.find(
         (item) =>
           item.type === donation.type && item.currency === donation.currency
@@ -186,7 +243,7 @@ const getAllDonationTypes = async (req, res) => {
         // If found, update the total amount
         existingType.totalAmount += donation.amount;
       } else {
-        // If not found, add a new entry for this type and currency
+        // Otherwise, add a new entry for this type
         acc.push({
           type: donation.type,
           totalAmount: donation.amount,
@@ -199,10 +256,10 @@ const getAllDonationTypes = async (req, res) => {
 
     res.status(200).json(donationSummary);
   } catch (error) {
+    console.error('Error fetching donation types:', error.message);
     res.status(500).json({ message: error.message });
   }
 };
-
 
 module.exports = {
   getAllDonations,

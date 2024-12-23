@@ -30,6 +30,7 @@ app.use("/api/v1/contacts", require("./routes/contactsRoutes.js"));
 app.use("/api/v1/donations", require("./routes/donationsRoutes.js"));
 app.use("/api/v1/email", require("./routes/emailsRoutes.js"));
 app.use("/api/v1/tasks", require("./routes/tasksRoutes.js"));
+app.use("/api/v1/dashboard", require("./routes/dashboardRoutes.js"));
 
 app.get("/api/v1/get-auth-user", (req, res) => {
   try {

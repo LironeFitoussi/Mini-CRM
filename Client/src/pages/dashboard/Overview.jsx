@@ -1,10 +1,8 @@
 // src/pages/dashboard/Overview.jsx
 import React from "react";
-import axios from "axios";
 
 // Components
 import MainInfoContainer from "../../components/MainInfoContainer";
-
 
 const DashboardOverview = () => {
   return (

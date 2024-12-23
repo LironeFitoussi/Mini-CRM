@@ -1,6 +1,39 @@
 import MainInfoCard from "./Atoms/MainInfoCard";
-
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 const MainInfoContainer = () => {
+  const fetchDashboardData = async () => {
+    try {
+      const res = await axios.get(
+        import.meta.env.VITE_API_URL + "/api/v1/dashboard"
+      );
+      console.log(res.data);
+      
+      return res.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["dashboarddata"],
+    queryFn: fetchDashboardData,
+    retry: false,
+  });
+
+  console.log(data);
+  
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) {
+    return (
+      <div>
+        <h1>Error</h1>
+        <p>
+          {error.message || "An error occurred while fetching dashboard data."}
+        </p>
+      </div>
+    );
+  }
   return (
     <>
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
@@ -8,10 +41,10 @@ const MainInfoContainer = () => {
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MainInfoCard title="totalDonators" type="info" />
-        <MainInfoCard title="New Signups" type="success" />
-        <MainInfoCard title="Active Sessions" type="warning" />
-        <MainInfoCard title="Pending Tasks" type="error" />
+        <MainInfoCard title="totalDonators" type="info" content={data.totalDonators} />
+        <MainInfoCard title="totalDonationsMonth" type="success" content={data.totalDonations} />
+        <MainInfoCard title="totalTasks" type="warning" content={data.totalTasks} />
+        <MainInfoCard title="totalCriticalTasks" type="error" content={data.totalCriticalTasks} />
       </div>
     </>
   );
