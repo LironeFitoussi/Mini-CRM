@@ -2,11 +2,22 @@ const User = require("../models/User");
 
 // Controller object
 const UserController = {
-  // Get all users
+  // Get all users with pagination and search
   getAllUsers: async (req, res) => {
+    const { page = 1, limit = 10, search = "" } = req.query;
+    const query = search ? { $or: [{ fName: new RegExp(search, "i") }, { lName: new RegExp(search, "i") }, { email: new RegExp(search, "i") }] } : {};
+    
     try {
-      const users = await User.find();
-      res.status(200).json(users);
+      const users = await User.find(query)
+        .skip((page - 1) * limit)
+        .limit(parseInt(limit));
+      const totalUsers = await User.countDocuments(query);
+      
+      res.status(200).json({
+        users,
+        totalPages: Math.ceil(totalUsers / limit),
+        currentPage: parseInt(page),
+      });
     } catch (error) {
       console.error(error);
       

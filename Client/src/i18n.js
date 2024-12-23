@@ -86,7 +86,12 @@ i18n
           donators: "Donators",
           donations: "Donations",
           email: "Email",
+          
+          // Task
           task: "Task",
+          tasks: "Tasks",
+          taskUpdateSuccess: "Task status updated successfully!",
+          taskUpdateFailure: "Failed to update task status. Please try again.",
 
           // Navigation
           navigationHome: "Home",
@@ -325,7 +330,13 @@ i18n
           donators: "Donateurs",
           donations: "Dons",
           email: "Email",
+
+          // Task
           task: "Tâche",
+          tasks: "Tâches",
+          taskUpdateSuccess: "Statut de la tâche mis à jour avec succès!",
+          takeUpdateFailure: "Échec de la mise à jour du statut de la tâche. Veuillez réessayer.",
+          
           // Navigation
           navigationHome: "Accueil",
           navigationCustomers: "Clients",

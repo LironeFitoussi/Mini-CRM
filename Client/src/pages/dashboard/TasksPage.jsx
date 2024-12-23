@@ -1,18 +1,18 @@
 // src/pages/dashboard/TasksPage.jsx
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { Container, Typography, CircularProgress, Box } from '@mui/material';
+import { fetchTasks, updateTaskStatus } from '../../api/tasks';
+import { useTranslation } from 'react-i18next';
+
+// Components
 import TaskList from '../../components/Molecules/TaskList.jsx';
 import SnackbarNotification from '../../components/Molecules/SnackbarNotification.jsx';
-import { fetchTasks, updateTaskStatus } from '../../api/tasks';
-import { capitalizeFirstLetter, getStatusColor } from '../../utils';
-
-const API_URL = import.meta.env.VITE_API_URL;
+import AddTaskButton from '../../components/Atoms/AddTaskButton.jsx';
 
 const TasksPage = () => {
     const queryClient = useQueryClient();
-
+    const { t } = useTranslation();
     // Fetch tasks using useQuery
     const {
         data: tasks,
@@ -43,7 +43,7 @@ const TasksPage = () => {
             queryClient.invalidateQueries(['tasks']);
             setSnackbar({
                 open: true,
-                message: 'Task status updated successfully!',
+                message: t('taskUpdateSuccess'),
                 severity: 'success',
             });
         },
@@ -51,7 +51,7 @@ const TasksPage = () => {
             console.error('Failed to update task status:', error);
             setSnackbar({
                 open: true,
-                message: 'Failed to update task status. Please try again.',
+                message: t('takeUpdateFailure'),
                 severity: 'error',
             });
         },
@@ -84,9 +84,12 @@ const TasksPage = () => {
 
     return (
         <Container className="mt-8">
-            <Typography variant="h4" className="mb-4">
-                Tasks
-            </Typography>
+            <Box variant="h4" className="mb-4 flex items-center justify-between">
+                <Typography variant="h4">
+                    {t('tasks')}
+                </Typography>
+                <AddTaskButton />
+            </Box>
             <TaskList
                 tasks={tasks}
                 onStatusChange={handleStatusChange}
