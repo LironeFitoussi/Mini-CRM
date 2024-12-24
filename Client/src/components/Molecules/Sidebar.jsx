@@ -47,14 +47,14 @@ const Sidebar = () => {
                 {t("donators")}
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link
                 to="donations"
                 className="block px-4 py-2 hover:bg-gray-700 transition"
               >
                 {t("donations")}
               </Link>
-            </li>
+            </li> */}
             {/* <li>
               <Link
                 to="email"
@@ -63,22 +63,22 @@ const Sidebar = () => {
                 {t("email")}
               </Link>
             </li> */}
-            <li>
+            {/* <li>
               <Link
                 to="whatsapp"
                 className="block px-4 py-2 hover:bg-gray-700 transition"
               >
                 WhatsApp
               </Link>
-            </li>
-            <li>
+            </li> */}
+            {/* <li>
               <Link
                 to="sms"
                 className="block px-4 py-2 hover:bg-gray-700 transition"
               >
                 SMS
               </Link>
-            </li>
+            </li> */}
             {userdata.role === "admin" || userdata.role === "developer" ? (
               <li>
                 <Link

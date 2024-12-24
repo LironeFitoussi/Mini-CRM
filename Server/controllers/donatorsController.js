@@ -27,7 +27,6 @@ const formatPhoneNumber = (phone) => {
   return phone.replace(/[\s\-\(\)\.\+]/g, "");
 };
 
-// Get all donators
 exports.getAllDonators = async (req, res) => {
   try {
     const { page = 1, limit = 10, search } = req.query;
@@ -39,17 +38,26 @@ exports.getAllDonators = async (req, res) => {
     let filter = {};
 
     if (search && search.trim() !== "") {
-      const searchRegex = new RegExp(search.trim(), "i");
-      filter = {
-        $or: [
-          { fName: searchRegex },
-          { lName: searchRegex },
-          { email_1: searchRegex },
-          { "phone_number_1.number": searchRegex },
-          { "phone_number_2.number": searchRegex },
-          { "phone_number_3.number": searchRegex },
-        ],
-      };
+      // Split the search string into individual terms
+      const searchTerms = search.trim().split(/\s+/);
+
+      // Create an array of $or conditions for each search term
+      const andConditions = searchTerms.map(term => {
+        const searchRegex = new RegExp(term, "i");
+        return {
+          $or: [
+            { fName: searchRegex },
+            { lName: searchRegex },
+            { email_1: searchRegex },
+            { "phone_number_1.number": searchRegex },
+            { "phone_number_2.number": searchRegex },
+            { "phone_number_3.number": searchRegex },
+          ],
+        };
+      });
+
+      // Combine all conditions with $and
+      filter = { $and: andConditions };
     }
 
     const donators = await Donator.find(filter)
@@ -79,6 +87,7 @@ exports.getAllDonators = async (req, res) => {
       .json({ error: "Failed to fetch donators", details: error.message });
   }
 };
+
 
 // Get Total Donators
 exports.getTotalDonators = async (req, res) => {

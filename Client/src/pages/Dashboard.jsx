@@ -1,8 +1,11 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
 // Components
 import Sidebar from "../components/Molecules/Sidebar.jsx";
+import GlobatSearch from "../components/Atoms/GlobalSearch.jsx";
+
 const Dashboard = () => {
   const { t } = useTranslation();
   return (
@@ -17,6 +20,7 @@ const Dashboard = () => {
           <div className="text-lg font-semibold">
             <h1>{t("dashboardWelcome")}</h1>
           </div>
+          <GlobatSearch />
         </header>
 
         {/* Main Content */}
