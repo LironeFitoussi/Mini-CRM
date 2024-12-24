@@ -84,14 +84,14 @@ const router = [
               </ProtectedRoute>
             ), // Donations route
           },
-          {
-            path: "email",
-            element: (
-              <ProtectedRoute level="user">
-                <EmailPage />
-              </ProtectedRoute>
-            ), // Email route
-          },
+          // {
+          //   path: "email",
+          //   element: (
+          //     <ProtectedRoute level="user">
+          //       <EmailPage />
+          //     </ProtectedRoute>
+          //   ), // Email route
+          // },
           {
             path: "whatsapp",
             element: (

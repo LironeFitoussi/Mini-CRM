@@ -55,14 +55,14 @@ const Sidebar = () => {
                 {t("donations")}
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link
                 to="email"
                 className="block px-4 py-2 hover:bg-gray-700 transition"
               >
                 {t("email")}
               </Link>
-            </li>
+            </li> */}
             <li>
               <Link
                 to="whatsapp"

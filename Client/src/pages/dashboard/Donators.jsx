@@ -19,6 +19,10 @@ import { useNavigate, Outlet, useParams } from "react-router-dom";
 import debounce from "lodash.debounce";
 import { useTranslation } from 'react-i18next';
 
+// Component
+import AddDonatorButton from "../../components/Atoms/AddDonatorButton";
+
+// 1. Create a new page component named DonatorsPage.
 const DontaorsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -113,6 +117,9 @@ const DontaorsPage = () => {
         {t("donators")}
       </Typography>
 
+      {/* Add Donator Button */}
+      <AddDonatorButton />
+      
       {/* Search Input */}
       <TextField
         label="Search clients"
