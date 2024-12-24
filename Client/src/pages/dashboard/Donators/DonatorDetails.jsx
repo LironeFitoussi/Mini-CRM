@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import SmsIcon from "@mui/icons-material/Sms";
-
+import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
 // MUI Components
 import {
   Box,
@@ -164,6 +164,7 @@ const ClientDetailsPage = () => {
     lName,
     email_1,
     phone_number_1,
+    birthdate,
     donations = [],
   } = client;
 
@@ -232,24 +233,26 @@ const ClientDetailsPage = () => {
 
   return (
     <Box sx={{ padding: 4 }}>
-      {/* ========== Client Info ========== */}
-      <Paper sx={{ padding: 3, marginBottom: 3, boxShadow: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          {fName} {lName}
-        </Typography>
-        <Divider sx={{ marginY: 2 }} />
-        <Box sx={{ display: "flex", gap: 4, justifyContent: "space-between" }}>
-          <Box>
-            <Typography variant="body1">
-              <strong>Email:</strong> {email_1 || "N/A"}
-            </Typography>
-            <Typography variant="body1">
-              <strong>Phone:</strong> {phone_number_1?.number || "N/A"}
-            </Typography>
-          </Box>
+        <Paper sx={{ padding: 3, marginBottom: 3, boxShadow: 3 }}>
+          <Typography variant="h4" gutterBottom>
+            {fName} {lName} {!fName && !lName && "This client has no name."}
+          </Typography>
+          <Divider sx={{ marginY: 2 }} />
+          <Box sx={{ display: "flex", gap: 4, justifyContent: "space-between" }}>
+            <Box>
+          <Typography variant="body1">
+            <strong>Email:</strong> {email_1 || "N/A"}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Phone:</strong> {phone_number_1?.number || "N/A"}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Birthdate:</strong> {birthdate ? new Date(birthdate).toLocaleDateString("en-GB") : "N/A"}
+          </Typography>
+            </Box>
 
-          <Box>
-            {/* ========== Contact Icons ========== */}
+            <Box>
+          {/* ========== Contact Icons ========== */}
             <Button
               sx={{
                 marginRight: 2,
@@ -370,15 +373,17 @@ const ClientDetailsPage = () => {
       </Box>
 
       {/* ========== Back to Clients ========== */}
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
       <Button
         variant="contained"
         color="primary"
         sx={{ mt: 3 }}
-        onClick={() => navigate("/dashboard/clients")}
+        onClick={() => navigate("/dashboard/donators")}
       >
         Back to Clients
       </Button>
-
+      <DeleteDonatorButton donatorData={client} />
+      </Box>
       {/* ========== Email Modal ========== */}
       <EmailModal
         // IMPORTANT: rename from `isOpen` to `open`

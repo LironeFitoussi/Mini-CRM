@@ -15,7 +15,7 @@ const AddDonatorButton = () => {
     const handleClose = () => setOpen(false);
 
     const handleAddDonator = async (donatorData) => {
-        // console.log(donatorData);
+        console.log(donatorData);
         
         const newDonator = {
             fName: donatorData.fName,
@@ -30,6 +30,8 @@ const AddDonatorButton = () => {
             phone_number_3: donatorData.donatorPhone[2] || undefined
         };
 
+        console.log(newDonator);
+        
         try {
             const response = await axios.post(import.meta.env.VITE_API_URL + '/api/v1/donators', newDonator);
             console.log(response.data);

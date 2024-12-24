@@ -121,6 +121,13 @@ exports.getDonatorById = async (req, res) => {
 // Create a new donator
 exports.createDonator = async (req, res) => {
   // Define a reusable phone number schema with error messages
+  console.log("Request body:", req.body);
+  
+  // Convert Date Strings to Date Objects
+  if (req.body.birthdate) {
+    req.body.birthdate = new Date(req.body.birthdate);
+  }
+  
   const phoneNumberSchema = z.object({
     number: z
       .string()
