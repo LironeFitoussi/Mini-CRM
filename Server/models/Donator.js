@@ -33,6 +33,10 @@ const donatorSchema = new mongoose.Schema(
       type: String,
       // required: false,
     },
+    birthdate: {
+      type: Date,
+      // required: false,
+    },
     email_1: {
       type: String,
       // required: false,

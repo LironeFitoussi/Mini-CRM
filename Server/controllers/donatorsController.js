@@ -4,7 +4,7 @@ const Task = require("../models/Task.js");
 const parseDonations = require("../helpers/parseDonations.js");
 
 // Zod Validation
-const { z } = require("zod");
+const { z, bigint } = require("zod");
 
 // Import EXCEL to JSON converter
 const excelToJson = require("convert-excel-to-json");
@@ -124,7 +124,8 @@ exports.createDonator = async (req, res) => {
   const phoneNumberSchema = z.object({
     number: z
       .string()
-      .min(6, { message: "Phone number must be at least 6 characters long" }),
+      .min(6, { message: "Phone number must be at least 6 characters long" })
+      .startsWith("+", { message: "Phone number must start with a '+'" }),
     country: z
       .string()
       .nonempty({ message: "Country is required for the phone number" }),
@@ -153,6 +154,7 @@ exports.createDonator = async (req, res) => {
       .string()
       .email({ message: "Email 3 must be a valid email address" })
       .optional(),
+    birthdate: z.date().optional(),
     phone_number_1: phoneNumberSchema,
     phone_number_2: phoneNumberSchema.optional(),
     phone_number_3: phoneNumberSchema.optional(),

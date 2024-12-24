@@ -113,13 +113,15 @@ const DontaorsPage = () => {
 
   return (
     <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        {t("donators")}
-      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
 
-      {/* Add Donator Button */}
-      <AddDonatorButton />
-      
+        <Typography variant="h4" component="h1" gutterBottom>
+          {t("donators")}
+        </Typography>
+
+        {/* Add Donator Button */}
+        <AddDonatorButton />
+      </Box>
       {/* Search Input */}
       <TextField
         label="Search clients"

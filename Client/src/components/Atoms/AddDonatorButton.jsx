@@ -1,20 +1,44 @@
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
 import AddDonatorModal from '../Modals/AddDonatorModal';
+import { useNavigate } from "react-router-dom";
+
+import axios from 'axios';
 
 const AddDonatorButton = () => {
     const [open, setOpen] = useState(false);
     const [donatorName, setDonatorName] = useState('');
     const [donatorEmail, setDonatorEmail] = useState('');
+    const navigate = useNavigate();
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const handleAddDonator = () => {
-        // Add logic to handle adding the donator
-        console.log('Donator Name:', donatorName);
-        console.log('Donator Email:', donatorEmail);
-        handleClose();
+    const handleAddDonator = async (donatorData) => {
+        // console.log(donatorData);
+        
+        const newDonator = {
+            fName: donatorData.fName,
+            lName: donatorData.lName,
+            allo_don_id: donatorData.alloDonId || undefined,
+            birthdate: donatorData.birthdate || undefined,
+            email_1: donatorData.donatorEmail[0] || undefined,
+            email_2: donatorData.donatorEmail[1] || undefined,
+            email_3: donatorData.donatorEmail[2] || undefined,
+            phone_number_1: donatorData.donatorPhone[0] || undefined,
+            phone_number_2: donatorData.donatorPhone[1] || undefined,
+            phone_number_3: donatorData.donatorPhone[2] || undefined
+        };
+
+        try {
+            const response = await axios.post(import.meta.env.VITE_API_URL + '/api/v1/donators', newDonator);
+            console.log(response.data);
+            navigate(`${response.data._id}`);
+
+            // handleClose();
+        } catch (error) {
+            console.error(error);
+        }        
     };
 
     return (
