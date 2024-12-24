@@ -37,6 +37,7 @@ import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
 import TaskCalendar from "../../../components/TaskCalendar";
 import EmailModal from "../../../components/Modals/EmailModal";
 import DonatorTasks from "../../../components/Molecules/DonatorTasks";
+import SendEmailButton from "../../../components/Atoms/SendEmailButton";
 
 const COLORS = [
   "#8884d8",
@@ -254,23 +255,7 @@ const ClientDetailsPage = () => {
 
             <Box>
           {/* ========== Contact Icons ========== */}
-            <Button
-              sx={{
-                marginRight: 2,
-                backgroundColor: "#FFBF00",
-                color: "white",
-              }}
-              color="primary"
-              startIcon={<MailOutlineIcon />}
-              // Open the Email Modal
-              onClick={() => {
-                setFormValues((prev) => ({ ...prev, to: email_1 || "" }));
-                email_1 && setEmailModalOpen(true);
-                !email_1 && alert("No email address found.");
-              }}
-            >
-              Email
-            </Button>
+            <SendEmailButton recipient={email_1} />
 
             <Button
               variant="contained"

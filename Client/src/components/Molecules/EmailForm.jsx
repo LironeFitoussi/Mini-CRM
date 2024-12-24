@@ -1,3 +1,4 @@
+// EmailForm.jsx
 import React from "react";
 import { Box, TextField, MenuItem, Button, Select, FormControl, InputLabel } from "@mui/material";
 import ReactQuill from "react-quill";
@@ -11,13 +12,14 @@ import ImageUploader from "../../components/ImageUploader";
  */
 const EmailForm = ({
   formValues: { from, subject, body, imagePosition, imageUrl },
-  handleChange
+  handleChange,
+  handleSubmit,
 }) => {
   // Quill modules and formats for basic formatting including hyperlinks
   const quillModules = {
     toolbar: [
-      ["bold", "italic", "underline"], 
-      ["link"], 
+      ["bold", "italic", "underline"],
+      ["link"],
       [{ list: "ordered" }, { list: "bullet" }],
       ["clean"],
     ],
@@ -27,7 +29,7 @@ const EmailForm = ({
     "contact.lesenfantsderachi@gmail.com",
     "info@company.com",
   ];
-  
+
   const quillFormats = [
     "bold",
     "italic",
@@ -40,6 +42,7 @@ const EmailForm = ({
   const handleFormChange = (e) => {
     handleChange(e.target.name, e.target.value);
   };
+
   return (
     <Box>
       {/* From Email */}
@@ -103,13 +106,14 @@ const EmailForm = ({
         <Button
           variant="contained"
           color="primary"
-          // onClick={onSendEmail}
-          // disabled={!canSendEmail}
+          onClick={handleSubmit}
         >
           Send Email
         </Button>
-        <Button variant="outlined" 
-        // onClick={onOpenPreview}
+        <Button
+          variant="outlined"
+          // You can implement preview functionality here if needed
+          // onClick={handlePreview}
         >
           Preview Email
         </Button>

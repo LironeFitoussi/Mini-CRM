@@ -1,30 +1,29 @@
+// EmailModal.jsx
 import React from "react";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
-import EmailForm from "../Molecules/EmailForm";
+import EmailForm from "../Molecules/EmailForm"; // Adjust the import path as needed
 
 const EmailModal = ({ open, onClose, handleChange, handleSubmit, formValues }) => {
-    const { t } = useTranslation();
-    
-    console.log("formValues", formValues);
-    
-    return (
-        <Dialog open={open} onClose={onClose}>
-        <DialogTitle>{t("emailModalTitle")}</DialogTitle>
-        <DialogContent>
-            <EmailForm formValues={formValues} handleChange={handleChange} />
-        </DialogContent>
-        <DialogActions>
-            <Button onClick={onClose} color="secondary">
-            {t("cancel")}
-            </Button>
-            <Button onClick={() => handleSubmit(formValues)} color="primary">
-            {t("submit")}
-            </Button>
-        </DialogActions>
-        </Dialog>
-    );
-    }
+  const { t } = useTranslation();
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle>{t("emailModalTitle") || "Send Email"}</DialogTitle>
+      <DialogContent>
+        <EmailForm formValues={formValues} handleChange={handleChange} handleSubmit={handleSubmit} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary">
+          {t("cancel") || "Cancel"}
+        </Button>
+        <Button onClick={handleSubmit} color="primary" variant="contained">
+          {t("submit") || "Submit"}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 export default EmailModal;
