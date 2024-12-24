@@ -46,7 +46,7 @@ function ServerDay(props) {
   );
 }
 
-export default function DateCalendarServerRequest() {
+export default function TaskCalendar() {
   const requestAbortController = React.useRef(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);

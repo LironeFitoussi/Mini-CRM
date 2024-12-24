@@ -3,6 +3,7 @@ import { Button } from '@mui/material';
 
 import DeleteDonatorModal from '../Modals/DeleteDonatorModal.jsx';
 import { useNavigate } from "react-router-dom";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import axios from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
@@ -29,7 +30,8 @@ const DeleteDonatorButton = ({donatorData}) => {
 
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={handleOpen}>
+            <Button variant="contained" color="error" onClick={handleOpen} sx={{ display: "flex", gap: 1 }}>
+                <DeleteIcon /> {" "}
                 Delete Donator
             </Button>
             <DeleteDonatorModal

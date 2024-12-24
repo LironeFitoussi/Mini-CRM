@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import SmsIcon from "@mui/icons-material/Sms";
-import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+
 // MUI Components
 import {
   Box,
@@ -31,10 +32,10 @@ import {
   Cell,
 } from "recharts";
 
-// Keep the same import
-import EmailModal from "../../../components/Modals/EmailModal";
-
 // Components
+import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
+import TaskCalendar from "../../../components/TaskCalendar";
+import EmailModal from "../../../components/Modals/EmailModal";
 import DonatorTasks from "../../../components/Molecules/DonatorTasks";
 
 const COLORS = [
@@ -371,15 +372,21 @@ const ClientDetailsPage = () => {
 
         <DonatorTasks donatorId={id} />
       </Box>
-
+      
+      {/* ========== Task Calendar ========== */}
+      <Box sx={{ mt: 4 }}>
+        <TaskCalendar />
+      </Box>
+      
       {/* ========== Back to Clients ========== */}
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 4 }}>
       <Button
         variant="contained"
         color="primary"
-        sx={{ mt: 3 }}
         onClick={() => navigate("/dashboard/donators")}
+        sx={{ display: "flex", gap: 1 }}
       >
+        <ArrowCircleLeftIcon /> {" "}
         Back to Clients
       </Button>
       <DeleteDonatorButton donatorData={client} />
