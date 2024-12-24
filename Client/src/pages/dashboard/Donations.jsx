@@ -1,37 +1,19 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom"; // <-- 1) Import Link here
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  TablePagination,
-  TextField,
-  MenuItem,
-  CircularProgress,
-  Alert,
-  Typography,
-  TableSortLabel,
-} from "@mui/material";
+import { Box, TextField, MenuItem, Typography } from "@mui/material";
 import debounce from "lodash.debounce";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
 
+// Child components
+import DonationsSummary from "../../components/Atoms/DonationsSummary";
+import DonationsOverTimeChart from "../../components/Atoms/DonationsOverTimeChart";
+import DonationsTable from "../../components/Molecules/DonationsTable";
+
+/**
+ * The main Donations Page that fetches data and composes child components.
+ */
 const DonationsPage = () => {
-  // State variables for paginated donations
+  // =====================
+  // State Variables
+  // =====================
   const [donations, setDonations] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -55,7 +37,9 @@ const DonationsPage = () => {
   // Year state
   const [year, setYear] = useState(new Date().getFullYear());
 
-  // Debounce the search input to avoid excessive API calls
+  // =====================
+  // Debounce for Search
+  // =====================
   const debouncedChangeHandler = useCallback(
     debounce((value) => {
       setDebouncedSearch(value.trim());
@@ -70,21 +54,15 @@ const DonationsPage = () => {
     debouncedChangeHandler(value);
   };
 
-  // Update year state and reset page or do any other necessary actions
+  // Handle year change
   const handleYearChange = (e) => {
     setYear(e.target.value);
     setPage(0);
   };
 
-  // Function to handle sorting
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-    setPage(0); // Reset to first page on sort change
-  };
-
-  // Fetch paginated donations from the API
+  // =====================
+  // Fetch Donations
+  // =====================
   useEffect(() => {
     const fetchDonations = async () => {
       setLoadingDonations(true);
@@ -98,6 +76,7 @@ const DonationsPage = () => {
           sortField: orderBy,
           sortOrder: order,
         });
+
         if (debouncedSearch) {
           params.append("search", debouncedSearch);
         }
@@ -134,7 +113,9 @@ const DonationsPage = () => {
     fetchDonations();
   }, [page, rowsPerPage, debouncedSearch, order, orderBy, year]);
 
-  // Fetch summary data (total amount and donation types)
+  // =====================
+  // Fetch Summary
+  // =====================
   useEffect(() => {
     const fetchSummary = async () => {
       setLoadingSummary(true);
@@ -176,36 +157,24 @@ const DonationsPage = () => {
     fetchSummary();
   }, [year]);
 
-  // Handle page change
+  // =====================
+  // Table Handlers
+  // =====================
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  // Handle rows per page change
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  // Prepare data for Donation Types chart
-  const donationTypesChartData = donationTypesData.map((type) => ({
-    name: type.type,
-    value: type.totalAmount,
-  }));
-
-  const COLORS = [
-    "#8884d8",
-    "#82ca9d",
-    "#ffc658",
-    "#ff7300",
-    "#d3d3d3",
-    "#0088FE",
-    "#00C49F",
-    "#FFBB28",
-    "#FF8042",
-    "#A28CFE",
-    "#FF69B4",
-  ];
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+    setPage(0);
+  };
 
   return (
     <Box sx={{ padding: 4 }}>
@@ -243,272 +212,35 @@ const DonationsPage = () => {
 
       {/* Summary Section */}
       <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap", mt: 4 }}>
-        {loadingSummary && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              my: 2,
-              width: "100%",
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        )}
-
-        {errorSummary && (
-          <Alert severity="error" sx={{ my: 2, width: "100%" }}>
-            {errorSummary} — Please try again later.
-          </Alert>
-        )}
-
-        {!loadingSummary && !errorSummary && (
-          <>
-            <Box
-              sx={{
-                flex: 1,
-                minWidth: 250,
-                p: 2,
-                bgcolor: "white",
-                borderRadius: 2,
-                boxShadow: 1,
-              }}
-            >
-              <Typography variant="h6">Total Donations</Typography>
-              <Typography variant="h4" color="primary">
-                €
-                {totalDonations.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </Typography>
-            </Box>
-
-            {/* Donation Types Chart */}
-            <Box
-              sx={{
-                flex: 1,
-                minWidth: 300,
-                p: 2,
-                bgcolor: "white",
-                borderRadius: 2,
-                boxShadow: 1,
-              }}
-            >
-              <Typography variant="h6">Donation Types</Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={donationTypesChartData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    fill="#8884d8"
-                    label
-                  >
-                    {donationTypesChartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value) =>
-                      `€${value.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}`
-                    }
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </Box>
-          </>
-        )}
+        <DonationsSummary
+          loadingSummary={loadingSummary}
+          errorSummary={errorSummary}
+          donationTypesData={donationTypesData}
+          totalDonations={totalDonations}
+        />
       </Box>
-
-      {loadingDonations && (
-        <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-          <CircularProgress />
-        </Box>
-      )}
-
-      {errorDonations && (
-        <Alert severity="error" sx={{ my: 2 }}>
-          {errorDonations} — Please try again later.
-        </Alert>
-      )}
 
       {/* Donations Over Time Chart */}
       {!loadingDonations && !errorDonations && donations.length > 0 && (
         <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap", mt: 4 }}>
-          <Box
-            sx={{
-              flex: 1,
-              minWidth: 300,
-              p: 2,
-              bgcolor: "white",
-              borderRadius: 2,
-              boxShadow: 1,
-            }}
-          >
-            <Typography variant="h6">Donations Over Time</Typography>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart
-                data={donations}
-                margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
-              >
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(tick) =>
-                    new Date(tick).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })
-                  }
-                />
-                <YAxis />
-                <Tooltip
-                  labelFormatter={(label) =>
-                    new Date(label).toLocaleDateString()
-                  }
-                  formatter={(value) =>
-                    `€${value.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}`
-                  }
-                />
-                <Bar dataKey="amount" fill="#82ca9d" />
-              </BarChart>
-            </ResponsiveContainer>
-          </Box>
+          <DonationsOverTimeChart donations={donations} />
         </Box>
       )}
 
       {/* Donations Table */}
-      {!loadingDonations && !errorDonations && (
-        <Box sx={{ mt: 4 }}>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    sortDirection={orderBy === "donator_id" ? order : false}
-                  >
-                    <TableSortLabel
-                      active={orderBy === "donator_id"}
-                      direction={orderBy === "donator_id" ? order : "asc"}
-                      onClick={() => handleRequestSort("donator_id")}
-                    >
-                      Donor ID
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell sortDirection={orderBy === "amount" ? order : false}>
-                    <TableSortLabel
-                      active={orderBy === "amount"}
-                      direction={orderBy === "amount" ? order : "asc"}
-                      onClick={() => handleRequestSort("amount")}
-                    >
-                      Amount (€)
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell sortDirection={orderBy === "date" ? order : false}>
-                    <TableSortLabel
-                      active={orderBy === "date"}
-                      direction={orderBy === "date" ? order : "asc"}
-                      onClick={() => handleRequestSort("date")}
-                    >
-                      Date
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell sortDirection={orderBy === "type" ? order : false}>
-                    <TableSortLabel
-                      active={orderBy === "type"}
-                      direction={orderBy === "type" ? order : "asc"}
-                      onClick={() => handleRequestSort("type")}
-                    >
-                      Type
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell sortDirection={orderBy === "method" ? order : false}>
-                    <TableSortLabel
-                      active={orderBy === "method"}
-                      direction={orderBy === "method" ? order : "asc"}
-                      onClick={() => handleRequestSort("method")}
-                    >
-                      Method
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell sortDirection={orderBy === "notes" ? order : false}>
-                    <TableSortLabel
-                      active={orderBy === "notes"}
-                      direction={orderBy === "notes" ? order : "asc"}
-                      onClick={() => handleRequestSort("notes")}
-                    >
-                      Notes
-                    </TableSortLabel>
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {donations.length > 0 ? (
-                  donations.map((donation) => (
-                    <TableRow key={donation._id}>
-                      {/* 2) Donor ID wrapped in Link */}
-                      <TableCell>
-                        <Link
-                          to={`/dashboard/donators/${donation.donator_id}`}
-                          style={{ textDecoration: "none", color: "#1976d2" }}
-                        >
-                          {donation.donator_id}
-                        </Link>
-                      </TableCell>
-                      <TableCell>
-                        {donation.amount.toLocaleString(undefined, {
-                          style: "currency",
-                          currency: donation.currency,
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(donation.date).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>{donation.type}</TableCell>
-                      <TableCell>{donation.method}</TableCell>
-                      <TableCell>{donation.notes}</TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={6} align="center">
-                      No donations found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          {/* Pagination */}
-          <TablePagination
-            component="div"
-            count={totalPages * rowsPerPage} // Adjust if API provides total count
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[5, 10, 25, 50]}
-            labelRowsPerPage="Rows per page:"
-            sx={{ mt: 2 }}
-          />
-        </Box>
-      )}
+      <DonationsTable
+        donations={donations}
+        loadingDonations={loadingDonations}
+        errorDonations={errorDonations}
+        order={order}
+        orderBy={orderBy}
+        handleRequestSort={handleRequestSort}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        handleChangePage={handleChangePage}
+        handleChangeRowsPerPage={handleChangeRowsPerPage}
+        totalPages={totalPages}
+      />
     </Box>
   );
 };
