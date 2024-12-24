@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const ImageUploader = ({setImageUrl}) => {
+const ImageUploader = ({handleChange}) => {
   const [image, setImage] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -37,7 +37,7 @@ const ImageUploader = ({setImageUrl}) => {
       });
 
       setUploadStatus(`Upload successful! URL: ${response.data.url}`);
-      setImageUrl(response.data.url);
+      handleChange("imageUrl", response.data.url);
     } catch (error) {
       setUploadStatus(`Upload failed: ${error.response?.data?.error || error.message}`);
     } finally {

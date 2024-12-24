@@ -13,7 +13,7 @@ import ProtectedRoute from "./components/Atoms/Protected.jsx";
 const Overview = React.lazy(() => import("./pages/dashboard/Overview.jsx"));
 const DontaorsPage = React.lazy(() => import("./pages/dashboard/Donators.jsx")); // Added import
 const ClientDetailsPage = React.lazy(() =>
-  import("./pages/dashboard/clients/ClientDetails.jsx")
+  import("./pages/dashboard/Donators/DonatorDetails.jsx")
 ); // Added import
 const DonationsPage = React.lazy(() =>
   import("./pages/dashboard/Donations.jsx")
