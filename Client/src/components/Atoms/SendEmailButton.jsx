@@ -41,7 +41,8 @@ const SendEmailButton = ({ recipient }) => {
     console.log("Sending email with data:", mailData);
     
     try {
-      const response = await axios.post("http://localhost:5000/send-email", mailData);
+      const response = await axios.post(import.meta.env.VITE_API_URL + "/api/v1/email", mailData);
+      
       // Handle success (e.g., show a success message)
       alert("Email sent successfully!");
       setEmailModalOpen(false); // Close the modal after sending

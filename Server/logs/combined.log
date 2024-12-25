@@ -309,3 +309,10 @@
 2024-12-25 08:31:14 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2024-12-25 08:31:18 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2024-12-25 08:32:41 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-25 18:32:17 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-25 18:36:55 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-25 18:36:57 [INFO]: ✅ Message sent: %s
+2024-12-25 18:36:57 [INFO]: 🗂️ Mail job marked as sent: 676c34a63f4ffda90e9aca48
+2024-12-25 18:38:09 [INFO]: ✅ SMTP server is ready to take our messages
+2024-12-25 18:38:11 [INFO]: ✅ Message sent: %s
+2024-12-25 18:38:11 [INFO]: 🗂️ Mail job marked as sent: 676c34f03f4ffda90e9aca54
