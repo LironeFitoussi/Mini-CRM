@@ -1,4 +1,3 @@
-// EmailForm.jsx
 import React, { useState } from "react";
 import {
   Box,
@@ -13,13 +12,10 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 import ImageUploader from "../../components/ImageUploader";
-import EmailPreviewModal from "../Modals/EmailPreviewModal"; // Adjust the import path as needed
+import EmailPreviewModal from "../Modals/EmailPreviewModal";
 import { useTranslation } from "react-i18next";
+import UseTemplateButton from "../Atoms/UseTemplateButton";
 
-/**
- * Component for the primary email form:
- * "From" selection, "Subject", "Body", "Image Position", and "Image Uploader".
- */
 const EmailForm = ({
   formValues: { from, subject, body, emailFooter, imagePosition, imageUrl },
   mailContent,
@@ -27,8 +23,14 @@ const EmailForm = ({
   handleSubmit,
 }) => {
   const { t } = useTranslation();
+  
+  const [emailPreviewOpen, setEmailPreviewOpen] = useState(false);
 
-  // Quill modules and formats for basic formatting including hyperlinks
+  const fromEmails = [
+    "lironefit@gmail.com",
+    "contact.lesenfantsderachi@gmail.com",
+  ];
+
   const quillModules = {
     toolbar: [
       ["bold", "italic", "underline"],
@@ -37,12 +39,6 @@ const EmailForm = ({
       ["clean"],
     ],
   };
-  const [emailPreviewOpen, setEmailPreviewOpen] = useState(false);
-
-  const fromEmails = [
-    "lironefit@gmail.com",
-    "contact.lesenfantsderachi@gmail.com",
-  ];
 
   const quillFormats = [
     "bold",
@@ -58,13 +54,11 @@ const EmailForm = ({
   };
 
   const handlePreview = () => {
-    // Compose the full email body with the image
     setEmailPreviewOpen(true);
   };
 
   return (
     <Box>
-      {/* From Email */}
       <TextField
         select
         label={t("emailFrom") || "From"}
@@ -82,7 +76,6 @@ const EmailForm = ({
         ))}
       </TextField>
 
-      {/* Subject */}
       <TextField
         label={t("emailSubject") || "Subject"}
         value={subject}
@@ -92,7 +85,6 @@ const EmailForm = ({
         margin="normal"
       />
 
-      {/* Email Body (Rich Text Editor) */}
       <ReactQuill
         theme="snow"
         value={body}
@@ -106,7 +98,6 @@ const EmailForm = ({
         }}
       />
 
-      {/* Image Position Toggle */}
       <FormControl fullWidth margin="normal">
         <InputLabel id="imagePosition-label">
           {t("emailImagePosition") || "Image Position"}
@@ -127,22 +118,24 @@ const EmailForm = ({
         </Select>
       </FormControl>
 
-      {/* Image Upload */}
       <ImageUploader handleChange={handleChange} imageUrl={imageUrl} />
 
-      {/* Action Buttons */}
-      <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
-        <Button variant="contained" color="primary" onClick={handleSubmit}>
-          {t("emailSend") || "Send Email"}
-        </Button>
-        <Button
-          variant="outlined"
-          // You can implement preview functionality here if needed
-          onClick={handlePreview}
-        >
-          {t("emailPreview") || "Preview Email"}
-        </Button>
+      <Box
+        sx={{ mt: 2, display: "flex", gap: 2, justifyContent: "space-between" }}
+      >
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            {t("emailSend") || "Send Email"}
+          </Button>
+          <Button variant="outlined" onClick={handlePreview}>
+            {t("emailPreview") || "Preview Email"}
+          </Button>
+        </Box>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <UseTemplateButton handleChange={handleChange} />
+        </Box>
       </Box>
+
       <EmailPreviewModal
         open={emailPreviewOpen}
         onClose={() => setEmailPreviewOpen(false)}

@@ -4,7 +4,7 @@ const MailTemplate = require('../models/MailTemplate');
 // Create a new MailTemplate
 exports.createMailTemplate = async (req, res) => {
     try {
-        const { name, subject, body } = req.body;
+        const { name, subject, body, imagePosition, imageUrl } = req.body;
 
         // Validate input
         if (!name || !subject || !body) {
@@ -12,7 +12,7 @@ exports.createMailTemplate = async (req, res) => {
         }
 
         // Create and save the new mail template
-        const newMailTemplate = new MailTemplate({ name, subject, body });
+        const newMailTemplate = new MailTemplate({ name, subject, body, imagePosition, imageUrl });
         const savedTemplate = await newMailTemplate.save();
 
         res.status(201).json(savedTemplate);

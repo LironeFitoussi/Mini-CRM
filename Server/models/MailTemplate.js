@@ -16,6 +16,15 @@ const MailTemplateSchema = new Schema({
         type: String,
         required: true
     },
+    imagePosition: {
+        type: String,
+        enum: ['top', 'bottom'],
+        default: 'top'
+    },
+    imageUrl: {
+        type: String,
+        default: ''
+    },
     createdAt: {
         type: Date,
         default: Date.now

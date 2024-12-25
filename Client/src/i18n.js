@@ -60,6 +60,12 @@ i18n
           emailImageTop: "Top",
           emailImageBottom: "Bottom",
 
+          // Templates
+          saveTemplate: "Save as Template",
+          confirmSaveTemplate: "Are you sure you want to save this email as a template?",
+          deleteTemplate: "Delete Template",
+          confirmDeleteTemplate: "Are you sure you want to delete this template? This action cannot be undone.",
+          
           // Image Uploader
           dragAndDrop: "Drag & Drop your image here or click to select a file",
           uploadImage: "Upload Image",
@@ -321,6 +327,14 @@ i18n
             "Glissez et déposez votre image ici ou cliquez pour sélectionner un fichier",
           uploadImage: "Charger l'image",
           uploading: "Chargement...",
+
+          // Templates
+          saveTemplate: "Enregistrer comme modèle",
+          confirmSaveTemplate:
+            "Êtes-vous sûr de vouloir enregistrer cet email en tant que modèle?",
+          deleteTemplate: "Supprimer le modèle",
+          confirmDeleteTemplate:
+            "Êtes-vous sûr de vouloir supprimer ce modèle? Cette action ne peut pas être annulée.",
 
           // General
           welcome: "Bienvenue",
