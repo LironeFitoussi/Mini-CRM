@@ -1,11 +1,12 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const ImageUploader = ({ handleChange }) => {
   const [image, setImage] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-
+  const { t } = useTranslation();
   // Create a ref for the hidden file input
   const inputRef = useRef(null);
 
@@ -76,7 +77,7 @@ const ImageUploader = ({ handleChange }) => {
           <p className="text-center text-gray-700">{image.name}</p>
         ) : (
           <p className="text-center text-gray-500">
-            Drag and drop an image here, or click to select a file
+            {t("dragAndDrop") || "Drag and drop an image here, or click to select"}
           </p>
         )}
         <input
@@ -103,7 +104,7 @@ const ImageUploader = ({ handleChange }) => {
         onClick={handleUpload}
         disabled={isUploading || !image}
       >
-        {isUploading ? "Uploading..." : "Upload"}
+        {isUploading ? t("uploading") : t("uploadImage") || "Upload"}
       </button>
 
       {uploadStatus && (

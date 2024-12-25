@@ -46,7 +46,24 @@ i18n
     resources: {
       en: {
         translation: {
-          totalDonators: "Total Donators",
+          // Email
+          emailSubject: "Subject",
+          emailMessage: "Message",
+          emailFrom: "From",
+          emailTo: "To",
+          emailPreview: "Preview",
+          emailSend: "Send",
+          emailSendSuccess: "Email sent successfully!",
+          emailSendFailure: "Failed to send email. Please try again.",
+          emailModalTitle: "Send Email",
+          emailImagePosition: "Image Position",
+          emailImageTop: "Top",
+          emailImageBottom: "Bottom",
+
+          // Image Uploader
+          dragAndDrop: "Drag & Drop your image here or click to select a file",
+          uploadImage: "Upload Image",
+
           // General
           welcome: "Welcome",
           dashboardWelcome: "Welcome to the Dashboard",
@@ -90,7 +107,7 @@ i18n
           donators: "Donators",
           donations: "Donations",
           email: "Email",
-          
+
           // Task
           task: "Task",
           tasks: "Tasks",
@@ -292,10 +309,19 @@ i18n
           phone: "Phone",
         },
       },
+
       fr: {
         translation: {
           totalDonators: "Total Donateurs",
           dashboardWelcome: "Bienvenue sur le tableau de bord",
+
+          // Image Uploader
+
+          dragAndDrop:
+            "Glissez et déposez votre image ici ou cliquez pour sélectionner un fichier",
+          uploadImage: "Charger l'image",
+          uploading: "Chargement...",
+
           // General
           welcome: "Bienvenue",
           home: "Accueil",
@@ -343,8 +369,9 @@ i18n
           task: "Tâche",
           tasks: "Tâches",
           taskUpdateSuccess: "Statut de la tâche mis à jour avec succès!",
-          takeUpdateFailure: "Échec de la mise à jour du statut de la tâche. Veuillez réessayer.",
-          
+          takeUpdateFailure:
+            "Échec de la mise à jour du statut de la tâche. Veuillez réessayer.",
+
           // Navigation
           navigationHome: "Accueil",
           navigationCustomers: "Clients",
@@ -463,7 +490,8 @@ i18n
           userManagementAssignRole: "Attribuer un rôle",
           userManagementUserRoleUser: "Utilisateur",
           userManagementUserRoleAdmin: "Administrateur",
-          deleteConfirmation: "Êtes-vous sûr de vouloir supprimer cet utilisateur?",
+          deleteConfirmation:
+            "Êtes-vous sûr de vouloir supprimer cet utilisateur?",
 
           // Settings
           settingsTitle: "Paramètres",
@@ -484,6 +512,20 @@ i18n
           notificationErrorOccurred: "Une erreur est survenue",
           notificationLoading: "Chargement...",
           notificationNoData: "Aucune donnée disponible",
+
+          // Email
+          emailSubject: "Sujet",
+          emailMessage: "Message",
+          emailFrom: "De",
+          emailTo: "À",
+          emailSend: "Envoyer",
+          emailPreview: "Prévisualiser",
+          emailSendSuccess: "Email envoyé avec succès!",
+          emailSendFailure: "Échec de l'envoi de l'email. Veuillez réessayer.",
+          emailModalTitle: "Envoyer un Email",
+          emailImagePosition: "Position de l'image",
+          emailImageTop: "En haut",
+          emailImageBottom: "En bas",
 
           // Forms
           formRequired: "Ce champ est requis",
