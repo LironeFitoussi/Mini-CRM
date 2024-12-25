@@ -1,0 +1,133 @@
+{
+    "info": {
+      "name": "MailTemplate API Collection",
+      "_postman_id": "d1a2b3c4-5678-90ab-cdef-1234567890ab",
+      "description": "A Postman collection to test the MailTemplate CRUD routes.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "MailTemplate API",
+        "item": [
+          {
+            "name": "Create MailTemplate",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"name\": \"WelcomeEmail\",\n    \"subject\": \"Welcome to Our Service!\",\n    \"body\": \"Hello {{name}}, welcome to our platform.\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/mail-templates",
+                "host": ["{{base_url}}"],
+                "path": ["api", "mail-templates"]
+              },
+              "description": "Creates a new MailTemplate."
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "const response = pm.response.json();",
+                    "if (response && response._id) {",
+                    "    pm.environment.set('mailTemplateId', response._id);",
+                    "    console.log('mailTemplateId set to:', response._id);",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Get All MailTemplates",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/mail-templates",
+                "host": ["{{base_url}}"],
+                "path": ["api", "mail-templates"]
+              },
+              "description": "Retrieves all MailTemplates."
+            },
+            "response": []
+          },
+          {
+            "name": "Get MailTemplate by ID",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/mail-templates/{{mailTemplateId}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "mail-templates", "{{mailTemplateId}}"]
+              },
+              "description": "Retrieves a single MailTemplate by its ID."
+            },
+            "response": []
+          },
+          {
+            "name": "Update MailTemplate by ID",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"subject\": \"Updated Subject Line\",\n    \"body\": \"Hello {{name}}, your account has been updated.\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/mail-templates/{{mailTemplateId}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "mail-templates", "{{mailTemplateId}}"]
+              },
+              "description": "Updates a MailTemplate by its ID."
+            },
+            "response": []
+          },
+          {
+            "name": "Delete MailTemplate by ID",
+            "request": {
+              "method": "DELETE",
+              "header": [],
+              "url": {
+                "raw": "{{base_url}}/api/mail-templates/{{mailTemplateId}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "mail-templates", "{{mailTemplateId}}"]
+              },
+              "description": "Deletes a MailTemplate by its ID."
+            },
+            "response": []
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "base_url",
+        "value": "http://localhost:5000",
+        "type": "string"
+      },
+      {
+        "key": "mailTemplateId",
+        "value": "",
+        "type": "string"
+      }
+    ]
+  }
+  
