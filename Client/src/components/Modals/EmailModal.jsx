@@ -5,23 +5,23 @@ import { useTranslation } from "react-i18next";
 
 import EmailForm from "../Molecules/EmailForm"; // Adjust the import path as needed
 
-const EmailModal = ({ open, onClose, handleChange, handleSubmit, formValues }) => {
+const EmailModal = ({ open, onClose, handleChange, handleSubmit, formValues, mailContent }) => {
   const { t } = useTranslation();
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>{t("emailModalTitle") || "Send Email"}</DialogTitle>
       <DialogContent>
-        <EmailForm formValues={formValues} handleChange={handleChange} handleSubmit={handleSubmit} />
+        <EmailForm handleChange={handleChange} handleSubmit={handleSubmit} formValues={formValues} mailContent={mailContent} />
       </DialogContent>
-      <DialogActions>
+      {/* <DialogActions>
         <Button onClick={onClose} color="secondary">
           {t("cancel") || "Cancel"}
         </Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">
           {t("submit") || "Submit"}
         </Button>
-      </DialogActions>
+      </DialogActions> */}
     </Dialog>
   );
 };

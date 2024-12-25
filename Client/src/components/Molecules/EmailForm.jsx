@@ -1,17 +1,19 @@
 // EmailForm.jsx
-import React from "react";
+import React, { useState } from "react";
 import { Box, TextField, MenuItem, Button, Select, FormControl, InputLabel } from "@mui/material";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 import ImageUploader from "../../components/ImageUploader";
+import EmailPreviewModal from "../Modals/EmailPreviewModal"; // Adjust the import path as needed
 
 /**
  * Component for the primary email form: 
  * "From" selection, "Subject", "Body", "Image Position", and "Image Uploader".
  */
 const EmailForm = ({
-  formValues: { from, subject, body, imagePosition, imageUrl },
+  formValues: { from, subject, body, emailFooter, imagePosition, imageUrl },
+  mailContent,
   handleChange,
   handleSubmit,
 }) => {
@@ -24,10 +26,11 @@ const EmailForm = ({
       ["clean"],
     ],
   };
+  const [emailPreviewOpen, setEmailPreviewOpen] = useState(false);
+
   const fromEmails = [
     "lironefit@gmail.com",
     "contact.lesenfantsderachi@gmail.com",
-    "info@company.com",
   ];
 
   const quillFormats = [
@@ -42,6 +45,11 @@ const EmailForm = ({
   const handleFormChange = (e) => {
     handleChange(e.target.name, e.target.value);
   };
+
+  const handlePreview = () => {
+    // Compose the full email body with the image 
+    setEmailPreviewOpen(true);
+  }
 
   return (
     <Box>
@@ -113,11 +121,16 @@ const EmailForm = ({
         <Button
           variant="outlined"
           // You can implement preview functionality here if needed
-          // onClick={handlePreview}
+          onClick={handlePreview}
         >
           Preview Email
         </Button>
       </Box>
+      <EmailPreviewModal
+        open={emailPreviewOpen}
+        onClose={() => setEmailPreviewOpen(false)}
+        fullEmailBody={mailContent}
+      />
     </Box>
   );
 };

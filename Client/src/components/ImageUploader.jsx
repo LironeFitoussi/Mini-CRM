@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 
-const ImageUploader = ({handleChange}) => {
+const ImageUploader = ({ handleChange }) => {
   const [image, setImage] = useState(null);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+
+  // Create a ref for the hidden file input
+  const inputRef = useRef(null);
 
   const handleFileChange = (file) => {
     setImage(file);
@@ -30,19 +33,34 @@ const ImageUploader = ({handleChange}) => {
     formData.append("image", image);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/upload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       setUploadStatus(`Upload successful! URL: ${response.data.url}`);
+      console.log("Image URL:", response.data.url);
+
       handleChange("imageUrl", response.data.url);
     } catch (error) {
-      setUploadStatus(`Upload failed: ${error.response?.data?.error || error.message}`);
+      setUploadStatus(
+        `Upload failed: ${error.response?.data?.error || error.message}`
+      );
     } finally {
       setIsUploading(false);
       setImage(null);
+    }
+  };
+
+  // Function to handle click on the drop area
+  const handleAreaClick = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
     }
   };
 
@@ -52,6 +70,7 @@ const ImageUploader = ({handleChange}) => {
         className="w-full max-w-md p-6 bg-white border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500"
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
+        onClick={handleAreaClick} // Add onClick handler here
       >
         {image ? (
           <p className="text-center text-gray-700">{image.name}</p>
@@ -62,8 +81,10 @@ const ImageUploader = ({handleChange}) => {
         )}
         <input
           type="file"
+          accept="image/*" // Restrict to image files
           className="hidden"
           onChange={(e) => handleFileChange(e.target.files[0])}
+          ref={inputRef} // Attach the ref to the input
         />
       </div>
 
