@@ -18,7 +18,7 @@ const DeleteDonatorButton = ({donatorData}) => {
     const handleDeleteDonator = async () => {
         try {
             const response = await axios.delete(import.meta.env.VITE_API_URL + '/api/v1/donators/' + donatorData._id);
-            console.log(response.data);
+            // console.log(response.data);
 
             // Invalidate QueryClient cache for donators
             queryClient.invalidateQueries({ queryKey: ['donators'] });

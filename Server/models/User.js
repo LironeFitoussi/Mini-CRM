@@ -27,4 +27,13 @@ const UserSchema = new Schema({
     }
 });
 
+// Allow virtual fields to be returned in the response
+UserSchema.set('toObject', { virtuals: true });
+UserSchema.set('toJSON', { virtuals: true });
+
+// UserSchema.pre(/^find/, function(next) {
+//     this.populate('notes');
+//     next();
+// });
+
 module.exports = mongoose.model('User', UserSchema);

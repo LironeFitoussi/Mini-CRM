@@ -10,14 +10,14 @@ const mongoose = require("mongoose");
 const Authorized = require("./models/Authorized");
 dotenv.config();
 const PORT = process.env.PORT || 3000;
-const Donator = require("./models/Donator");
-
+const path = require("path");
 const app = express();
 
 app.use(morgan("dev"));
 app.use(cors());
 app.use(bodyParser.json());
 app.use("/api/upload", uploadRoutes);
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI).then(() => {
@@ -33,6 +33,8 @@ app.use("/api/v1/email", require("./routes/emailsRoutes.js"));
 app.use("/api/v1/tasks", require("./routes/tasksRoutes.js"));
 app.use("/api/v1/dashboard", require("./routes/dashboardRoutes.js"));
 app.use("/api/v1/mail-templates", require("./routes/mailTemplateRoutes"));
+app.use("/api/v1/notes", require("./routes/noteRoutes"));
+app.use("/unsubscribe", require("./routes/unsubscribeRoutes.js"));
 
 app.get("/api/v1/get-auth-user", (req, res) => {
   try {
@@ -43,17 +45,6 @@ app.get("/api/v1/get-auth-user", (req, res) => {
   }
 });
 
-app.post("/api/v1/unsuscribe", async (req, res) => {
-  try {
-    const { id } = req.body;
-    const user = await Donator.findById(id);
-    user.isSubscribed = false;
-    await user.save();
-    res.status(200).json({ message: "User unsuscribed successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
 
 // Initialize Cron Jobs
 initializeMailCronJob();

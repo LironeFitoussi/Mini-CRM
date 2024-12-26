@@ -4,7 +4,7 @@ const Task = require("../models/Task.js");
 const parseDonations = require("../helpers/parseDonations.js");
 
 // Zod Validation
-const { z, bigint } = require("zod");
+const { z } = require("zod");
 
 // Import EXCEL to JSON converter
 const excelToJson = require("convert-excel-to-json");
@@ -88,7 +88,6 @@ exports.getAllDonators = async (req, res) => {
   }
 };
 
-
 // Get Total Donators
 exports.getTotalDonators = async (req, res) => {
   try {
@@ -116,7 +115,7 @@ exports.getDonatorById = async (req, res) => {
         model: "Task",
         // Select only the fields we need
         select: "title description due_date status",
-      });
+      }).populate("notes");
 
     if (!donator) {
       return res.status(404).json({ message: "Donator not found" });
@@ -153,23 +152,19 @@ exports.createDonator = async (req, res) => {
       .default("unknown"),
   });
 
+  const emailSchema = z.object({
+    email: z.string().email({ message: "Email must be a valid email address" }),
+    isSubscribed: z.boolean().optional().default(true),
+  });
+
   // Validate request body with error messages
   const donatorSchema = z.object({
     fName: z.string().nonempty({ message: "First name is required" }),
     lName: z.string().nonempty({ message: "Last name is required" }),
     allo_dons_id: z.string().optional(),
-    email_1: z
-      .string()
-      .email({ message: "Email 1 must be a valid email address" })
-      .optional(),
-    email_2: z
-      .string()
-      .email({ message: "Email 2 must be a valid email address" })
-      .optional(),
-    email_3: z
-      .string()
-      .email({ message: "Email 3 must be a valid email address" })
-      .optional(),
+    email_1: emailSchema,
+    email_2: emailSchema.optional(),
+    email_3: emailSchema.optional(),
     birthdate: z.date().optional(),
     phone_number_1: phoneNumberSchema,
     phone_number_2: phoneNumberSchema.optional(),

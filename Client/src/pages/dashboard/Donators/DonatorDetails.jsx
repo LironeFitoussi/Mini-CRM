@@ -59,7 +59,7 @@ const ClientDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  console.log("Client data:", client);
+  // console.log("Client data:", client);
   
   // ======= Email Modal State =======
   const [emailModalOpen, setEmailModalOpen] = useState(false);

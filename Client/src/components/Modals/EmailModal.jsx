@@ -22,7 +22,7 @@ const EmailModal = ({
 }) => {
   const { t } = useTranslation();
 
-  console.log(formValues);
+  // console.log(formValues);
   
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

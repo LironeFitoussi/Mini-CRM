@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsubscription Confirmation</title>
+    <style>
+        /* Reset some default styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .container h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #ff5e57;
+        }
+
+        .container p {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .container .email {
+            font-weight: bold;
+            color: #555;
+            word-break: break-all;
+        }
+
+        .container .icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #ff5e57;
+        }
+
+        .container .button {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #ff5e57;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .container .button:hover {
+            background: #ff3b30;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .container h1 {
+                font-size: 1.5em;
+            }
+
+            .container p {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="icon">🗑️</div>
+        <h1>Unsubscribed Successfully</h1>
+        <p>You have been successfully unsubscribed from our mailing list.</p>
+        <p class="email" id="userEmail"></p>
+    </div>
+
+    <script>
+        // Function to extract the email from the URL
+        function getEmailFromURL() {
+            const path = window.location.pathname;
+            const segments = path.split('/');
+            let email = segments.pop() || segments.pop(); // Handle potential trailing slash
+            email = decodeURIComponent(email);
+            return email;
+        }
+
+        // Insert the email into the page
+        document.addEventListener('DOMContentLoaded', () => {
+            const email = getEmailFromURL();
+            if (email) {
+                const emailElement = document.getElementById('userEmail');
+                emailElement.textContent = `Email: ${email}`;
+            }
+        });
+    </script>
+
+</body>
+</html>

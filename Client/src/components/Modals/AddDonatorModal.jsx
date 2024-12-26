@@ -17,7 +17,9 @@ const AddDonatorModal = ({ open, onClose, handleAddDonator }) => {
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
   const [birthdate, setBirthdate] = useState("");
-  const [donatorEmail, setDonatorEmail] = useState([""]);
+  const [donatorEmail, setDonatorEmail] = useState([
+    { email: "" },
+  ]);
   const [donatorPhone, setDonatorPhone] = useState([
     { number: "", country: "il" },
   ]);
@@ -30,7 +32,7 @@ const AddDonatorModal = ({ open, onClose, handleAddDonator }) => {
       return;
     }
     setError("");
-    setDonatorEmail([...donatorEmail, ""]);
+    setDonatorEmail([...donatorEmail, { email: "" }]);
   };
 
   const addPhoneField = () => {
@@ -56,7 +58,7 @@ const AddDonatorModal = ({ open, onClose, handleAddDonator }) => {
 
   const handleEmailChange = (index, value) => {
     const updatedEmails = [...donatorEmail];
-    updatedEmails[index] = value;
+    updatedEmails[index] = { email: value };
     setDonatorEmail(updatedEmails);
   };
 
@@ -74,6 +76,10 @@ const AddDonatorModal = ({ open, onClose, handleAddDonator }) => {
       setError("First Name, Last Name, and Phone Number are required.");
       return;
     }
+
+    // console.log(donatorEmail);
+    // console.log(donatorPhone);
+    
     handleAddDonator({
       fName,
       lName,
@@ -154,7 +160,7 @@ const AddDonatorModal = ({ open, onClose, handleAddDonator }) => {
             <TextField
               fullWidth
               label={`Email ${index + 1}`}
-              value={email}
+              value={email.email}
               onChange={(e) => handleEmailChange(index, e.target.value)}
             />
             <IconButton

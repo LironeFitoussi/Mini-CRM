@@ -15,37 +15,31 @@ const AddDonatorButton = () => {
     const handleClose = () => setOpen(false);
 
     const handleAddDonator = async (donatorData) => {
-        console.log(donatorData);
+        // console.log(donatorData);
         
         const newDonator = {
             fName: donatorData.fName,
             lName: donatorData.lName,
             allo_don_id: donatorData.alloDonId || undefined,
             birthdate: donatorData.birthdate || undefined,
-            email_1: {
-                email: donatorData.donatorEmail[0],
-            },
-            email_2: {
-                email: donatorData.donatorEmail[1] || undefined,
-            },
-            email_3: {
-                email: donatorData.donatorEmail[2] || undefined,
-            },
+            email_1: donatorData.donatorEmail[0] || undefined,
+            email_2: donatorData.donatorEmail[1] || undefined,
+            email_3: donatorData.donatorEmail[2] || undefined,
             phone_number_1: donatorData.donatorPhone[0] || undefined,
             phone_number_2: donatorData.donatorPhone[1] || undefined,
             phone_number_3: donatorData.donatorPhone[2] || undefined
         };
 
-        console.log(newDonator);
+        // console.log(newDonator);
         
         try {
             const response = await axios.post(import.meta.env.VITE_API_URL + '/api/v1/donators', newDonator);
-            console.log(response.data);
+            // console.log(response.data);
             navigate(`${response.data._id}`);
 
             // handleClose();
         } catch (error) {
-            console.error(error);
+            console.error(error.response.data);
         }        
     };
 

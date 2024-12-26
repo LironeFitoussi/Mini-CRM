@@ -14,7 +14,7 @@ const DonatorTasks = ({ donatorId }) => {
             try {
                 const response = await axios.get(
                     `${import.meta.env.VITE_API_URL}/api/v1/donators/${donatorId}/tasks`);
-                console.log(response.data);
+                // console.log(response.data);
                 
                 setTasks(response.data);
             } catch (err) {
