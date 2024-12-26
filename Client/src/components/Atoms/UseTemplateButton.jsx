@@ -65,7 +65,7 @@ const UseTemplateButton = ({ handleChange }) => {
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {templates.map((template) => (
           <MenuItem
-            key={template.id}
+            key={template._id}
             onClick={() => handleTemplateSelect(template)}
             style={{
               display: 'flex',
