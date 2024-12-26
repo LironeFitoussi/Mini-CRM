@@ -12,6 +12,7 @@ import {
   DialogTitle,
   TextField,
   IconButton,
+    Box,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -19,6 +20,8 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { useAuth0 } from "@auth0/auth0-react";
 import ConfirmationModal from "../Modals/ConfirmationModal";
+import AddCommentIcon from '@mui/icons-material/AddComment';
+
 // Function to add a new note
 const addNote = async ({ donatorId, note, userId }) => {
   const { data } = await axios.post(
@@ -114,6 +117,7 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
 
   return (
     <div>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
       <Typography variant="h6">{t("donatorNotes.title")}</Typography>
       <Button
         variant="contained"
@@ -121,8 +125,10 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
         onClick={handleOpenModal}
         style={{ margin: "10px 0" }}
       >
-        {t("donatorNotes.addNote")}
+        {/* {t("donatorNotes.addNote")} */}
+        <AddCommentIcon />
       </Button>
+        </Box>
       {addNoteMutation.isLoading && (
         <CircularProgress size={24} style={{ margin: "10px 0" }} />
       )}
