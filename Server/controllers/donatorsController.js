@@ -278,7 +278,7 @@ exports.bulkCreateDonators = async (req, res) => {
         // Normalize Emails
         const emails = splitAndClean(contact.email);
         emails.forEach((email, emailIndex) => {
-          contact[`email_${emailIndex + 1}`] = email;
+          contact[`email_${emailIndex + 1}`] = { email, isSubscribed: true };
         });
         delete contact.email;
 
@@ -298,6 +298,7 @@ exports.bulkCreateDonators = async (req, res) => {
             number,
             country, // Update as needed
             is_whatsapp: "unknown", // Ensure it's a string
+            isSubscribed: true,
           };
           phoneIndex++;
         });

@@ -22,9 +22,15 @@ const AddDonatorButton = () => {
             lName: donatorData.lName,
             allo_don_id: donatorData.alloDonId || undefined,
             birthdate: donatorData.birthdate || undefined,
-            email_1: donatorData.donatorEmail[0] || undefined,
-            email_2: donatorData.donatorEmail[1] || undefined,
-            email_3: donatorData.donatorEmail[2] || undefined,
+            email_1: {
+                email: donatorData.donatorEmail[0],
+            },
+            email_2: {
+                email: donatorData.donatorEmail[1] || undefined,
+            },
+            email_3: {
+                email: donatorData.donatorEmail[2] || undefined,
+            },
             phone_number_1: donatorData.donatorPhone[0] || undefined,
             phone_number_2: donatorData.donatorPhone[1] || undefined,
             phone_number_3: donatorData.donatorPhone[2] || undefined

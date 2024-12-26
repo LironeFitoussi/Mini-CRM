@@ -16,6 +16,21 @@ const phoneSchema = new mongoose.Schema({
     required: false,
     default: "unknown",
   },
+  isSubscribed: {
+    type: Boolean,
+    default: true,
+  },
+});
+
+const mailSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    // required: true,
+  },
+  isSubscribed: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 // Main donator schema
@@ -37,18 +52,9 @@ const donatorSchema = new mongoose.Schema(
       type: Date,
       // required: false,
     },
-    email_1: {
-      type: String,
-      // required: false,
-    },
-    email_2: {
-      type: String,
-      // required: false,
-    },
-    email_3: {
-      type: String,
-      // required: false,
-    },
+    email_1: mailSchema, // Directly assign the sub-schema
+    email_2: mailSchema, // Directly assign the sub-schema
+    email_3: mailSchema, // Directly assign the sub-schema
     phone_number_1: phoneSchema, // Directly assign the sub-schema
     phone_number_2: phoneSchema,
     phone_number_3: phoneSchema,

@@ -155,7 +155,7 @@ export default function GlobalDonator() {
               <span>
                 {option.fName} {option.lName}
               </span>
-              <span>{option.email_1 || "N/A"}</span>
+              <span>{option.email_1.email || "N/A"}</span>
               <span>{getPhoneNumber(option)}</span>
             </div>
           </Box>

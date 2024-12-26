@@ -10,6 +10,7 @@ const mongoose = require("mongoose");
 const Authorized = require("./models/Authorized");
 dotenv.config();
 const PORT = process.env.PORT || 3000;
+const Donator = require("./models/Donator");
 
 const app = express();
 
@@ -37,6 +38,18 @@ app.get("/api/v1/get-auth-user", (req, res) => {
   try {
     const users = Authorized.find();
     res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.post("/api/v1/unsuscribe", async (req, res) => {
+  try {
+    const { id } = req.body;
+    const user = await Donator.findById(id);
+    user.isSubscribed = false;
+    await user.save();
+    res.status(200).json({ message: "User unsuscribed successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

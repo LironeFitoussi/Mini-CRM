@@ -59,13 +59,15 @@ const ClientDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  console.log("Client data:", client);
+  
   // ======= Email Modal State =======
   const [emailModalOpen, setEmailModalOpen] = useState(false);
 
   // Form values to pass into EmailModal > EmailForm
   const [formValues, setFormValues] = useState({
     from: "contact.lesenfantsderachi@gmail.com",
-    to: client?.email_1 || "",
+    to: client?.email_1?.email || "",
     subject: "",
     body: "",
     imagePosition: "top",
@@ -243,7 +245,7 @@ const ClientDetailsPage = () => {
           <Box sx={{ display: "flex", gap: 4, justifyContent: "space-between" }}>
             <Box>
           <Typography variant="body1">
-            <strong>Email:</strong> {email_1 || "N/A"}
+            <strong>Email:</strong> {email_1.email || "N/A"}
           </Typography>
           <Typography variant="body1">
             <strong>Phone:</strong> {phone_number_1?.number || "N/A"}
@@ -255,7 +257,7 @@ const ClientDetailsPage = () => {
 
             <Box>
           {/* ========== Contact Icons ========== */}
-            <SendEmailButton recipient={email_1} />
+            <SendEmailButton recipient={email_1.email} />
 
             <Button
               variant="contained"

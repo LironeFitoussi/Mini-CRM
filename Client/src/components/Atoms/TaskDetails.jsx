@@ -133,9 +133,9 @@ const TaskDetails = ({ task }) => {
             <Grid item xs={12}>
               <Typography variant="subtitle2">Email:</Typography>
               <Typography variant="body1">
-                {donator.email_1 ? (
-                  <a href={`mailto:${donator.email_1}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
-                    {donator.email_1}
+                {donator.email_1.email ? (
+                  <a href={`mailto:${donator.email_1.email}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
+                    {donator.email_1.email}
                   </a>
                 ) : (
                   "No email provided"

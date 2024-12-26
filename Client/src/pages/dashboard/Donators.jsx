@@ -178,7 +178,7 @@ const DontaorsPage = () => {
                   >
                     <TableCell>{client.fName || "N/A"}</TableCell>
                     <TableCell>{client.lName || "N/A"}</TableCell>
-                    <TableCell>{client.email_1 || "N/A"}</TableCell>
+                    <TableCell>{client.email_1?.email || "N/A"}</TableCell>
                     <TableCell>
                       {client.phone_number_1 && client.phone_number_1.number
                         ? `${client.phone_number_1.number}${
