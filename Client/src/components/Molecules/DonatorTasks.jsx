@@ -3,7 +3,6 @@ import axios from 'axios';
 import DonatorTaskItem from '../Atoms/DonatorTaskItem';
 
 const DonatorTasks = ({ donatorId }) => {
-    // console.log(donatorId);
     
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);

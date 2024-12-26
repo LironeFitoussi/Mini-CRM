@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import SmsIcon from "@mui/icons-material/Sms";
-import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 
 // MUI Components
 import {
@@ -21,15 +21,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
   PieChart,
   Pie,
+  Tooltip,
   Cell,
+  ResponsiveContainer,
 } from "recharts";
 
 // Components
@@ -38,6 +34,8 @@ import TaskCalendar from "../../../components/TaskCalendar";
 import EmailModal from "../../../components/Modals/EmailModal";
 import DonatorTasks from "../../../components/Molecules/DonatorTasks";
 import SendEmailButton from "../../../components/Atoms/SendEmailButton";
+import DonatorNotes from "../../../components/Molecules/DonatorNotes";
+import { getDonationTypes } from "../../../utils";
 
 const COLORS = [
   "#8884d8",
@@ -59,8 +57,6 @@ const ClientDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // console.log("Client data:", client);
-  
   // ======= Email Modal State =======
   const [emailModalOpen, setEmailModalOpen] = useState(false);
 
@@ -74,17 +70,15 @@ const ClientDetailsPage = () => {
     imageUrl: null,
   });
 
-  // Example: track changes from the child form
+  // ======= Handle Email Form Changes =======
   const handleEmailChange = (fieldName, newValue) => {
     console.log("Field changed:", fieldName, newValue);
-    
     setFormValues((prev) => ({ ...prev, [fieldName]: newValue }));
   };
 
-  // Example: handle the final "Send" button in the modal
+  // ======= Handle Email Submit =======
   const handleEmailSubmit = async (values) => {
     try {
-      // Mock an API request or real integration
       console.log("Sending email with values:", values);
       alert("Email sent successfully!");
       setEmailModalOpen(false);
@@ -187,152 +181,115 @@ const ClientDetailsPage = () => {
     NIS: "₪",
   };
 
-  const donationTypes = [
-    {
-      name: "Don spontané",
-      value: donations.filter((d) => d.type === "Don spontané").length,
-    },
-    {
-      name: "Aide au hayalim",
-      value: donations.filter((d) => d.type === "Aide au hayalim").length,
-    },
-    {
-      name: "Mikvé",
-      value: donations.filter((d) => d.type === "Mikvé").length,
-    },
-    {
-      name: "Aide aux Nécessiteux",
-      value: donations.filter((d) => d.type === "Aide aux Nécessiteux").length,
-    },
-    {
-      name: "Pessah",
-      value: donations.filter((d) => d.type === "Pessah").length,
-    },
-    {
-      name: "HANOUCA HAYALIM & YELADIM",
-      value: donations.filter((d) => d.type === "HANOUCA HAYALIM & YELADIM")
-        .length,
-    },
-    {
-      name: "Pourim",
-      value: donations.filter((d) => d.type === "Pourim").length,
-    },
-    {
-      name: "kapparot",
-      value: donations.filter((d) => d.type === "kapparot").length,
-    },
-    {
-      name: "DBI",
-      value: donations.filter((d) => d.type === "DBI").length,
-    },
-    {
-      name: "merci",
-      value: donations.filter((d) => d.type === "merci").length,
-    },
-    {
-      name: "Ahdoute",
-      value: donations.filter((d) => d.type === "Ahdoute").length,
-    },
-  ];
+  const donationTypes = getDonationTypes(donations);
 
+  // ======= Render UI =======
   return (
     <Box sx={{ padding: 4 }}>
-        <Paper sx={{ padding: 3, marginBottom: 3, boxShadow: 3 }}>
-          <Typography variant="h4" gutterBottom>
-            {fName} {lName} {!fName && !lName && "This client has no name."}
-          </Typography>
-          <Divider sx={{ marginY: 2 }} />
-          <Box sx={{ display: "flex", gap: 4, justifyContent: "space-between" }}>
-            <Box>
-          <Typography variant="body1">
-            <strong>Email:</strong> {email_1.email || "N/A"}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Phone:</strong> {phone_number_1?.number || "N/A"}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Birthdate:</strong> {birthdate ? new Date(birthdate).toLocaleDateString("en-GB") : "N/A"}
-          </Typography>
-            </Box>
-
-            <Box>
-          {/* ========== Contact Icons ========== */}
-            <SendEmailButton recipient={email_1.email} />
-
-            <Button
-              variant="contained"
-              startIcon={<WhatsAppIcon />}
-              sx={{
-                marginRight: 2,
-                backgroundColor: "#25D366",
-                color: "white",
-              }}
-            >
-              WhatsApp
-            </Button>
-
-            <Button
-              variant="contained"
-              startIcon={<SmsIcon />}
-              sx={{
-                backgroundColor: "#0088FE",
-                color: "white",
-              }}
-            >
-              SMS
-            </Button>
-          </Box>
-        </Box>
-      </Paper>
-
-      {/* ========== Analytics ========== */}
-      <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap", mt: 4 }}>
-        <Paper sx={{ flex: 1, p: 2, boxShadow: 3 }}>
-          <Typography variant="h6">Total Donations</Typography>
-          {Object.entries(groupedDonations).map(([currency, total]) => (
-            <Typography key={currency} variant="h5" sx={{ color: "primary.main" }}>
-              {currency} {currencyIcons[currency]}: {total}
+      {/* ========== Main Info & Chart (Side by Side but separate Papers) ========== */}
+      <Box sx={{ display: "flex", gap: 2, marginBottom: 3 }}>
+        {/* ---------- Left Paper: Client Info ---------- */}
+        <Paper sx={{ flex: 1, boxShadow: 3 }}>
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h4" gutterBottom>
+              {fName} {lName} {!fName && !lName && "This client has no name."}
             </Typography>
-          ))}
-        </Paper>
+            <Divider sx={{ my: 2 }} />
 
-        <Paper sx={{ flex: 1, p: 2, boxShadow: 3 }}>
-          <Typography variant="h6">Donation Types</Typography>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie
-                data={donationTypes}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                fill="#8884d8"
+            <Typography variant="body1" sx={{ mb: 1 }}>
+              <strong>Email:</strong> {email_1?.email || "N/A"}
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 1 }}>
+              <strong>Phone:</strong> {phone_number_1?.number || "N/A"}
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              <strong>Birthdate:</strong>{" "}
+              {birthdate
+                ? new Date(birthdate).toLocaleDateString("en-GB")
+                : "N/A"}
+            </Typography>
+
+            {/* ========== Contact Buttons ========== */}
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <SendEmailButton recipient={email_1?.email} />
+
+              <Button
+                variant="contained"
+                startIcon={<WhatsAppIcon />}
+                sx={{
+                  backgroundColor: "#25D366",
+                  color: "white",
+                  ":hover": { backgroundColor: "#1da851" },
+                }}
               >
-                {donationTypes.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+                WhatsApp
+              </Button>
+
+              <Button
+                variant="contained"
+                startIcon={<SmsIcon />}
+                sx={{
+                  backgroundColor: "#0088FE",
+                  color: "white",
+                  ":hover": { backgroundColor: "#0077e4" },
+                }}
+              >
+                SMS
+              </Button>
+            </Box>
+          </Box>
         </Paper>
 
-        <Paper sx={{ flex: 1, p: 2, boxShadow: 3 }}>
-          <Typography variant="h6">Donations Over Time</Typography>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={donations}>
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="amount" fill="#82ca9d" />
-            </BarChart>
-          </ResponsiveContainer>
+        {/* ---------- Right Paper: Donation Chart ---------- */}
+        <Paper sx={{ flex: 1, boxShadow: 3 }}>
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Total Donations
+            </Typography>
+            {Object.entries(groupedDonations).map(([currency, total]) => (
+              <Typography
+                key={currency}
+                variant="h5"
+                sx={{ color: "primary.main" }}
+              >
+                {currency} {currencyIcons[currency]}: {total}
+              </Typography>
+            ))}
+
+            <Box sx={{ width: "100%", height: 200, mt: 2 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={donationTypes}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                  >
+                    {donationTypes.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </Box>
+          </Box>
         </Paper>
       </Box>
 
+      {/* ========== Donator Notes ========== */}
+      <Paper sx={{ p: 2, boxShadow: 3, mb: 3 }}>
+        <DonatorNotes donatorId={id} note={client.notes} />
+      </Paper>
+
       {/* ========== Donation History Table ========== */}
-      <Box sx={{ mt: 4 }}>
+      <Box sx={{ mb: 4 }}>
         <Typography variant="h6" gutterBottom>
           Donation History
         </Typography>
@@ -356,31 +313,40 @@ const ClientDetailsPage = () => {
             </TableBody>
           </Table>
         </TableContainer>
+      </Box>
 
+      {/* ========== Donator Tasks ========== */}
+      <Box sx={{ mb: 4 }}>
         <DonatorTasks donatorId={id} />
       </Box>
-      
+
       {/* ========== Task Calendar ========== */}
-      <Box sx={{ mt: 4 }}>
+      <Box sx={{ mb: 4 }}>
         <TaskCalendar />
       </Box>
-      
-      {/* ========== Back to Clients ========== */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 4 }}>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => navigate("/dashboard/donators")}
-        sx={{ display: "flex", gap: 1 }}
+
+      {/* ========== Footer: Back & Delete ========== */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mt: 4,
+        }}
       >
-        <ArrowCircleLeftIcon /> {" "}
-        Back to Clients
-      </Button>
-      <DeleteDonatorButton donatorData={client} />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/dashboard/donators")}
+          sx={{ display: "flex", gap: 1 }}
+        >
+          <ArrowCircleLeftIcon /> Back to Clients
+        </Button>
+        <DeleteDonatorButton donatorData={client} />
       </Box>
+
       {/* ========== Email Modal ========== */}
       <EmailModal
-        // IMPORTANT: rename from `isOpen` to `open`
         open={emailModalOpen}
         onClose={() => setEmailModalOpen(false)}
         formValues={formValues}

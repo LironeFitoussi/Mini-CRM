@@ -87,7 +87,7 @@ const SendEmailButton = ({ recipient }) => {
     <>
       <Button
         sx={{
-          marginRight: 2,
+          // marginRight: 2,
           backgroundColor: "#FFBF00",
           color: "white",
           "&:hover": {

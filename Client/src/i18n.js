@@ -46,6 +46,21 @@ i18n
     resources: {
       en: {
         translation: {
+          donatorNotes: {
+            title: "Donator Notes",
+            addNote: "Add Note",
+            noNotes: "No notes available.",
+            addNewNote: "Add a New Note",
+            deleteTitle: "Delete Note",
+            deleteDescription: "Are you sure you want to delete this note? This action cannot be undone.",
+            noNotes: "No notes available.",
+            noteLabel: "Note",
+            cancel: "Cancel",
+            adding: "Adding...",
+            by: "By",
+            unknown: "Unknown",
+            on: "on",
+          },
           // Email
           emailSubject: "Subject",
           emailMessage: "Message",
@@ -62,10 +77,12 @@ i18n
 
           // Templates
           saveTemplate: "Save as Template",
-          confirmSaveTemplate: "Are you sure you want to save this email as a template?",
+          confirmSaveTemplate:
+            "Are you sure you want to save this email as a template?",
           deleteTemplate: "Delete Template",
-          confirmDeleteTemplate: "Are you sure you want to delete this template? This action cannot be undone.",
-          
+          confirmDeleteTemplate:
+            "Are you sure you want to delete this template? This action cannot be undone.",
+
           // Image Uploader
           dragAndDrop: "Drag & Drop your image here or click to select a file",
           uploadImage: "Upload Image",
@@ -318,6 +335,21 @@ i18n
 
       fr: {
         translation: {
+          donatorNotes: {
+            title: "Notes des Donateurs",
+            addNote: "Ajouter une Note",
+            deleteTitle: "Supprimer la Note",
+            deleteDescription:  "Êtes-vous sûr de vouloir supprimer cette note? Cette action ne peut pas être annulée.",
+            noNotes: "Aucune note disponible.",
+            addNewNote: "Ajouter une Nouvelle Note",
+            noNotes: "Aucune note disponible.",
+            noteLabel: "Note",
+            cancel: "Annuler",
+            adding: "Ajout...",
+            by: "Par",
+            unknown: "Inconnu",
+            on: "le",
+          },
           totalDonators: "Total Donateurs",
           dashboardWelcome: "Bienvenue sur le tableau de bord",
 

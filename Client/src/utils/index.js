@@ -31,3 +31,53 @@ export const emailFooter = `
   </tr>
 </table>
 `;
+
+export const getDonationTypes = (donations) => {
+  return [
+    {
+      name: "Don spontané",
+      value: donations.filter((d) => d.type === "Don spontané").length,
+    },
+    {
+      name: "Aide au hayalim",
+      value: donations.filter((d) => d.type === "Aide au hayalim").length,
+    },
+    {
+      name: "Mikvé",
+      value: donations.filter((d) => d.type === "Mikvé").length,
+    },
+    {
+      name: "Aide aux Nécessiteux",
+      value: donations.filter((d) => d.type === "Aide aux Nécessiteux").length,
+    },
+    {
+      name: "Pessah",
+      value: donations.filter((d) => d.type === "Pessah").length,
+    },
+    {
+      name: "HANOUCA HAYALIM & YELADIM",
+      value: donations.filter((d) => d.type === "HANOUCA HAYALIM & YELADIM")
+        .length,
+    },
+    {
+      name: "Pourim",
+      value: donations.filter((d) => d.type === "Pourim").length,
+    },
+    {
+      name: "kapparot",
+      value: donations.filter((d) => d.type === "kapparot").length,
+    },
+    {
+      name: "DBI",
+      value: donations.filter((d) => d.type === "DBI").length,
+    },
+    {
+      name: "merci",
+      value: donations.filter((d) => d.type === "merci").length,
+    },
+    {
+      name: "Ahdoute",
+      value: donations.filter((d) => d.type === "Ahdoute").length,
+    },
+  ];
+}
