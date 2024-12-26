@@ -14,6 +14,8 @@ import {
   Alert,
   Typography,
 } from "@mui/material";
+import Checkbox from '@mui/material/Checkbox';
+import PlaylistAddCircleIcon from '@mui/icons-material/PlaylistAddCircle';
 
 import { useNavigate, Outlet, useParams } from "react-router-dom";
 import debounce from "lodash.debounce";
@@ -23,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import AddDonatorButton from "../../components/Atoms/AddDonatorButton";
 
 // 1. Create a new page component named DonatorsPage.
-const DontaorsPage = () => {
+const DonatorsPage = () => { // Corrected component name
   const navigate = useNavigate();
   const { id } = useParams();
   const { t } = useTranslation();
@@ -37,6 +39,9 @@ const DontaorsPage = () => {
   const [totalClients, setTotalClients] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // New state for selected donor IDs
+  const [selectedDonorIds, setSelectedDonorIds] = useState([]);
 
   // Debounce the search input to avoid excessive API calls
   const debouncedChangeHandler = useCallback(
@@ -106,10 +111,40 @@ const DontaorsPage = () => {
     setPage(0); // Reset to first page whenever rows per page changes
   };
 
+  // Handle individual donor selection
+  const handleDonorSelect = (id) => {
+    setSelectedDonorIds((prevSelected) => {
+      if (prevSelected.includes(id)) {
+        return prevSelected.filter((donorId) => donorId !== id);
+      } else {
+        return [...prevSelected, id];
+      }
+    });
+  };
+
+  // Handle "Select All" functionality
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allIds = clients.map((client) => client._id);
+      setSelectedDonorIds(allIds);
+    } else {
+      setSelectedDonorIds([]);
+    }
+  };
+
+  // Log selected donor IDs whenever they change
+  useEffect(() => {
+    console.log("Selected Donor IDs:", selectedDonorIds);
+    // Future logic implementation can be placed here
+  }, [selectedDonorIds]);
+
   // If an ID param is present, render the Outlet for nested routes/details.
   if (id) {
     return <Outlet />;
   }
+
+  // Determine if all donors on the current page are selected
+  const isAllSelected = clients.length > 0 && selectedDonorIds.length === clients.length;
 
   return (
     <Box sx={{ padding: 4 }}>
@@ -154,6 +189,16 @@ const DontaorsPage = () => {
             <TableHead>
               <TableRow>
                 <TableCell>
+                  {/* "Select All" Checkbox */}
+                  <Checkbox
+                    color="primary"
+                    indeterminate={selectedDonorIds.length > 0 && selectedDonorIds.length < clients.length}
+                    checked={isAllSelected}
+                    onChange={handleSelectAll}
+                    inputProps={{ 'aria-label': 'select all clients' }}
+                  />
+                </TableCell>
+                <TableCell>
                   {t("fName")}
                 </TableCell>
                 <TableCell>
@@ -169,30 +214,42 @@ const DontaorsPage = () => {
             </TableHead>
             <TableBody>
               {clients.length > 0 ? (
-                clients.map((client) => (
-                  <TableRow
-                    key={client._id}
-                    hover
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => navigate(`/dashboard/donators/${client._id}`)}
-                  >
-                    <TableCell>{client.fName || "N/A"}</TableCell>
-                    <TableCell>{client.lName || "N/A"}</TableCell>
-                    <TableCell>{client.email_1?.email || "N/A"}</TableCell>
-                    <TableCell>
-                      {client.phone_number_1 && client.phone_number_1.number
-                        ? `${client.phone_number_1.number}${
-                            client.phone_number_1.country
-                              ? ` (${client.phone_number_1.country})`
-                              : ""
-                          }`
-                        : "N/A"}
-                    </TableCell>
-                  </TableRow>
-                ))
+                clients.map((client) => {
+                  const isSelected = selectedDonorIds.includes(client._id);
+                  return (
+                    <TableRow
+                      key={client._id}
+                      hover
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => navigate(`/dashboard/donators/${client._id}`)}
+                      selected={isSelected}
+                    >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          color="primary"
+                          checked={isSelected}
+                          onChange={() => handleDonorSelect(client._id)}
+                          inputProps={{ 'aria-label': `select client ${client.fName} ${client.lName}` }}
+                        />
+                      </TableCell>
+                      <TableCell>{client.fName || "N/A"}</TableCell>
+                      <TableCell>{client.lName || "N/A"}</TableCell>
+                      <TableCell>{client.email_1?.email || "N/A"}</TableCell>
+                      <TableCell>
+                        {client.phone_number_1 && client.phone_number_1.number
+                          ? `${client.phone_number_1.number}${
+                              client.phone_number_1.country
+                                ? ` (${client.phone_number_1.country})`
+                                : ""
+                            }`
+                          : "N/A"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} align="center">
+                  <TableCell colSpan={5} align="center">
                     No clients found.
                   </TableCell>
                 </TableRow>
@@ -220,4 +277,4 @@ const DontaorsPage = () => {
   );
 };
 
-export default DontaorsPage;
+export default DonatorsPage;
