@@ -12,6 +12,7 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 const path = require("path");
 const app = express();
+const connectDB = require('./config/db');
 
 app.use(morgan("dev"));
 app.use(cors());
@@ -19,10 +20,7 @@ app.use(bodyParser.json());
 app.use("/api/upload", uploadRoutes);
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI).then(() => {
-  // console.log("Connected to MongoDB");
-});
+connectDB();
 
 app.use("/api/v1/users", require("./routes/usersRoutes.js"));
 app.use("/api/v1/whatsapp", require("./routes/whatsappRoutes.js"));
@@ -33,6 +31,7 @@ app.use("/api/v1/email", require("./routes/emailsRoutes.js"));
 app.use("/api/v1/tasks", require("./routes/tasksRoutes.js"));
 app.use("/api/v1/dashboard", require("./routes/dashboardRoutes.js"));
 app.use("/api/v1/mail-templates", require("./routes/mailTemplateRoutes"));
+app.use("/api/v1/leads", require("./routes/leadRoutes"));
 app.use("/api/v1/notes", require("./routes/noteRoutes"));
 app.use("/unsubscribe", require("./routes/unsubscribeRoutes.js"));
 

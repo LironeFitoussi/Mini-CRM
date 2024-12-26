@@ -1,0 +1,336 @@
+{
+    "info": {
+      "name": "Lead API Collection",
+      "_postman_id": "12345678-1234-1234-1234-123456789012",
+      "description": "Collection of API endpoints for Lead management",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Leads",
+        "item": [
+          {
+            "name": "Create Lead",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"title\": \"Lead Title\",\n    \"description\": \"Lead Description\",\n    \"owner\": \"{{ownerId}}\",\n    \"donators\": [\n        {\n            \"donatorId\": \"{{donatorId}}\",\n            \"status\": \"To Contact\"\n        }\n    ],\n    \"metadata\": {\n        \"key1\": \"value1\",\n        \"key2\": \"value2\"\n    }\n}"
+              },
+              "url": {
+                "raw": "{{Base_URL}}/leads",
+                "host": ["{{Base_URL}}"],
+                "path": ["leads"]
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "// Tests for Create Lead",
+                    "pm.test(\"Status code is 201\", function () {",
+                    "    pm.response.to.have.status(201);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has _id\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.have.property('_id');",
+                    "    pm.environment.set(\"leadId\", jsonData._id);",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Get All Leads",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{Base_URL}}/leads",
+                "host": ["{{Base_URL}}"],
+                "path": ["leads"]
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "// Tests for Get All Leads",
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Response is an array\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.be.an('array');",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Get Lead by ID",
+            "request": {
+              "method": "GET",
+              "header": [],
+              "url": {
+                "raw": "{{Base_URL}}/leads/{{leadId}}",
+                "host": ["{{Base_URL}}"],
+                "path": ["leads", "{{leadId}}"]
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "// Tests for Get Lead by ID",
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has correct _id\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.have.property('_id', pm.environment.get('leadId'));",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Update Lead",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"title\": \"Updated Lead Title\",\n    \"description\": \"Updated Description\",\n    \"donators\": [\n        {\n            \"donatorId\": \"{{donatorId}}\",\n            \"status\": \"Meeting Scheduled\"\n        }\n    ],\n    \"metadata\": {\n        \"key1\": \"newValue1\"\n    }\n}"
+              },
+              "url": {
+                "raw": "{{Base_URL}}/leads/{{leadId}}",
+                "host": ["{{Base_URL}}"],
+                "path": ["leads", "{{leadId}}"]
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "// Tests for Update Lead",
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has updated title\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.have.property('title', 'Updated Lead Title');",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Delete Lead",
+            "request": {
+              "method": "DELETE",
+              "header": [],
+              "url": {
+                "raw": "{{Base_URL}}/leads/{{leadId}}",
+                "host": ["{{Base_URL}}"],
+                "path": ["leads", "{{leadId}}"]
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "// Tests for Delete Lead",
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has success message\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.have.property('message', 'Lead deleted successfully');",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Add Donator",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"donatorId\": \"{{donatorId}}\",\n    \"status\": \"To Call Back\"\n}"
+              },
+              "url": {
+                "raw": "{{Base_URL}}/leads/{{leadId}}/donators",
+                "host": ["{{Base_URL}}"],
+                "path": ["leads", "{{leadId}}", "donators"]
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "// Tests for Add Donator",
+                    "pm.test(\"Status code is 201\", function () {",
+                    "    pm.response.to.have.status(201);",
+                    "});",
+                    "",
+                    "pm.test(\"Donator added\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.donators).to.be.an('array').that.is.not.empty;",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Update Donator Status",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"status\": \"No Response\"\n}"
+              },
+              "url": {
+                "raw": "{{Base_URL}}/leads/{{leadId}}/donators/{{donatorId}}",
+                "host": ["{{Base_URL}}"],
+                "path": ["leads", "{{leadId}}", "donators", "{{donatorId}}"]
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "// Tests for Update Donator Status",
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Donator status updated\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    var donator = jsonData.donators.find(d => d.donatorId === pm.environment.get('donatorId'));",
+                    "    pm.expect(donator).to.have.property('status', 'No Response');",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Remove Donator",
+            "request": {
+              "method": "DELETE",
+              "header": [],
+              "url": {
+                "raw": "{{Base_URL}}/leads/{{leadId}}/donators/{{donatorId}}",
+                "host": ["{{Base_URL}}"],
+                "path": ["leads", "{{leadId}}", "donators", "{{donatorId}}"]
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "// Tests for Remove Donator",
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has success message\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.have.property('message', 'Donator removed successfully');",
+                    "});"
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "Base_URL",
+        "value": "http://localhost:5000/api/v1",
+        "type": "string"
+      },
+      {
+        "key": "leadId",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "donatorId",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "ownerId",
+        "value": "",
+        "type": "string"
+      }
+    ]
+  }
+  
