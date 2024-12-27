@@ -46,6 +46,7 @@ i18n
     resources: {
       en: {
         translation: {
+          leads: "Leads",
           donatorNotes: {
             title: "Donator Notes",
             addNote: "Add Note",
@@ -335,6 +336,7 @@ i18n
 
       fr: {
         translation: {
+          leads: "Leads",
           donatorNotes: {
             title: "Notes des Donateurs",
             addNote: "Ajouter une Note",
