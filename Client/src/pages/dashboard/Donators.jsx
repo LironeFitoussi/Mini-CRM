@@ -144,10 +144,10 @@ const DonatorsPage = () => { // Corrected component name
     };
 
     // Log selected donor IDs whenever they change
-    useEffect(() => {
-        console.log("Selected Donor IDs:", selectedDonorIds);
+    // useEffect(() => {
+        // console.log("Selected Donor IDs:", selectedDonorIds);
         // Future logic implementation can be placed here
-    }, [selectedDonorIds]);
+    // }, [selectedDonorIds]);
 
     // If an ID param is present, render the Outlet for nested routes/details.
     if (id) {

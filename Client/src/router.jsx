@@ -8,6 +8,7 @@ import Profile from "./pages/Profile.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import ProtectedRoute from "./components/Atoms/Protected.jsx";
+const LeadsPage = React.lazy(() => import("./pages/dashboard/Leads.jsx"));
 
 // Dashboard subpages
 const Overview = React.lazy(() => import("./pages/dashboard/Overview.jsx"));
@@ -67,6 +68,14 @@ const router = [
                 ), // Client Details subpage
               },
             ],
+          },
+          {
+            path: "leads",
+            element: (
+              <ProtectedRoute level="user">
+                <LeadsPage />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "tasks",

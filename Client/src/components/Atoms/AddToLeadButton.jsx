@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import debounce from 'lodash.debounce';
 import useLeads from '../../queryhooks/useLeads';
 import useAddDonorsToLead from '../../queryhooks/useAddDonorsToLead';
+import CreateLeadButton from '../Buttons/CreateLeadButton';
 
 const AddToLeadButton = ({ selectedDonorIds }) => {
     const { t } = useTranslation();
@@ -154,6 +155,7 @@ const AddToLeadButton = ({ selectedDonorIds }) => {
 
                     {/* Action Buttons */}
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, gap: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                         <Button
                             variant="contained"
                             color="primary"
@@ -173,6 +175,10 @@ const AddToLeadButton = ({ selectedDonorIds }) => {
                         >
                             Cancel
                         </Button>
+                        </Box>
+                        <Box>
+                            <CreateLeadButton />
+                        </Box>
                     </Box>
                 </Box>
             </Modal>

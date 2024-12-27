@@ -6,6 +6,8 @@ import { fetchDonators } from '../api/donators';
 const useDonators = ({ initialPage = 1, limit = 10, search = '' }) => {
     const [currentPage, setCurrentPage] = useState(initialPage);
 
+    // console.log(initialPage, limit, search);
+    
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['donators', currentPage, limit, search],
         queryFn: () => fetchDonators({ page: currentPage, limit, search }),

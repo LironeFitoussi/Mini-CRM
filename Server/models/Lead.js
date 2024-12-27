@@ -56,6 +56,11 @@ const leadSchema = new Schema(
 // Index for faster querying by owner or donator status
 leadSchema.index({ owner: 1, 'donators.status': 1 });
 
+// pre fetch each donator from Donator collection
+leadSchema.pre('find', function() {
+  this.populate('donators.donatorId');
+});
+
 // Lead Model
 const Lead = model('Lead', leadSchema);
 
