@@ -47,6 +47,14 @@ const Sidebar = () => {
                 {t("donators")}
               </Link>
             </li>
+            <li>
+              <Link
+                to="leads"
+                className="block px-4 py-2 hover:bg-gray-700 transition"
+              >
+                {t("leads")}
+              </Link>
+            </li>
             {/* <li>
               <Link
                 to="donations"
