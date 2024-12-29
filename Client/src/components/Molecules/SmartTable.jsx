@@ -42,6 +42,9 @@ const SmartTable = ({
     onStatusToggle && onStatusToggle(leadId, newStatus);
   };
 
+  if (!leadId) {
+    return <div>{t("selectLead")}</div>;
+  }
   const columns = [
     {
       field: "lName",
@@ -54,16 +57,15 @@ const SmartTable = ({
       flex: 1,
     },
     {
-      field: "email_1",
+      field: "email",
       headerName: t("Email"),
       flex: 2, // Make this column larger
-      valueGetter: (params) => params?.row?.email_1 || "N/A",
     },
     {
-      field: "phone",
+      field: "phoneNumber",
       headerName: t("Phone"),
       flex: 1,
-      valueGetter: (params) => params?.row?.phone_number_1 || "N/A",
+      // valueGetter: (params) => params?.row?.phone_number_1?.number || "N/A",
     },
     {
       field: "status",
@@ -102,9 +104,13 @@ const SmartTable = ({
   const rows = donators.map((donatorEntry) => ({
     leadId: donatorEntry._id,
     status: donatorEntry.status,
+    phoneNumber: donatorEntry.donator[0].phone_number_1?.number || "N/A",
+    email: donatorEntry.donator[0].email_1?.email || "N/A",
     ...donatorEntry.donator[0],
   }));
 
+  console.log(rows);
+  
   return (
     <div style={{ height: 600, width: size }}>
       <DataGrid

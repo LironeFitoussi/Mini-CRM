@@ -105,7 +105,7 @@ export default function GlobalDonator() {
   const getOptionLabel = (option) => {
     const fName = option.fName || "";
     const lName = option.lName || "";
-    const email = option.email_1 || "";
+    const email = option?.email_1 || "";
     const phone = getPhoneNumber(option);
 
     // Prioritize name, then email, then phone
@@ -155,7 +155,7 @@ export default function GlobalDonator() {
               <span>
                 {option.fName} {option.lName}
               </span>
-              <span>{option.email_1.email || "N/A"}</span>
+              <span>{option?.email_1?.email || "N/A"}</span>
               <span>{getPhoneNumber(option)}</span>
             </div>
           </Box>

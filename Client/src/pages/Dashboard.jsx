@@ -18,16 +18,23 @@ import GlobatSearch from "../components/Atoms/GlobalSearch.jsx";
 
 const Dashboard = () => {
   const { t } = useTranslation();
-  const { user, isAuthenticated, isLoading: authLoading, error: authError } = useAuth0();
+  const {
+    user,
+    isAuthenticated,
+    isLoading: authLoading,
+    error: authError,
+  } = useAuth0();
 
   // console.log(user.sub);
-  
+
   // Function to fetch user data from your backend
   const fetchUserData = async () => {
     if (!user) throw new Error("User is not authenticated");
 
     // Construct the API URL using environment variables and user.sub
-    const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/users/me?email=${user.email}`;
+    const apiUrl = `${import.meta.env.VITE_API_URL}/api/v1/users/me?email=${
+      user.email
+    }`;
 
     try {
       const response = await axios.get(apiUrl);
@@ -73,17 +80,11 @@ const Dashboard = () => {
   return (
     <div className="flex bg-gray-100" style={{ height: "100vh" }}>
       {/* Sidebar */}
-      <Sidebar />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <header className="flex items-center justify-between px-6 py-4 bg-white shadow">
-          <div className="text-lg font-semibold">
-            <h1>{t("dashboardWelcome")}</h1>
-          </div>
-          <GlobatSearch />
-        </header>
+        <Sidebar />
 
         {/* Main Content */}
         <main className="p-6 overflow-y-auto">
