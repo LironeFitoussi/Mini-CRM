@@ -2,6 +2,7 @@
 const express = require('express');
 const {
   createLead,
+  changeLeadStatus,
   getAllLeads,
   getLeadById,
   updateLead,
@@ -27,6 +28,9 @@ router.route('/:id')
   .get(getLeadById)
   .put(updateLead)
   .delete(deleteLead);
+
+router.route('/:id/status')
+  .put(changeLeadStatus);
 
 router.route('/:id/donators')
   .post(addDonator);

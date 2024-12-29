@@ -23,8 +23,8 @@ import debounce from "lodash.debounce";
 import { useTranslation } from 'react-i18next';
 
 // Components
-import AddDonatorButton from "../../components/Atoms/AddDonatorButton";
-import AddToLeadButton from "../../components/Atoms/AddToLeadButton";
+import AddDonatorButton from "../../components/Buttons/AddDonatorButton";
+import AddToLeadButton from "../../components/Buttons/AddToLeadButton";
 
 // 1. Create a new page component named DonatorsPage.
 const DonatorsPage = () => { // Corrected component name

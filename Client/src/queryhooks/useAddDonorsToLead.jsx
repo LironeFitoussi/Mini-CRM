@@ -3,8 +3,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 const addDonorsToLead = async ({ leadId, donorIds }) => {
+    console.log(donorIds);
+    
     const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/v1/leads/${leadId}/add-donors`,
+        `${import.meta.env.VITE_API_URL}/api/v1/leads/${leadId}/donators`,
         { donorIds }
     );
     return response.data;

@@ -1,9 +1,12 @@
+// src/queryhooks/useLeads.js
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
-const fetchLeads = async () => {
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/leads`);
-    return response.data;
+const fetchLeads = async (searchTerm = '') => {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/leads`, {
+        params: { search: searchTerm },
+    });
+    return response.data.data;
 };
 
 const createLead = async (newLead) => {
@@ -11,24 +14,35 @@ const createLead = async (newLead) => {
     return response.data;
 };
 
-const useLeads = () => {
+const useLeads = (searchTerm) => {
     const queryClient = useQueryClient();
 
     const leadsQuery = useQuery({
-        queryKey: ['leads'],
-        queryFn: fetchLeads,
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        queryKey: ['leads', searchTerm],
+        queryFn: () => fetchLeads(searchTerm),
+        staleTime: 5 * 60 * 1000,
         retry: 1,
     });
 
     const createLeadMutation = useMutation({
         mutationFn: createLead,
-        onSuccess: (data) => {
-            queryClient.invalidateQueries(['leads']); // Refresh leads on successful creation
+        onSuccess: () => {
+            queryClient.invalidateQueries(['leads']);
         },
     });
 
-    return { ...leadsQuery, createLead: createLeadMutation };
+    const { data, isLoading, isError, error } = leadsQuery;
+
+    const invalidateLeads = () => queryClient.invalidateQueries(['leads']);
+
+    return { 
+        data, 
+        isLoading, 
+        isError, 
+        error, 
+        invalidateLeads,
+        createLead: createLeadMutation 
+    };
 };
 
 export default useLeads;

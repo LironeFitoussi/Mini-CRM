@@ -53,7 +53,8 @@ i18n
             noNotes: "No notes available.",
             addNewNote: "Add a New Note",
             deleteTitle: "Delete Note",
-            deleteDescription: "Are you sure you want to delete this note? This action cannot be undone.",
+            deleteDescription:
+              "Are you sure you want to delete this note? This action cannot be undone.",
             noNotes: "No notes available.",
             noteLabel: "Note",
             cancel: "Cancel",
@@ -61,6 +62,14 @@ i18n
             by: "By",
             unknown: "Unknown",
             on: "on",
+          },
+          menuItems: {
+            toContact: "To Contact",
+            noResponse: "No Response",
+            toCallBack: "To Call Back",
+            meetingScheduled: "Meeting Scheduled",
+            notInterested: "Not Interested",
+            nothingToReport: "Nothing to Report",
           },
           // Email
           emailSubject: "Subject",
@@ -336,12 +345,22 @@ i18n
 
       fr: {
         translation: {
+          menuItems: {
+            toContact: "À contacter",
+            noResponse: "Pas de réponse",
+            toCallBack: "À rappeler",
+            meetingScheduled: "Réunion prévue",
+            notInterested: "Pas intéressé",
+            nothingToReport: "Rien à signaler",
+          },
+
           leads: "Leads",
           donatorNotes: {
             title: "Notes des Donateurs",
             addNote: "Ajouter une Note",
             deleteTitle: "Supprimer la Note",
-            deleteDescription:  "Êtes-vous sûr de vouloir supprimer cette note? Cette action ne peut pas être annulée.",
+            deleteDescription:
+              "Êtes-vous sûr de vouloir supprimer cette note? Cette action ne peut pas être annulée.",
             noNotes: "Aucune note disponible.",
             addNewNote: "Ajouter une Nouvelle Note",
             noNotes: "Aucune note disponible.",

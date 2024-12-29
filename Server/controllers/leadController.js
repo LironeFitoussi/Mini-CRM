@@ -1,5 +1,6 @@
 // controllers/leadController.js
-const Lead = require('../models/Lead');
+const LeadList = require("../models/LeadList");
+const LeadCard = require("../models/LeadCard");
 
 // @desc    Create a new lead
 // @route   POST /api/leads
@@ -8,15 +9,23 @@ const createLead = async (req, res, next) => {
   try {
     const { title, description, owner, donators, metadata } = req.body;
 
-    const lead = new Lead({
+    const lead = new LeadList({
       title,
       description,
-      owner,
-      donators,
+      user: owner, // Assign the owner's ID
       metadata,
     });
 
     const savedLead = await lead.save();
+
+    // Create lead cards for each donator
+    const leadCards = donators.map((donator) => ({
+      leadList: savedLead._id,
+      donatorEntryId: donator.donatorId,
+    }));
+
+    await LeadCard.insertMany(leadCards);
+
     res.status(201).json(savedLead);
   } catch (error) {
     next(error);
@@ -26,12 +35,43 @@ const createLead = async (req, res, next) => {
 // @desc    Get all leads
 // @route   GET /api/leads
 // @access  Private
+// controllers/leadsController.js
 const getAllLeads = async (req, res, next) => {
   try {
-    const leads = await Lead.find()
-      .populate('owner', 'name email') // Adjust fields as necessary
-      .populate('donators.donatorId', 'name contact'); // Adjust fields as necessary
-    res.status(200).json(leads);
+    const { search, page = 1, limit = 20 } = req.query; // Optional pagination
+
+    // Build the query object
+    const query = {};
+
+    if (search) {
+      // Use a case-insensitive regular expression for partial matching on the 'name' field
+      query.name = { $regex: search, $options: "i" };
+    }
+
+    // Calculate pagination values
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const parsedLimit = parseInt(limit) > 100 ? 100 : parseInt(limit); // Cap the limit to prevent excessive data
+
+    // Execute the query with filters and pagination
+    const leads = await LeadList.find(query)
+      // .populate("leadCards")
+      .skip(skip)
+      .limit(parsedLimit)
+      .select("-__v -createdAt -updatedAt -id")
+      .exec();
+
+    // Optionally, get the total count for pagination purposes
+    const totalLeads = await LeadList.countDocuments(query).exec();
+
+    res.status(200).json({
+      data: leads,
+      meta: {
+        total: totalLeads,
+        page: parseInt(page),
+        limit: parsedLimit,
+        totalPages: Math.ceil(totalLeads / parsedLimit),
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -42,12 +82,11 @@ const getAllLeads = async (req, res, next) => {
 // @access  Private
 const getLeadById = async (req, res, next) => {
   try {
-    const lead = await Lead.findById(req.params.id)
-      .populate('owner', 'name email')
-      .populate('donators.donatorId', 'name contact');
+    const lead = await LeadList.findById(req.params.id)
+      .populate("leadCards")
 
     if (!lead) {
-      return res.status(404).json({ message: 'Lead not found' });
+      return res.status(404).json({ message: "Lead not found" });
     }
 
     res.status(200).json(lead);
@@ -61,16 +100,16 @@ const getLeadById = async (req, res, next) => {
 // @access  Private
 const updateLead = async (req, res, next) => {
   try {
-    const { title, description, donators, metadata } = req.body;
+    const { title, description } = req.body;
 
-    const updatedLead = await Lead.findByIdAndUpdate(
+    const updatedLead = await LeadList.findByIdAndUpdate(
       req.params.id,
-      { title, description, donators, metadata },
+      { title, description },
       { new: true, runValidators: true }
     );
 
     if (!updatedLead) {
-      return res.status(404).json({ message: 'Lead not found' });
+      return res.status(404).json({ message: "Lead not found" });
     }
 
     res.status(200).json(updatedLead);
@@ -79,18 +118,40 @@ const updateLead = async (req, res, next) => {
   }
 };
 
+// @desc    Toggle a lead's status by ID
+// @route   PUT /api/leads/:id/toggle-status
+// @access  Private
+const changeLeadStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    
+    const lead = await LeadCard.findById(req.params.id);
+
+    if (!lead) {
+      return res.status(404).json({ message: "Lead not found" });
+    }
+
+    lead.status === status;
+
+    await lead.save();
+
+    res.status(200).json(lead);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to toggle lead status" });
+  }
+};
 // @desc    Delete a lead by ID
 // @route   DELETE /api/leads/:id
 // @access  Private
 const deleteLead = async (req, res, next) => {
   try {
-    const lead = await Lead.findByIdAndDelete(req.params.id);
+    const lead = await LeadList.findByIdAndDelete(req.params.id);
 
     if (!lead) {
-      return res.status(404).json({ message: 'Lead not found' });
+      return res.status(404).json({ message: "Lead not found" });
     }
 
-    res.status(200).json({ message: 'Lead deleted successfully' });
+    res.status(200).json({ message: "Lead deleted successfully" });
   } catch (error) {
     next(error);
   }
@@ -101,18 +162,23 @@ const deleteLead = async (req, res, next) => {
 // @access  Private
 const addDonator = async (req, res, next) => {
   try {
-    const { donatorId, status } = req.body;
+    // Get Lead ID from the URL
+    const { id } = req.params;
 
-    const lead = await Lead.findById(req.params.id);
+    // Get the donator IDs from the request body
+    const { donorIds } = req.body;
 
-    if (!lead) {
-      return res.status(404).json({ message: 'Lead not found' });
-    }
+    // Crate a new LeadCard for each donator
+    const leadCards = donorIds.map((donatorId) => ({
+      leadList: id,
+      donatorEntryId: donatorId,
+    }));
 
-    lead.donators.push({ donatorId, status });
-    const updatedLead = await lead.save();
+    // Insert the new LeadCards
+    const leads = await LeadCard.insertMany(leadCards);
 
-    res.status(201).json(updatedLead);
+
+    res.status(201).json(leads);
   } catch (error) {
     next(error);
   }
@@ -129,13 +195,17 @@ const updateDonatorStatus = async (req, res, next) => {
     const lead = await Lead.findById(id);
 
     if (!lead) {
-      return res.status(404).json({ message: 'Lead not found' });
+      return res.status(404).json({ message: "Lead not found" });
     }
 
-    const donator = lead.donators.find(d => d.donatorId.toString() === donatorId);
+    const donator = lead.donators.find(
+      (d) => d.donatorId.toString() === donatorId
+    );
 
     if (!donator) {
-      return res.status(404).json({ message: 'Donator not found in this lead' });
+      return res
+        .status(404)
+        .json({ message: "Donator not found in this lead" });
     }
 
     donator.status = status;
@@ -157,25 +227,30 @@ const removeDonator = async (req, res, next) => {
     const lead = await Lead.findById(id);
 
     if (!lead) {
-      return res.status(404).json({ message: 'Lead not found' });
+      return res.status(404).json({ message: "Lead not found" });
     }
 
-    const donatorIndex = lead.donators.findIndex(d => d.donatorId.toString() === donatorId);
+    const donatorIndex = lead.donators.findIndex(
+      (d) => d.donatorId.toString() === donatorId
+    );
 
     if (donatorIndex === -1) {
-      return res.status(404).json({ message: 'Donator not found in this lead' });
+      return res
+        .status(404)
+        .json({ message: "Donator not found in this lead" });
     }
 
     lead.donators.splice(donatorIndex, 1);
     await lead.save();
 
-    res.status(200).json({ message: 'Donator removed successfully' });
+    res.status(200).json({ message: "Donator removed successfully" });
   } catch (error) {
     next(error);
   }
 };
 
 module.exports = {
+  getAllLeads,
   createLead,
   getAllLeads,
   getLeadById,
@@ -184,4 +259,5 @@ module.exports = {
   addDonator,
   updateDonatorStatus,
   removeDonator,
+  changeLeadStatus,
 };

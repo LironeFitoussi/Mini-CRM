@@ -7,6 +7,7 @@ import {
   Select,
   FormControl,
   InputLabel,
+  CircularProgress,
 } from "@mui/material";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -23,8 +24,9 @@ const EmailForm = ({
   handleSubmit,
 }) => {
   const { t } = useTranslation();
-  
+
   const [emailPreviewOpen, setEmailPreviewOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false); // New state for loading spinner
 
   const fromEmails = [
     "lironefit@gmail.com",
@@ -55,6 +57,17 @@ const EmailForm = ({
 
   const handlePreview = () => {
     setEmailPreviewOpen(true);
+  };
+  
+  const handleEmailSubmit = async () => {
+    setIsSending(true); // Start loading state
+    try {
+      await handleSubmit(); // Wait for the email submission to complete
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("Failed to send email.");
+    }
+    setIsSending(false); // Reset loading
   };
 
   return (
@@ -124,8 +137,22 @@ const EmailForm = ({
         sx={{ mt: 2, display: "flex", gap: 2, justifyContent: "space-between" }}
       >
         <Box sx={{ display: "flex", gap: 2 }}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            {t("emailSend") || "Send Email"}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleEmailSubmit}
+            disabled={isSending} // Disable the button while sending
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {isSending ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              t("emailSend") || "Send Email"
+            )}
           </Button>
           <Button variant="outlined" onClick={handlePreview}>
             {t("emailPreview") || "Preview Email"}

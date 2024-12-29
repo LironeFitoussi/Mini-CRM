@@ -68,9 +68,9 @@ const SendEmailButton = ({ recipient }) => {
   };
 
   // Function to handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // You can add form validation here if needed
-    sendMail();
+    await sendMail();
   };
 
   // Function to handle button click
@@ -95,10 +95,9 @@ const SendEmailButton = ({ recipient }) => {
           },
         }}
         color="primary"
-        startIcon={<MailOutlineIcon />}
         onClick={handleClick}
       >
-        Email
+        <MailOutlineIcon />
       </Button>
       <EmailModal
         open={emailModalOpen}

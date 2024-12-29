@@ -2,11 +2,9 @@
 import React from "react";
 import {
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
   Box,
-  Button,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
