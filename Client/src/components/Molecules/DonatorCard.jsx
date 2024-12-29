@@ -8,8 +8,8 @@ import {
   Tooltip,
   IconButton,
 } from "@mui/material";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import SmsIcon from "@mui/icons-material/Sms";
+import { Link } from "react-router-dom";
 import {
   PieChart,
   Pie,
@@ -18,6 +18,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import axios from "axios";
+import LaunchIcon from '@mui/icons-material/Launch';
 
 // Buttons
 import SendEmailButton from "../../components/Atoms/SendEmailButton"; // Adjust the path to your component
@@ -35,7 +36,7 @@ const mockDonationData = [
 const DonatorCard = ({ donatorId, onClose }) => {
   const [showChart, setShowChart] = useState(false);
   const [donatorData, setDonatorData] = useState(null);
-    
+
   // Fetch donator data
   useEffect(() => {
     const fetchDonatorData = async () => {
@@ -62,44 +63,57 @@ const DonatorCard = ({ donatorId, onClose }) => {
         position: "relative",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "space-between",
         gap: 2,
       }}
     >
-      {/* Donator Details */}
       <Box>
-        <Typography variant="h6" gutterBottom>
-          Donator Details
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <Typography variant="body1">
-          <strong>Name:</strong>
-          {` ${donatorData?.fName || "Unknown"} ${donatorData?.lName || ""}`}
-        </Typography>
-      </Box>
+        {/* Donator Details */}
+        <Box>
+          <Typography variant="h6" gutterBottom className="flex justify-between items-center">
+            Donator Details
 
-      {/* Contact Options */}
-      <Box>
-        <Typography variant="body1" sx={{ mb: 1 }}>
-          <strong>Contact Options:</strong>
-        </Typography>
-        <Box sx={{ display: "flex", gap: 1 }}>
-          {/* Send Email Button */}
-          <SendEmailButton
-            recipient={donatorData?.email_1?.email || ""}
-            defaultSubject={`Follow-up with ${donatorData?.fName || "Donator"}`}
-            defaultBody="Dear Donator, thank you for your continued support."
-          />
+            {/* Open Donator Profile Button */}
+            <Link
+              sx={{ ml: 1, p: 1 }}
+              to={`/dashboard/donators/${donatorId}`}
+            >
+              <LaunchIcon />
+            </Link>
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Typography variant="body1">
+            <strong>Name:</strong>
+            {` ${donatorData?.fName || "Unknown"} ${donatorData?.lName || ""}`}
+          </Typography>
+        </Box>
 
-          {/* WhatsApp Button */}
-          <SendWhatsappButton
-            recipientPhone={donatorData?.phone_number_1?.number || ""}
-          />
-          {/* SMS Button */}
-          <Tooltip title="Send SMS">
-            <IconButton sx={{ color: "#0088FE" }}>
-              <SmsIcon />
-            </IconButton>
-          </Tooltip>
+        {/* Contact Options */}
+        <Box>
+          <Typography variant="body1" sx={{ mb: 1 }}>
+            <strong>Contact Options:</strong>
+          </Typography>
+          <Box sx={{ display: "flex", gap: 1 }}>
+            {/* Send Email Button */}
+            <SendEmailButton
+              recipient={donatorData?.email_1?.email || ""}
+              defaultSubject={`Follow-up with ${
+                donatorData?.fName || "Donator"
+              }`}
+              defaultBody="Dear Donator, thank you for your continued support."
+            />
+
+            {/* WhatsApp Button */}
+            <SendWhatsappButton
+              recipientPhone={donatorData?.phone_number_1?.number || ""}
+            />
+            {/* SMS Button */}
+            <Tooltip title="Send SMS">
+              <IconButton sx={{ color: "#0088FE" }}>
+                <SmsIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
       </Box>
 
@@ -114,14 +128,14 @@ const DonatorCard = ({ donatorId, onClose }) => {
       </Button>
 
       {/* Chart Toggle */}
-      <Button
+      {/* <Button
         variant="outlined"
         color="primary"
         onClick={() => setShowChart((prev) => !prev)}
         sx={{ mt: 2 }}
       >
         {showChart ? "Hide Chart" : "Show Donations Chart"}
-      </Button>
+      </Button> */}
 
       {/* Donations Chart */}
       {showChart && (
