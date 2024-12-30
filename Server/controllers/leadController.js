@@ -1,6 +1,7 @@
 // controllers/leadController.js
 const LeadList = require("../models/LeadList");
 const LeadCard = require("../models/LeadCard");
+const Notification = require("../models/Notification");
 
 // @desc    Create a new lead
 // @route   POST /api/leads
@@ -134,6 +135,18 @@ const setCallBackDate = async (req, res,) => {
     leadCard.nextContactDate = nextContactDate;
 
     await leadCard.save();
+
+    const leadList = await LeadList.findById(leadCard.leadList);
+
+    const notification = new Notification({
+      title: "Call Back",
+      type: "callback",
+      userId: leadList.user,
+      donatorId: leadCard.donatorEntryId,
+      notificationDate: nextContactDate,
+    });
+
+    await notification.save();
 
     res.status(200).json(leadCard);
   } catch (error) {

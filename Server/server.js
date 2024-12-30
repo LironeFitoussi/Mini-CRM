@@ -33,6 +33,7 @@ app.use("/api/v1/dashboard", require("./routes/dashboardRoutes.js"));
 app.use("/api/v1/mail-templates", require("./routes/mailTemplateRoutes"));
 app.use("/api/v1/leads", require("./routes/leadRoutes"));
 app.use("/api/v1/notes", require("./routes/noteRoutes"));
+app.use("/api/v1/notifications", require("./routes/notificationRoutes.js"));
 app.use("/unsubscribe", require("./routes/unsubscribeRoutes.js"));
 
 app.get("/api/v1/get-auth-user", (req, res) => {

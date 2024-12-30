@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 
 import LanguageSwitcher from "./LanguageSwitcher";
 import GlobatSearch from "../Atoms/GlobalSearch";
+import NotificationsButton from "../Buttons/NotificationsButton";
+
 const HorizontalNavbar = () => {
   const { t } = useTranslation();
   const { logout } = useAuth0();
@@ -55,6 +57,7 @@ const HorizontalNavbar = () => {
       </div>
       <GlobatSearch />
       <div className="flex items-center space-x-4">
+        <NotificationsButton />
         <LanguageSwitcher />
         <button
           className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
