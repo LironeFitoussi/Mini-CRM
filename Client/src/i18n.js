@@ -70,6 +70,8 @@ i18n
             meetingScheduled: "Meeting Scheduled",
             notInterested: "Not Interested",
             nothingToReport: "Nothing to Report",
+            done: "Done",
+            toValidate: "To Validate",
           },
           // Email
           emailSubject: "Subject",
@@ -352,6 +354,8 @@ i18n
             meetingScheduled: "Réunion prévue",
             notInterested: "Pas intéressé",
             nothingToReport: "Rien à signaler",
+            done: "Fait",
+            toValidate: "À valider",
           },
 
           leads: "Leads",

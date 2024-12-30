@@ -4,14 +4,22 @@
 
 /* SmartTable.css */
 
-.row-today {
+.row-upcoming {
   background-color: white;
 }
 
-.row-upcoming {
-  background-color: orange;
+.row-today {
+  background-color: rgb(255, 193, 79);
 }
 
 .row-past {
-  background-color: red;
+  background-color: rgb(255, 86, 86);
+}
+
+.row-done {
+  background-color: rgb(77, 255, 77);
+}
+
+.row-to-validate {
+  background-color: rgb(255, 27, 255);
 }

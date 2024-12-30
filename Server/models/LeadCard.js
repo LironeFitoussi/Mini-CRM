@@ -23,6 +23,8 @@ const leadCardSchema = new Schema(
         "Meeting Scheduled", // Translated from Rdv
         "Not Interested", // Translated from Pas intéressé
         "Nothing to Report", // Translated from RAS
+        "Done", // Translated from Fait
+        "To Validate", // Translated from A valider
       ],
       default: "To Contact",
     },

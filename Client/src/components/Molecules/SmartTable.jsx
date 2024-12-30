@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Select, MenuItem, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import NextContactDateModal from "../Modals/NextContactDateModal"; 
-import useLeadList from "../../queryhooks/useLeadList"; 
+import NextContactDateModal from "../Modals/NextContactDateModal";
+import useLeadList from "../../queryhooks/useLeadList";
 import axios from "axios";
 // import "./SmartTable.css"; // Import the CSS file
 
@@ -23,13 +23,14 @@ const SmartTable = ({
   const [selectedLeadCardId, setLeadCardId] = useState(null);
 
   // Use custom hook for fetching lead list
-  const { data, isLoading, isError, error, invalidateLeadList } = useLeadList(leadId);
+  const { data, isLoading, isError, error, invalidateLeadList } =
+    useLeadList(leadId);
 
   const donators = data?.leadCards || [];
 
   const handleStatusToggle = (leadCardId, newStatus) => {
     // console.log("Updating status for lead:", leadCardId, "to", newStatus);
-    
+
     // Optionally trigger a mutation here if updating on the server
     onStatusToggle && onStatusToggle(leadCardId, newStatus);
     invalidateLeadList(); // Refresh data after update
@@ -53,7 +54,9 @@ const SmartTable = ({
 
     try {
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/v1/leads/callback/${selectedLeadCardId}`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/v1/leads/callback/${selectedLeadCardId}`,
         { nextContactDate: isoDate }
       );
       console.log("Next contact date updated successfully");
@@ -108,7 +111,11 @@ const SmartTable = ({
         }
 
         const handleChange = (event) => {
-          if (event.target.value === "To Call Back") {
+          if (
+            event.target.value === "To Call Back" ||
+            event.target.value === "To Validate" ||
+            event.target.value === "No Response"
+          ) {
             handleOpenModal(params.row.leadCardId);
           }
           const newStatus = event.target.value;
@@ -119,7 +126,7 @@ const SmartTable = ({
           <Select
             value={params.row.status || ""}
             onChange={handleChange}
-            variant="outlined"            
+            variant="outlined"
             size="small"
             fullWidth
           >
@@ -128,15 +135,17 @@ const SmartTable = ({
             <MenuItem value="To Call Back">
               {t("menuItems.toCallBack")}
             </MenuItem>
-            <MenuItem value="Meeting Scheduled">
+            {/* <MenuItem value="Meeting Scheduled">
               {t("menuItems.meetingScheduled")}
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem value="Not Interested">
               {t("menuItems.notInterested")}
             </MenuItem>
-            <MenuItem value="Nothing to Report">
+            {/* <MenuItem value="Nothing to Report">
               {t("menuItems.nothingToReport")}
-            </MenuItem>
+            </MenuItem> */}
+            <MenuItem value="To Validate">{t("menuItems.toValidate")}</MenuItem>
+            <MenuItem value="Done">{t("menuItems.done")}</MenuItem>
           </Select>
         );
       },
@@ -158,10 +167,15 @@ const SmartTable = ({
           : "N/A";
 
         return (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-            <Typography variant="body2">
-              {formattedDate}
-            </Typography>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+            }}
+          >
+            <Typography variant="body2">{formattedDate}</Typography>
           </div>
         );
       },
@@ -183,12 +197,24 @@ const SmartTable = ({
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+    if (params.row.status === "Done") {
+      return "row-done";
+    }
+
+    if (params.row.status === "To Validate") {
+      return "row-to-validate";
+    }
+
     if (!params.row.nextContactDate) {
-      return "row-today"; // Default to today styling if no date is set
+      return "row-upcoming"; // Default to today styling if no date is set
     }
 
     const contactDate = new Date(params.row.nextContactDate);
-    const contactDay = new Date(contactDate.getFullYear(), contactDate.getMonth(), contactDate.getDate());
+    const contactDay = new Date(
+      contactDate.getFullYear(),
+      contactDate.getMonth(),
+      contactDate.getDate()
+    );
 
     if (contactDay.getTime() === today.getTime()) {
       return "row-today";
