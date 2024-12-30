@@ -53,7 +53,7 @@ const LeadsPage = () => {
           status: newStatus,
         }
       );
-      console.log("Status updated successfully", res.data);
+      // console.log("Status updated successfully", res.data);
       invalidateLeads();
     } catch (error) {
       console.error("Failed to update status", error);

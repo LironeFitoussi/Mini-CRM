@@ -28,7 +28,7 @@ const SmartTable = ({
   const donators = data?.leadCards || [];
 
   const handleStatusToggle = (leadCardId, newStatus) => {
-    console.log("Updating status for lead:", leadCardId, "to", newStatus);
+    // console.log("Updating status for lead:", leadCardId, "to", newStatus);
     
     // Optionally trigger a mutation here if updating on the server
     onStatusToggle && onStatusToggle(leadCardId, newStatus);
@@ -110,7 +110,6 @@ const SmartTable = ({
         const handleChange = (event) => {
           if (event.target.value === "To Call Back") {
             handleOpenModal(params.row.leadCardId);
-            return;
           }
           const newStatus = event.target.value;
           handleStatusToggle(params.row.leadCardId, newStatus);
