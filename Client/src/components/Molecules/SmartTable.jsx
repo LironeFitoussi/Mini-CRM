@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import NextContactDateModal from "../Modals/NextContactDateModal";
 import useLeadList from "../../queryhooks/useLeadList";
 import axios from "axios";
-// import "./SmartTable.css"; // Import the CSS file
 
 const SmartTable = ({
   leadId,

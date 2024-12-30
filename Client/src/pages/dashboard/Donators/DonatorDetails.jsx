@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import { useDonator } from "../../../queryhooks/useDonator";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import SmsIcon from "@mui/icons-material/Sms";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
+import EditDonatorButton from "../../../components/Buttons/EditDonatorButton";
 
 // MUI Components
 import {
@@ -20,13 +21,7 @@ import {
   TableRow,
   CircularProgress,
 } from "@mui/material";
-import {
-  PieChart,
-  Pie,
-  Tooltip,
-  Cell,
-  ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from "recharts";
 
 // Components
 import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
@@ -53,14 +48,11 @@ const ClientDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [client, setClient] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { data: client, isLoading, error} = useDonator(id);
 
-  // ======= Email Modal State =======
+  // Email Modal State
   const [emailModalOpen, setEmailModalOpen] = useState(false);
 
-  // Form values to pass into EmailModal > EmailForm
   const [formValues, setFormValues] = useState({
     from: "contact.lesenfantsderachi@gmail.com",
     to: client?.email_1?.email || "",
@@ -70,16 +62,12 @@ const ClientDetailsPage = () => {
     imageUrl: null,
   });
 
-  // ======= Handle Email Form Changes =======
   const handleEmailChange = (fieldName, newValue) => {
-    console.log("Field changed:", fieldName, newValue);
     setFormValues((prev) => ({ ...prev, [fieldName]: newValue }));
   };
 
-  // ======= Handle Email Submit =======
   const handleEmailSubmit = async (values) => {
     try {
-      console.log("Sending email with values:", values);
       alert("Email sent successfully!");
       setEmailModalOpen(false);
     } catch (err) {
@@ -88,30 +76,7 @@ const ClientDetailsPage = () => {
     }
   };
 
-  // ======= Fetch client & donations =======
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/v1/donators/${id}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch client data");
-        }
-        const data = await response.json();
-        setClient(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [id]);
-
-  // ======= Loading & Error states =======
-  if (loading) {
+  if (isLoading) {
     return (
       <Box sx={{ padding: 4, textAlign: "center" }}>
         <CircularProgress />
@@ -126,7 +91,7 @@ const ClientDetailsPage = () => {
     return (
       <Box sx={{ padding: 4, textAlign: "center" }}>
         <Typography variant="h4" color="error" gutterBottom>
-          {error}
+          {error.message}
         </Typography>
         <Button
           variant="contained"
@@ -156,7 +121,6 @@ const ClientDetailsPage = () => {
     );
   }
 
-  // ======= Destructure client data =======
   const {
     fName,
     lName,
@@ -166,7 +130,6 @@ const ClientDetailsPage = () => {
     donations = [],
   } = client;
 
-  // ======= Donations analytics =======
   const groupedDonations = donations.reduce((acc, donation) => {
     const { currency, amount } = donation;
     if (!acc[currency]) acc[currency] = 0;
@@ -174,15 +137,14 @@ const ClientDetailsPage = () => {
     return acc;
   }, {});
 
+  const donationTypes = getDonationTypes(donations);
+
   const currencyIcons = {
     USD: "$",
     EUR: "€",
     GBP: "£",
     NIS: "₪",
   };
-
-  const donationTypes = getDonationTypes(donations);
-
   // ======= Render UI =======
   return (
     <Box sx={{ padding: 4 }}>
@@ -193,6 +155,7 @@ const ClientDetailsPage = () => {
           <Box sx={{ p: 3 }}>
             <Typography variant="h4" gutterBottom>
               {fName} {lName} {!fName && !lName && "This client has no name."}
+              <EditDonatorButton donatorData={client} />
             </Typography>
             <Divider sx={{ my: 2 }} />
 
