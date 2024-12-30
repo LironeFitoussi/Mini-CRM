@@ -1,5 +1,5 @@
 // routes/leadRoutes.js
-const express = require('express');
+const express = require("express");
 const {
   createLead,
   changeLeadStatus,
@@ -10,7 +10,8 @@ const {
   addDonator,
   updateDonatorStatus,
   removeDonator,
-} = require('../controllers/leadController');
+  setCallBackDate,
+} = require("../controllers/leadController");
 
 // Import authentication middleware if available
 // const { protect } = require('../middleware/authMiddleware');
@@ -20,22 +21,18 @@ const router = express.Router();
 // Protect all routes after this middleware
 // router.use(protect);
 
-router.route('/')
-  .post(createLead)
-  .get(getAllLeads);
+router.route("/").post(createLead).get(getAllLeads);
 
-router.route('/:id')
-  .get(getLeadById)
-  .put(updateLead)
-  .delete(deleteLead);
+router.route("/callback/:leadCardId").post(setCallBackDate);
 
-router.route('/:id/status')
-  .put(changeLeadStatus);
+router.route("/:id").get(getLeadById).put(updateLead).delete(deleteLead);
 
-router.route('/:id/donators')
-  .post(addDonator);
+router.route("/:id/status").put(changeLeadStatus);
 
-router.route('/:id/donators/:donatorId')
+router.route("/:id/donators").post(addDonator);
+
+router
+  .route("/:id/donators/:donatorId")
   .put(updateDonatorStatus)
   .delete(removeDonator);
 

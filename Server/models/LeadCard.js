@@ -26,6 +26,9 @@ const leadCardSchema = new Schema(
       ],
       default: "To Contact",
     },
+    nextContactDate: {
+      type: Date,
+    },
   },
   {
     timestamps: true, // Automatically manage createdAt and updatedAt

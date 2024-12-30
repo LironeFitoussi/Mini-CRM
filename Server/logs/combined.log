@@ -523,3 +523,19 @@
 2024-12-29 12:26:31 [INFO]: ✅ SMTP server is ready to take our messages
 2024-12-29 12:26:34 [INFO]: ✅ Message sent: %s
 2024-12-29 12:26:34 [INFO]: 🗂️ Mail job marked as sent: 677123d7c12b96ff7144c4f7
+2024-12-30 09:54:03 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 09:55:25 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 10:15:30 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 10:15:40 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 10:15:42 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 10:17:04 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 10:18:26 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 10:19:35 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 10:20:08 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 10:30:00 [INFO]: ⏰ Cron job triggered at 30.12.2024, 10:30:00
+2024-12-30 10:30:01 [INFO]: 📭 No unsent mail jobs found
+2024-12-30 10:34:27 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 11:29:06 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 11:30:04 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 11:34:23 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2024-12-30 11:34:48 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM

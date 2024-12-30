@@ -118,28 +118,58 @@ const updateLead = async (req, res, next) => {
   }
 };
 
+// @desc    Set Call Back Date for a lead
+// @route   POST /api/v1/leads/:leadCardId
+// @access  Private
+const setCallBackDate = async (req, res,) => {
+  try {
+    const { nextContactDate } = req.body;
+
+    const leadCard = await LeadCard.findById(req.params.leadCardId);
+
+    if (!leadCard) {
+      return res.status(404).json({ message: "Lead not found" });
+    }
+
+    leadCard.nextContactDate = nextContactDate;
+
+    await leadCard.save();
+
+    res.status(200).json(leadCard);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to set call back date" });
+  }
+};
+
 // @desc    Toggle a lead's status by ID
 // @route   PUT /api/leads/:id/toggle-status
 // @access  Private
 const changeLeadStatus = async (req, res) => {
   try {
     const { status } = req.body;
-    
+
+    console.log("Status", status);
+
     const lead = await LeadCard.findById(req.params.id);
 
     if (!lead) {
       return res.status(404).json({ message: "Lead not found" });
     }
 
-    lead.status === status;
+    // Update the status
+    lead.status = status;
 
+    // Save the updated lead
     await lead.save();
 
+    console.log("Lead", lead);
+    
     res.status(200).json(lead);
   } catch (error) {
-    res.status(500).json({ message: "Failed to toggle lead status" });
+    res.status(500).json({ message: "Failed to update lead status", error: error.message });
   }
 };
+
 // @desc    Delete a lead by ID
 // @route   DELETE /api/leads/:id
 // @access  Private
@@ -260,4 +290,5 @@ module.exports = {
   updateDonatorStatus,
   removeDonator,
   changeLeadStatus,
+  setCallBackDate
 };

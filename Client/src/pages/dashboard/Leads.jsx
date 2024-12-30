@@ -45,14 +45,15 @@ const LeadsPage = () => {
     setSelectedLead(selected);
   };
 
-  const handleStatusToggle = async (donatorEntryId, newStatus) => {
+  const handleStatusToggle = async (leadCardId, newStatus) => {
     try {
-      await axios.put(
-        import.meta.env.VITE_API_URL + `/api/v1/leads/${donatorEntryId}/status`,
+      const res = await axios.put(
+        import.meta.env.VITE_API_URL + `/api/v1/leads/${leadCardId}/status`,
         {
           status: newStatus,
         }
       );
+      console.log("Status updated successfully", res.data);
       invalidateLeads();
     } catch (error) {
       console.error("Failed to update status", error);
@@ -90,7 +91,7 @@ const LeadsPage = () => {
   }
 
   return (
-    <Box sx={{ p: 3, display: "flex" }}>
+    <Box sx={{ p: 3, display: "flex"}}>
       <Box sx={{ flex: 1 }}>
         <Typography variant="h4" gutterBottom>
           Leads Management
@@ -129,7 +130,7 @@ const LeadsPage = () => {
               loading={isLoading}
               onStatusToggle={handleStatusToggle}
               onDonatorSelect={handleDonatorSelect}
-              size={isCardVisible ? "69vw" : "85vw"}
+              size={isCardVisible ? "76vw" : "92vw"}
             />
           ) : (
             <Typography variant="h6" align="center">
