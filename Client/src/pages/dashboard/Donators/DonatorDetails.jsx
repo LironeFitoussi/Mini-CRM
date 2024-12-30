@@ -31,6 +31,7 @@ import DonatorTasks from "../../../components/Molecules/DonatorTasks";
 import SendEmailButton from "../../../components/Atoms/SendEmailButton";
 import DonatorNotes from "../../../components/Molecules/DonatorNotes";
 import { getDonationTypes } from "../../../utils";
+import SendWhatsappButton from "../../../components/Buttons/SendWhatsappButton";
 
 const COLORS = [
   "#8884d8",
@@ -48,7 +49,7 @@ const ClientDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data: client, isLoading, error} = useDonator(id);
+  const { data: client, isLoading, error } = useDonator(id);
 
   // Email Modal State
   const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -162,9 +163,34 @@ const ClientDetailsPage = () => {
             <Typography variant="body1" sx={{ mb: 1 }}>
               <strong>Email:</strong> {email_1?.email || "N/A"}
             </Typography>
+            {client?.email_2?.email && (
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Email 2:</strong>
+                {client.email_2?.email || "N/A"}
+              </Typography>
+            )}
+            {client?.email_3?.email && (
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Email 3:</strong>
+                {client.email_3?.email || "N/A"}
+              </Typography>
+            )}
             <Typography variant="body1" sx={{ mb: 1 }}>
               <strong>Phone:</strong> {phone_number_1?.number || "N/A"}
             </Typography>
+            {client?.phone_number_2?.number && (
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Phone 2:</strong>
+                {client.phone_number_2?.number || "N/A"}
+              </Typography>
+            )}
+            {client?.phone_number_3?.number && (
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                <strong>Phone 3:</strong>
+                {client.phone_number_3?.number || "N/A"}
+              </Typography>
+            )}
+
             <Typography variant="body1" sx={{ mb: 2 }}>
               <strong>Birthdate:</strong>{" "}
               {birthdate
@@ -176,17 +202,7 @@ const ClientDetailsPage = () => {
             <Box sx={{ display: "flex", gap: 1 }}>
               <SendEmailButton recipient={email_1?.email} />
 
-              <Button
-                variant="contained"
-                startIcon={<WhatsAppIcon />}
-                sx={{
-                  backgroundColor: "#25D366",
-                  color: "white",
-                  ":hover": { backgroundColor: "#1da851" },
-                }}
-              >
-                WhatsApp
-              </Button>
+              <SendWhatsappButton recipientPhone={phone_number_1?.number} />
 
               <Button
                 variant="contained"

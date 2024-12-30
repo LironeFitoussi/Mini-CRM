@@ -84,13 +84,15 @@ const EditDonatorModal = ({
 
   // Remove Email Field
   const removeEmailField = (index) => {
-    const updatedEmails = donatorEmail.filter((_, i) => i !== index);
+    const updatedEmails = [...donatorEmail];
+    updatedEmails[index].email = "";
     setDonatorEmail(updatedEmails);
   };
 
   // Remove Phone Field
   const removePhoneField = (index) => {
-    const updatedPhones = donatorPhone.filter((_, i) => i !== index);
+    const updatedPhones = [...donatorPhone];
+    updatedPhones[index].number = "";
     setDonatorPhone(updatedPhones);
   };
 
@@ -116,20 +118,6 @@ const EditDonatorModal = ({
       phone_number_3: donatorPhone[2],
     });
     onClose();
-  };
-
-  // Format YYYY-MM-DD to DD/MM/YYYY
-  const formatDate = (date) => {
-    if (!date) return "";
-    const [year, month, day] = date.split("-");
-    return `${day}/${month}/${year}`;
-  };
-
-  // Parse DD/MM/YYYY back to YYYY-MM-DD
-  const parseDate = (formattedDate) => {
-    if (!formattedDate) return "";
-    const [day, month, year] = formattedDate.split("/");
-    return `${year}-${month}-${day}`;
   };
 
   return (
