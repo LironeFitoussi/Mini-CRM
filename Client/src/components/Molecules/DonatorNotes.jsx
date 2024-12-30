@@ -18,17 +18,26 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-import { useAuth0 } from "@auth0/auth0-react";
 import ConfirmationModal from "../Modals/ConfirmationModal";
 import AddCommentIcon from '@mui/icons-material/AddComment';
+import { useSelector } from "react-redux";
 
 // Function to add a new note
 const addNote = async ({ donatorId, note, userId }) => {
-  const { data } = await axios.post(
-    `${import.meta.env.VITE_API_URL}/api/v1/notes`,
-    { note, donator: donatorId, user: userId }
-  );
-  return data;
+  console.log("donatorId", donatorId);
+  console.log("note", note);
+  console.log("userId", userId);
+  
+  try {
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/v1/notes`,
+      { note, donator: donatorId, user: userId }
+    );
+    return data;
+  } catch (error) {
+    console.error("Error adding note:", error.response.data);
+    throw error;
+  }
 };
 
 // Function to delete a note
@@ -45,10 +54,8 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
 
-  // Auth0
-  const { user } = useAuth0();
-  const currentUser = queryClient.getQueryData(["user", user?.sub]);
-
+  const currentUser = useSelector((state) => state.user.user);
+  
   // Add note mutation
   const addNoteMutation = useMutation({
     mutationFn: ({ note }) => addNote({ donatorId, note, userId: currentUser?._id }),

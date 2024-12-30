@@ -18,8 +18,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import axios from "axios";
-import LaunchIcon from '@mui/icons-material/Launch';
+import LaunchIcon from "@mui/icons-material/Launch";
 
+import DonatorNotes from "../../components/Molecules/DonatorNotes";
 // Buttons
 import SendEmailButton from "../../components/Atoms/SendEmailButton"; // Adjust the path to your component
 import SendWhatsappButton from "../../components/Buttons/SendWhatsappButton"; // Adjust the path to your component
@@ -36,6 +37,8 @@ const mockDonationData = [
 const DonatorCard = ({ donatorId, onClose }) => {
   const [showChart, setShowChart] = useState(false);
   const [donatorData, setDonatorData] = useState(null);
+
+  console.log("DonatorCard -> donatorData", donatorData);
 
   // Fetch donator data
   useEffect(() => {
@@ -70,14 +73,14 @@ const DonatorCard = ({ donatorId, onClose }) => {
       <Box>
         {/* Donator Details */}
         <Box>
-          <Typography variant="h6" gutterBottom className="flex justify-between items-center">
+          <Typography
+            variant="h6"
+            gutterBottom
+            className="flex justify-between items-center"
+          >
             Donator Details
-
             {/* Open Donator Profile Button */}
-            <Link
-              sx={{ ml: 1, p: 1 }}
-              to={`/dashboard/donators/${donatorId}`}
-            >
+            <Link sx={{ ml: 1, p: 1 }} to={`/dashboard/donators/${donatorId}`}>
               <LaunchIcon />
             </Link>
           </Typography>
@@ -115,6 +118,10 @@ const DonatorCard = ({ donatorId, onClose }) => {
             </Tooltip>
           </Box>
         </Box>
+        <Paper sx={{ p: 2, boxShadow: 3, mb: 3, mt: 2 }}>
+          {/* Donator Notes */}
+          <DonatorNotes donatorId={donatorId} note={donatorData?.notes} />
+        </Paper>
       </Box>
 
       {/* Close Button */}
@@ -126,6 +133,7 @@ const DonatorCard = ({ donatorId, onClose }) => {
       >
         Close
       </Button>
+      {/* ========== Donator Notes ========== */}
 
       {/* Chart Toggle */}
       {/* <Button

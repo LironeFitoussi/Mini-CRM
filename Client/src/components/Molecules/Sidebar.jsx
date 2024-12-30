@@ -2,18 +2,15 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useQueryClient } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
 
 import LanguageSwitcher from "./LanguageSwitcher";
 import GlobatSearch from "../Atoms/GlobalSearch";
 const HorizontalNavbar = () => {
   const { t } = useTranslation();
   const { logout } = useAuth0();
-  const queryClient = useQueryClient();
-
-  // Access cached user data directly
-  const userdata = queryClient.getQueryData(["userdata"]);
-
+  const user = useSelector((state) => state.user.user);
+  
   return (
     <header className="bg-white text-gray-800 flex justify-between items-center shadow-md p-4 w-full">
       <div className="flex items-center space-x-6">
@@ -44,7 +41,7 @@ const HorizontalNavbar = () => {
           >
             {t("leads")}
           </Link>
-          {userdata?.role === "admin" || userdata?.role === "developer" ? (
+          {user?.role === "admin" || user?.role === "developer" ? (
             <Link
               to="users"
               className="px-3 py-2 hover:bg-gray-100 rounded-md transition flex items-center"
