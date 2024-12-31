@@ -18,6 +18,9 @@ router.get('/:id', notificationController.getNotificationById);
 // Create a new notification
 router.post('/', notificationController.createNotification);
 
+// Set a notification as read
+router.patch('/:id', notificationController.setNotificationAsRead);
+
 // Update a notification by ID
 router.put('/:id', notificationController.updateNotification);
 

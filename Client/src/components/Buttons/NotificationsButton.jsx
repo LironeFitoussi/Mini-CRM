@@ -4,7 +4,8 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import Badge from '@mui/material/Badge';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import {useNavigate} from 'react-router-dom';
+import Divider from '@mui/material/Divider'; // For adding a linear line
+import { useNavigate } from 'react-router-dom';
 
 import useNotifications from '../../queryhooks/useNotifications';
 
@@ -12,28 +13,24 @@ const NotificationsButton = () => {
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const { notifications, isLoading } = useNotifications();
+    const { notifications, isLoading, setNotificationAsRead, refetch } = useNotifications();
 
     if (isLoading) {
         return null;
     }
 
-    const formattedNotifications = notifications?.map((notification) => {
-        if (notification.type === 'callback') {
-            return {
-                content : `Call back for ${notification?.donator?.fName || ""} ${notification?.donator?.lName || ""} on ${notification.notificationDate.split('T')[0]}`,
-                ...notification,
-            }
-        }
+    const formattedNotifications = notifications?.map((notification) => ({
+        content: (
+            <span style={{ fontWeight: notification.isRead ? 'normal' : 'bold' }}>
+                {notification.type === 'callback'
+                    ? `Call back for ${notification?.donator?.fName || ""} ${notification?.donator?.lName || ""} on ${notification.notificationDate.split('T')[0]}`
+                    : notification.message}
+            </span>
+        ),
+        isRead: notification.isRead,
+        ...notification,
+    }));
 
-        return {
-            content: notification.message,
-            ...notification,
-        }
-    });
-
-    console.log('Formatted Notifications:', formattedNotifications);
-    
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -42,21 +39,26 @@ const NotificationsButton = () => {
         setAnchorEl(null);
     };
 
-    const handleNotificationClick = (notification) => {
-        console.log(notification.type);
-        
-        if (notification.type === 'callback') {            
+    const unreadNotifications = notifications?.filter((notification) => !notification.isRead);
+
+    const handleNotificationClick = async (notification) => {
+        // Set notification as read
+        await setNotificationAsRead(notification._id);
+        await refetch();
+        if (notification.type === 'callback') {
             navigate(`/dashboard/donators/${notification.donator._id}`);
         }
-        handleClose()
+        handleClose();
     };
 
     return (
         <>
-            <IconButton  aria-label="notifications" onClick={handleClick}
-                color={notifications?.length > 0 ? 'secondary' : 'default'}
+            <IconButton
+                aria-label="notifications"
+                onClick={handleClick}
+                color={unreadNotifications?.length > 0 ? 'secondary' : 'default'}
             >
-                <Badge badgeContent={notifications?.length} color="secondary">
+                <Badge badgeContent={unreadNotifications?.length} color="secondary">
                     <NotificationsIcon />
                 </Badge>
             </IconButton>
@@ -74,10 +76,33 @@ const NotificationsButton = () => {
                 }}
             >
                 {formattedNotifications?.map((notification, index) => (
-                    <MenuItem key={index} onClick={() => handleNotificationClick(notification)}>
-                        {notification.content}
+                    <MenuItem
+                        key={index}
+                        onClick={() => handleNotificationClick(notification)}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            position: 'relative',
+                        }}
+                    >
+                        {!notification.isRead && (
+                            <div
+                                style={{
+                                    width: '4px',
+                                    height: '100%',
+                                    backgroundColor: 'blue',
+                                    position: 'absolute',
+                                    left: 0,
+                                    top: 0,
+                                }}
+                            />
+                        )}
+                        <div style={{ marginLeft: notification.isRead ? 0 : '8px' }}>
+                            {notification.content}
+                        </div>
                     </MenuItem>
                 ))}
+                <Divider />
             </Menu>
         </>
     );

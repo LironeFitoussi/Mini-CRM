@@ -1,6 +1,6 @@
 // queryhooks/useNotifications.js
 import { useQuery } from '@tanstack/react-query';
-import { fetchNotifications } from '../api/notifications';
+import { fetchNotifications, setNotificationAsRead } from '../api/notifications';
 
 const useNotifications = () => {
     const { data, isLoading, isError, refetch } = useQuery({
@@ -10,12 +10,13 @@ const useNotifications = () => {
     });
     
     const notifications = data || [];
-
+    
     return {
         notifications,
         isLoading,
         isError,
         refetch,
+        setNotificationAsRead
     };
 };
 
