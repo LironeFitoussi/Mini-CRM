@@ -14,11 +14,14 @@ import DonatorCard from "../../components/Molecules/DonatorCard.jsx";
 import useLeads from "../../queryhooks/useLeads";
 import axios from "axios";
 
+import { useTranslation } from "react-i18next";
+
 const LeadsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState(null);
   const [selectedDonorId, setSelectedDonorId] = useState(null);
   const [isCardVisible, setIsCardVisible] = useState(false);
+  const { t } = useTranslation();
 
   const {
     data: leads,
@@ -74,7 +77,7 @@ const LeadsPage = () => {
       <Box sx={{ p: 3, textAlign: "center" }}>
         <CircularProgress />
         <Typography variant="h6" sx={{ mt: 2 }}>
-          Loading Leads...
+          {t("leadsManagement.loading")}
         </Typography>
       </Box>
     );
@@ -84,7 +87,7 @@ const LeadsPage = () => {
     return (
       <Box sx={{ p: 3, textAlign: "center" }}>
         <Typography variant="h6" color="error">
-          Failed to load leads. Please try again later.
+          {t("leadsManagement.failed")}
         </Typography>
       </Box>
     );
@@ -94,7 +97,7 @@ const LeadsPage = () => {
     <Box sx={{ p: 3, display: "flex"}}>
       <Box sx={{ flex: 1 }}>
         <Typography variant="h4" gutterBottom>
-          Leads Management
+          {t("leadsManagement.title")}
         </Typography>
 
         <Select
@@ -105,7 +108,7 @@ const LeadsPage = () => {
           sx={{ mb: 2 }}
         >
           <MenuItem value="" disabled>
-            Select a Lead
+            {t("leadsManagement.select")}
           </MenuItem>
           {leads?.map((lead) => (
             <MenuItem key={lead._id} value={lead._id}>
@@ -120,7 +123,7 @@ const LeadsPage = () => {
           onClick={handleOpenModal}
           sx={{ mb: 2 }}
         >
-          Create New Lead
+          {t("leadsManagement.create")}
         </Button>
 
         <Paper sx={{ p: 2 }}>

@@ -135,7 +135,7 @@
         "add": "Add Customer",
         "edit": "Edit Donor",
         "delete": "Delete Donor",
-        "details": "Customer Details",
+        "details": "Donor Details",
         "name": "Name",
         "email": "Email",
         "emails": "Emails",
@@ -154,15 +154,20 @@
         "notes": "Notes",
         "tags": "Tags",
         "assignedTo": "Assigned To",
-        "status": "Status"
+        "status": "Status",
+        "contactBackDate": "Contact Back Date"
     },
     "leadsManagement": {
-        "title": "Leads",
+        "title": "Leads Management",
         "add": "Add Lead",
         "edit": "Edit Lead",
         "delete": "Delete Lead",
         "details": "Lead Details",
+        "loading": "Loading leads...",
+        "failed": "Failed to load leads. Please try again.",
         "source": "Source",
+        "select": "Select Source",
+        "create": "Create a list",
         "campaign": "Campaign",
         "status": "Lead Status",
         "qualification": "Qualification"

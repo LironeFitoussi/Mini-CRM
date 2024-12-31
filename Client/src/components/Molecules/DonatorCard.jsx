@@ -24,7 +24,7 @@ import DonatorNotes from "../../components/Molecules/DonatorNotes";
 // Buttons
 import SendEmailButton from "../../components/Atoms/SendEmailButton"; // Adjust the path to your component
 import SendWhatsappButton from "../../components/Buttons/SendWhatsappButton"; // Adjust the path to your component
-
+import { useTranslation } from "react-i18next";
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300"];
 
 const mockDonationData = [
@@ -35,6 +35,7 @@ const mockDonationData = [
 ];
 
 const DonatorCard = ({ donatorId, onClose }) => {
+  const { t } = useTranslation();
   const [showChart, setShowChart] = useState(false);
   const [donatorData, setDonatorData] = useState(null);
 
@@ -78,7 +79,7 @@ const DonatorCard = ({ donatorId, onClose }) => {
             gutterBottom
             className="flex justify-between items-center"
           >
-            Donator Details
+            {t("customerManagement.details")}
             {/* Open Donator Profile Button */}
             <Link sx={{ ml: 1, p: 1 }} to={`/dashboard/donators/${donatorId}`}>
               <LaunchIcon />

@@ -120,7 +120,7 @@
         "add": "Ajouter un client",
         "edit": "Modifier le donateur",
         "delete": "Supprimer le donateur",
-        "details": "Détails du client",
+        "details": "Détails du donateur",
         "name": "Nom",
         "email": "Email",
         "emails": "Emails",
@@ -139,15 +139,20 @@
         "notes": "Notes",
         "tags": "Étiquettes",
         "assignedTo": "Attribué à",
-        "status": "Statut"
+        "status": "Statut",
+        "contactBackDate": "Date de rappel"
     },
     "leadsManagement": {
-        "title": "Pistes",
+        "title": "Gestion des Leads",
         "add": "Ajouter une piste",
         "edit": "Modifier la piste",
         "delete": "Supprimer la piste",
         "details": "Détails de la piste",
+        "loading": "Chargement des leads...",
+        "failed": "Échec du chargement des leads. Veuillez réessayer.",
         "source": "Source",
+        "select": "Sélectionner une source",
+        "create": "Créer une liste",
         "campaign": "Campagne",
         "status": "Statut de la piste",
         "qualification": "Qualification"

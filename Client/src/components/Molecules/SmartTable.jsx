@@ -81,28 +81,28 @@ const SmartTable = ({
 
   const columns = [
     {
-      field: "lName",
-      headerName: t("lName"),
+      field: "fName",
+      headerName: t("clientInfo.fName"),
       flex: 1,
     },
     {
-      field: "fName",
-      headerName: t("fName"),
+      field: "lName",
+      headerName: t("clientInfo.lName"),
       flex: 1,
     },
     {
       field: "email",
-      headerName: t("Email"),
+      headerName: t("clientInfo.email"),
       flex: 2,
     },
     {
       field: "phoneNumber",
-      headerName: t("Phone"),
+      headerName: t("clientInfo.phone"),
       flex: 1,
     },
     {
       field: "status",
-      headerName: "Status",
+      headerName: t("customerManagement.status"),
       flex: 2,
       renderCell: (params) => {
         if (!params.row || typeof params.row.status === "undefined") {
@@ -151,7 +151,7 @@ const SmartTable = ({
     },
     {
       field: "nextContactDate",
-      headerName: "Next Contact Date",
+      headerName: t("customerManagement.contactBackDate"),
       flex: 2,
       renderCell: (params) => {
         const formattedDate = params.row.nextContactDate
