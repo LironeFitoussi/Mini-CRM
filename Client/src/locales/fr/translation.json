@@ -94,7 +94,8 @@
         "email": "Email"
     },
     "actions": {
-        "backToDonors": "Retour aux Donateurs"
+        "backToDonors": "Retour aux Donateurs",
+        "close": "Fermer"
     },
     "tasks": {
         "task": "Tâche",
@@ -318,6 +319,8 @@
         "lastYear": "L'année dernière"
     },
     "clientInfo": {
+        "contactOptions": "Options de contact",
+        "name": "Nom",
         "fName": "Prénom",
         "lName": "Nom de famille",
         "email": "Email",

@@ -109,7 +109,8 @@
         "donations": "Donations"
     },
     "actions": {
-        "backToDonors": "Back to Donors"
+        "backToDonors": "Back to Donors",
+        "close": "Close"
     },
     "tasks": {
         "task": "Task",
@@ -318,6 +319,8 @@
         "lastYear": "Last Year"
     },
     "clientInfo": {
+        "contactOptions": "Contact Options",
+        "name": "Name",
         "fName": "First Name",
         "lName": "Last Name",
         "email": "Email",

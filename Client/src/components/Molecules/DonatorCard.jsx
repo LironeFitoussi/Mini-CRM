@@ -87,7 +87,7 @@ const DonatorCard = ({ donatorId, onClose }) => {
           </Typography>
           <Divider sx={{ mb: 2 }} />
           <Typography variant="body1">
-            <strong>Name:</strong>
+            <strong>{t("clientInfo.name")}: </strong>
             {` ${donatorData?.fName || "Unknown"} ${donatorData?.lName || ""}`}
           </Typography>
         </Box>
@@ -95,7 +95,7 @@ const DonatorCard = ({ donatorId, onClose }) => {
         {/* Contact Options */}
         <Box>
           <Typography variant="body1" sx={{ mb: 1 }}>
-            <strong>Contact Options:</strong>
+            <strong>{t("clientInfo.contactOptions")}:</strong>
           </Typography>
           <Box sx={{ display: "flex", gap: 1 }}>
             {/* Send Email Button */}
@@ -132,7 +132,7 @@ const DonatorCard = ({ donatorId, onClose }) => {
         onClick={onClose}
         sx={{ mt: 2 }}
       >
-        Close
+        {t("actions.close")}
       </Button>
       {/* ========== Donator Notes ========== */}
 
