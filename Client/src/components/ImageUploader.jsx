@@ -77,7 +77,7 @@ const ImageUploader = ({ handleChange }) => {
           <p className="text-center text-gray-700">{image.name}</p>
         ) : (
           <p className="text-center text-gray-500">
-            {t("dragAndDrop") || "Drag and drop an image here, or click to select"}
+            {t("imageUploader.dragAndDrop") || "Drag and drop an image here, or click to select"}
           </p>
         )}
         <input
@@ -104,7 +104,7 @@ const ImageUploader = ({ handleChange }) => {
         onClick={handleUpload}
         disabled={isUploading || !image}
       >
-        {isUploading ? t("uploading") : t("uploadImage") || "Upload"}
+        {isUploading ? t("imageUploader.uploading") : t("imageUploader.uploadImage") || "Upload"}
       </button>
 
       {uploadStatus && (

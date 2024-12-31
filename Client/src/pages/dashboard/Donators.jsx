@@ -14,7 +14,6 @@ import {
     CircularProgress,
     Alert,
     Typography,
-    Button,
 } from "@mui/material";
 import Checkbox from '@mui/material/Checkbox';
 
@@ -162,7 +161,7 @@ const DonatorsPage = () => { // Corrected component name
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 
                 <Typography variant="h4" component="h1" gutterBottom>
-                    {t("donators")}
+                    {t("general.donors")}
                 </Typography>
 
                 <Box sx={{ display: "flex", gap: 2 }}>
@@ -175,7 +174,7 @@ const DonatorsPage = () => { // Corrected component name
             </Box>
             {/* Search Input */}
             <TextField
-                label="Search clients"
+                label={t("general.searchDonors")}
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -202,7 +201,9 @@ const DonatorsPage = () => { // Corrected component name
             {!loading && !error && (
                 <TableContainer component={Paper} sx={{ mt: 2 }}>
                     <Table>
-                        <TableHead>
+                        <TableHead
+                            className="bg-gray-200"
+                        >
                             <TableRow>
                                 <TableCell>
                                     {/* "Select All" Checkbox */}
@@ -215,16 +216,16 @@ const DonatorsPage = () => { // Corrected component name
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    {t("fName")}
+                                    {t("clientInfo.fName")}
                                 </TableCell>
                                 <TableCell>
-                                    {t("lName")}
+                                    {t("clientInfo.lName")}
                                 </TableCell>
                                 <TableCell>
-                                    {t("email")}
+                                    {t("clientInfo.email")}
                                 </TableCell>
                                 <TableCell>
-                                    {t("phone")}
+                                    {t("clientInfo.phone")}
                                 </TableCell>
                             </TableRow>
                         </TableHead>

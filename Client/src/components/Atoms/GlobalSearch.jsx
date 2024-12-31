@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import debounce from "lodash.debounce";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function GlobalDonator() {
   // Controlled value for selected option
@@ -20,6 +21,7 @@ export default function GlobalDonator() {
   const [donators, setDonators] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
   const inputRef = useRef(null); // Reference to the input element
@@ -163,7 +165,7 @@ export default function GlobalDonator() {
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Search Donators"
+            label={t("general.searchDonors")}
             type="search"
             inputRef={inputRef} // Attach the ref here
             InputProps={{

@@ -74,13 +74,13 @@ const EmailForm = ({
     <Box>
       <TextField
         select
-        label={t("emailFrom") || "From"}
+        label={t("email.from") || "From"}
         value={from}
         name="from"
         onChange={handleFormChange}
         fullWidth
         margin="normal"
-        helperText="Select an email address to send from."
+        helperText={t("email.fromHelper") || "Select the sender email"}
       >
         {fromEmails.map((email) => (
           <MenuItem key={email} value={email}>
@@ -90,7 +90,7 @@ const EmailForm = ({
       </TextField>
 
       <TextField
-        label={t("emailSubject") || "Subject"}
+        label={t("email.subject") || "Subject"}
         value={subject}
         name="subject"
         onChange={handleFormChange}
@@ -113,7 +113,7 @@ const EmailForm = ({
 
       <FormControl fullWidth margin="normal">
         <InputLabel id="imagePosition-label">
-          {t("emailImagePosition") || "Image Position"}
+          {t("email.imagePosition") || "Image Position"}
         </InputLabel>
         <Select
           labelId="imagePosition-label"
@@ -123,10 +123,10 @@ const EmailForm = ({
           onChange={handleFormChange}
         >
           <MenuItem value="top">
-            {t("emailImageTop") || "Top (default)"}
+            {t("email.imageTop") || "Top (default)"}
           </MenuItem>
           <MenuItem value="bottom">
-            {t("emailImageBottom") || "Bottom"}
+            {t("email.imageBottom") || "Bottom"}
           </MenuItem>
         </Select>
       </FormControl>
@@ -151,11 +151,11 @@ const EmailForm = ({
             {isSending ? (
               <CircularProgress size={20} color="inherit" />
             ) : (
-              t("emailSend") || "Send Email"
+              t("email.send") || "Send Email"
             )}
           </Button>
           <Button variant="outlined" onClick={handlePreview}>
-            {t("emailPreview") || "Preview Email"}
+            {t("email.preview") || "Preview Email"}
           </Button>
         </Box>
         <Box sx={{ display: "flex", gap: 2 }}>

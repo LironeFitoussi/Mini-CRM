@@ -35,7 +35,7 @@ const HorizontalNavbar = () => {
             to="donators"
             className="px-3 py-2 hover:bg-gray-100 rounded-md transition flex items-center"
           >
-            {t("donators")}
+            {t("general.donors")}
           </Link>
           <Link
             to="leads"
@@ -48,7 +48,7 @@ const HorizontalNavbar = () => {
               to="users"
               className="px-3 py-2 hover:bg-gray-100 rounded-md transition flex items-center"
             >
-              {t("userManagementUsers")}
+              {t("userManagement.users")}
             </Link>
           ) : null}
 
@@ -63,7 +63,7 @@ const HorizontalNavbar = () => {
           className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
           onClick={() => logout({ returnTo: window.location.origin })}
         >
-          {t("logout")}
+          {t("general.logout")}
         </button>
       </div>
     </header>

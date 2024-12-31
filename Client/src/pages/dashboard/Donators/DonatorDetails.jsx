@@ -5,7 +5,7 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import SmsIcon from "@mui/icons-material/Sms";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import EditDonatorButton from "../../../components/Buttons/EditDonatorButton";
-
+import { useTranslation } from "react-i18next";
 // MUI Components
 import {
   Box,
@@ -46,6 +46,7 @@ const COLORS = [
 ];
 
 const ClientDetailsPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -99,7 +100,7 @@ const ClientDetailsPage = () => {
           color="primary"
           onClick={() => navigate("/dashboard/clients")}
         >
-          Back to Clients
+          {t("actions.backToDonors")}
         </Button>
       </Box>
     );
@@ -116,7 +117,7 @@ const ClientDetailsPage = () => {
           color="primary"
           onClick={() => navigate("/dashboard/clients")}
         >
-          Back to Clients
+          {t("actions.backToDonors")}
         </Button>
       </Box>
     );
@@ -176,23 +177,30 @@ const ClientDetailsPage = () => {
               </Typography>
             )}
             <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>Phone:</strong> {phone_number_1?.number || "N/A"}
+              <strong>
+                {t("customerManagement.phone")} 1:
+                </strong> {phone_number_1?.number || "N/A"}
             </Typography>
             {client?.phone_number_2?.number && (
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Phone 2:</strong>
+                <strong>
+                  {t("customerManagement.phone")} 2:</strong>
                 {client.phone_number_2?.number || "N/A"}
               </Typography>
             )}
             {client?.phone_number_3?.number && (
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Phone 3:</strong>
+                <strong>
+                  {t("customerManagement.phone")} 3:
+                  </strong>
                 {client.phone_number_3?.number || "N/A"}
               </Typography>
             )}
 
             <Typography variant="body1" sx={{ mb: 2 }}>
-              <strong>Birthdate:</strong>{" "}
+              <strong>
+                {t("contactsManagement.birthDate")}:
+                </strong>{" "}
               {birthdate
                 ? new Date(birthdate).toLocaleDateString("en-GB")
                 : "N/A"}
@@ -223,7 +231,7 @@ const ClientDetailsPage = () => {
         <Paper sx={{ flex: 1, boxShadow: 3 }}>
           <Box sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Total Donations
+              {t("general.totalDonations")}
             </Typography>
             {Object.entries(groupedDonations).map(([currency, total]) => (
               <Typography
@@ -270,14 +278,18 @@ const ClientDetailsPage = () => {
       {/* ========== Donation History Table ========== */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h6" gutterBottom>
-          Donation History
+          {t("general.donationsHistory")}
         </Typography>
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Amount</TableCell>
+                <TableCell>
+                  {t("general.date")}
+                  </TableCell>
+                <TableCell>
+                  {t("donations.amount")}
+                  </TableCell>
                 <TableCell>Type</TableCell>
               </TableRow>
             </TableHead>
@@ -294,10 +306,10 @@ const ClientDetailsPage = () => {
         </TableContainer>
       </Box>
 
-      {/* ========== Donator Tasks ========== */}
+      {/* ========== Donator Tasks ==========
       <Box sx={{ mb: 4 }}>
         <DonatorTasks donatorId={id} />
-      </Box>
+      </Box> */}
 
       {/* ========== Task Calendar ========== */}
       <Box sx={{ mb: 4 }}>
@@ -319,7 +331,7 @@ const ClientDetailsPage = () => {
           onClick={() => navigate("/dashboard/donators")}
           sx={{ display: "flex", gap: 1 }}
         >
-          <ArrowCircleLeftIcon /> Back to Clients
+          <ArrowCircleLeftIcon /> {t("actions.backToDonors")}
         </Button>
         <DeleteDonatorButton donatorData={client} />
       </Box>

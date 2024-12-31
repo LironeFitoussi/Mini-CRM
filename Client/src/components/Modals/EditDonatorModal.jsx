@@ -14,6 +14,7 @@ import { CalendarToday } from "@mui/icons-material";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { Add, Remove } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 
 const EditDonatorModal = ({
   open,
@@ -21,6 +22,7 @@ const EditDonatorModal = ({
   handleEditDonator,
   donatorData,
 }) => {
+  const { t } = useTranslation();
   const [fName, setFName] = useState(donatorData?.fName || "");
   const [lName, setLName] = useState(donatorData?.lName || "");
   const [birthdate, setBirthdate] = useState(donatorData?.birthdate || "");
@@ -137,7 +139,7 @@ const EditDonatorModal = ({
         }}
       >
         <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-          Edit Donator
+          {t("customerManagement.edit")}
         </Typography>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -147,7 +149,7 @@ const EditDonatorModal = ({
         <TextField
           margin="normal"
           fullWidth
-          label="First Name"
+          label={t("clientInfo.fName")}
           value={fName}
           onChange={(e) => setFName(e.target.value)}
           required
@@ -156,14 +158,14 @@ const EditDonatorModal = ({
         <TextField
           margin="normal"
           fullWidth
-          label="Last Name"
+          label={t("clientInfo.lName")}
           value={lName}
           onChange={(e) => setLName(e.target.value)}
           required
           sx={{ mb: 2 }}
         />
         <DateField
-          label="Birthdate"
+          label={t("contactsManagement.birthDate")}
           value={birthdate ? new Date(birthdate) : null}
           onChange={(newValue) =>
             setBirthdate(newValue ? newValue.toISOString().split("T")[0] : "")
@@ -179,7 +181,7 @@ const EditDonatorModal = ({
 
         {/* Email Section */}
         <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
-          Emails
+          {t("customerManagement.emails")}
         </Typography>
         {donatorEmail.map((email, index) => (
           <Stack
@@ -208,13 +210,13 @@ const EditDonatorModal = ({
         ))}
         {donatorEmail.length < 3 && (
           <Button startIcon={<Add />} onClick={addEmailField} sx={{ mt: 1 }}>
-            Add Email
+            {t("customerManagement.addEmail")}
           </Button>
         )}
 
         {/* Phone Section */}
         <Typography variant="subtitle1" sx={{ mt: 4, mb: 1 }}>
-          Phone Numbers
+          {t("customerManagement.phones")}
         </Typography>
         {donatorPhone.map((phone, index) => (
           <Stack
@@ -262,7 +264,7 @@ const EditDonatorModal = ({
           onClick={handleSubmit}
           sx={{ mt: 4 }}
         >
-          Save Changes
+          {t("buttons.saveChanges")}
         </Button>
       </Box>
     </Modal>

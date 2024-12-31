@@ -25,18 +25,18 @@ const ConfirmationModal = ({ open, onClose, onConfirm, title, description, type 
                 }}
             >
                 <Typography id="confirmation-modal-title" variant="h6" component="h2">
-                    {title}
+                    {t(`confirmations.${title}`)}
                 </Typography>
                 <Typography id="confirmation-modal-description" sx={{ mt: 2 }}>
-                    {description}
+                    {t(`confirmations.${description}`)}
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
                     <Button onClick={onClose} sx={{ mr: 2 }}>
-                        {t('cancel')}
+                        {t('general.cancel')}
                     </Button>
                     <Button variant="contained" color={type === 'danger' ? 'error' : 'primary'}
                     onClick={onConfirm}>
-                        {t('confirm')}
+                        {t('general.confirm')}
                     </Button>
                 </Box>
             </Box>

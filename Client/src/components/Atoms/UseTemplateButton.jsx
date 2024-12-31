@@ -3,13 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Button, Menu, MenuItem, CircularProgress, Typography } from '@mui/material';
 import DeleteTemplateButton from './DeleteTemplateButton';
-
+import { useTranslation } from 'react-i18next';
 const fetchTemplates = async () => {
   const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/mail-templates`);
   return response.data;
 };
 
 const UseTemplateButton = ({ handleChange }) => {
+  const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);
   const {
     data: templates,
@@ -52,7 +53,8 @@ const UseTemplateButton = ({ handleChange }) => {
         variant="body1"
         style={{ textAlign: 'center', marginTop: '20px' }}
       >
-        Error loading templates: {error.message}
+        {t('templates.errorLoadingTemplates') || 'Error loading templates'}: 
+        {error.message}
       </Typography>
     );
   }

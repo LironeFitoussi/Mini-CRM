@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Button } from '@mui/material';
 import AddDonatorModal from '../Modals/AddDonatorModal';
 import { useNavigate } from "react-router-dom";
-
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 const AddDonatorButton = () => {
     const [open, setOpen] = useState(false);
     const [donatorName, setDonatorName] = useState('');
     const [donatorEmail, setDonatorEmail] = useState('');
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const handleOpen = () => setOpen(true);
@@ -46,7 +47,7 @@ const AddDonatorButton = () => {
     return (
         <div>
             <Button variant="contained" color="primary" onClick={handleOpen}>
-                Add Donator
+                {t('addDonor')}
             </Button>
             <AddDonatorModal
                 open={open}

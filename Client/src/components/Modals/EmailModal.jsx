@@ -19,13 +19,11 @@ const EmailModal = ({
   mailContent,
 }) => {
   const { t } = useTranslation();
-
-  // console.log(formValues);
   
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
-        <DialogTitle>{t("emailModalTitle") || "Send Email"}</DialogTitle>
+        <DialogTitle>{t("email.modalTitle") || "Send Email"}</DialogTitle>
         <SaveAsTemplateButton
           subject={formValues.subject}
           body={formValues.body}

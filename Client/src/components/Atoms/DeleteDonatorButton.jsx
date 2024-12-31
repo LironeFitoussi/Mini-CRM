@@ -4,10 +4,11 @@ import { Button } from '@mui/material';
 import DeleteDonatorModal from '../Modals/DeleteDonatorModal.jsx';
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
 const DeleteDonatorButton = ({donatorData}) => {
+    const { t } = useTranslation();
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -32,7 +33,7 @@ const DeleteDonatorButton = ({donatorData}) => {
         <div>
             <Button variant="contained" color="error" onClick={handleOpen} sx={{ display: "flex", gap: 1 }}>
                 <DeleteIcon /> {" "}
-                Delete Donator
+                {t('customerManagement.delete')}
             </Button>
             <DeleteDonatorModal
                 open={open}
