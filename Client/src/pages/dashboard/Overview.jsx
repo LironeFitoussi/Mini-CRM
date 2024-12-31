@@ -1,45 +1,149 @@
 // src/pages/dashboard/Overview.jsx
-import React from "react";
-
-// Components
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Paper,
+  Typography,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  Box,
+} from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { Link } from "react-router-dom"; // Import du composant Link
 import MainInfoContainer from "../../components/MainInfoContainer";
+import { fetchAllNotifications } from "../../api/notifications";
+
+// Fonction pour obtenir la couleur basée sur le rôle de l'utilisateur
+const getColorByRole = (role) => {
+  switch (role.toLowerCase()) {
+    case "developer":
+      return "#1976d2"; // Bleu
+    case "admin":
+      return "#d32f2f"; // Rouge
+    case "user":
+      return "#388e3c"; // Vert
+    default:
+      return "#757575"; // Gris pour les rôles non définis
+  }
+};
+
+// Fonction pour formater les dates en français
+const formatDateFR = (dateString) => {
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  return new Date(dateString).toLocaleDateString("fr-FR", options);
+};
+
+// Fonction pour générer les messages de notification en français
+const generateFrenchMessage = (notification) => {
+  if (notification.type === "callback") {
+    const donatorName = notification.donator
+      ? `${notification.donator.fName} ${notification.donator.lName}`
+      : "Inconnu";
+    const callbackDate = notification.notificationDate
+      ? formatDateFR(notification.notificationDate)
+      : "Date inconnue";
+
+    return `Nous devons rappeler le donateur ${donatorName} le ${callbackDate}.`;
+  }
+
+  // Pour d'autres types de notifications, retourner le titre
+  return notification.title;
+};
 
 const DashboardOverview = () => {
-  return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      < MainInfoContainer />
+  const [notifications, setNotifications] = useState([]);
 
-      {/* Recent Activities */}
-      <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Recent Activities</h2>
-        <ul className="space-y-4">
-          <li className="flex items-center space-x-4">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-              <span className="text-blue-500 font-bold">U</span>
-            </div>
-            <p className="text-gray-700">
-              <span className="font-semibold">John Doe</span> signed up for an account.
-            </p>
-          </li>
-          <li className="flex items-center space-x-4">
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-              <span className="text-green-500 font-bold">N</span>
-            </div>
-            <p className="text-gray-700">
-              <span className="font-semibold">New Task</span> was created by Jane Smith.
-            </p>
-          </li>
-          <li className="flex items-center space-x-4">
-            <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-              <span className="text-yellow-500 font-bold">R</span>
-            </div>
-            <p className="text-gray-700">
-              <span className="font-semibold">Reminder</span>: Quarterly report due in 2 days.
-            </p>
-          </li>
-        </ul>
-      </div>
-    </div>
+  useEffect(() => {
+    fetchAllNotifications()
+      .then((data) => {
+        setNotifications(data);
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la récupération des notifications :", error);
+      });
+  }, []);
+
+  const getInitials = (fName, lName) => {
+    return fName.charAt(0).toUpperCase() + lName.charAt(0).toUpperCase();
+  };
+
+  const getFullName = (fName, lName) => {
+    return `${fName} ${lName}`;
+  };
+
+  return (
+    <Container sx={{ minHeight: "100vh", bgcolor: "grey.100", p: 6 }}>
+      <MainInfoContainer />
+
+      {/* Notifications Récentes */}
+      <Paper sx={{ mt: 8, p: 3, borderRadius: 2, boxShadow: 3 }}>
+        <Typography variant="h4" component="h2" gutterBottom>
+          Notifications Récentes
+        </Typography>
+        <List>
+          {notifications.map((notification) => (
+            <ListItem
+              key={notification._id}
+              alignItems="flex-start"
+              component={Link} // Transformation du ListItem en un lien
+              to={`/dashboard/donators/${notification.donatorId}`} // Destination du lien
+              button // Ajout de la propriété 'button' pour les styles de lien
+              secondaryAction={
+                notification.isRead && <CheckCircleIcon color="success" />
+              }
+              sx={{ textDecoration: "none", color: "inherit" }} // Suppression de la décoration de texte par défaut et hérité des couleurs
+            >
+              <ListItemAvatar>
+                <Avatar
+                  sx={{
+                    bgcolor:
+                      notification.user && notification.user.role
+                        ? getColorByRole(notification.user.role)
+                        : getColorByRole("user"), // Par défaut à 'user' si le rôle est manquant
+                  }}
+                >
+                  {notification.user &&
+                    getInitials(notification.user.fName, notification.user.lName)}
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Typography
+                      variant="body1"
+                      component="span"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      {notification.user
+                        ? getFullName(notification.user.fName, notification.user.lName)
+                        : "Utilisateur Inconnu"}
+                    </Typography>
+                  </Box>
+                }
+                secondary={
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    color="text.secondary"
+                  >
+                    {generateFrenchMessage(notification)}
+                  </Typography>
+                }
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Paper>
+    </Container>
   );
 };
 

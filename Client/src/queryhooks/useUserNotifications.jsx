@@ -1,11 +1,14 @@
 // queryhooks/useNotifications.js
 import { useQuery } from '@tanstack/react-query';
-import { fetchNotifications, setNotificationAsRead } from '../api/notifications';
+import { fetchUsersDayliNotifications, setNotificationAsRead } from '../api/notifications';
+import { useSelector } from "react-redux";
 
-const useNotifications = () => {
+const useUserNotifications = () => {
+    const {user} = useSelector((state) => state.user);
+    
     const { data, isLoading, isError, refetch } = useQuery({
         queryKey: ['notifications'],
-        queryFn: fetchNotifications,
+        queryFn: () => fetchUsersDayliNotifications(user._id),
         keepPreviousData: true, // To keep previous data while fetching new page
     });
     
@@ -20,4 +23,4 @@ const useNotifications = () => {
     };
 };
 
-export default useNotifications;
+export default useUserNotifications;

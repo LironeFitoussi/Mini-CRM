@@ -24,7 +24,6 @@
         "unknown": "Inconnu",
         "on": "le"
     },
-    "totalDonators": "Total Donateurs",
     "dashboardWelcome": "Bienvenue sur le tableau de bord",
     "imageUploader": {
         "dragAndDrop": "Glissez et déposez votre image ici ou cliquez pour sélectionner un fichier",
@@ -91,7 +90,8 @@
         "overview": "Aperçu",
         "donators": "Donateurs",
         "donations": "Dons",
-        "email": "Email"
+        "email": "Email",
+        "totalDonators": "Total Donateurs"
     },
     "actions": {
         "backToDonors": "Retour aux Donateurs",

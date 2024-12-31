@@ -20,8 +20,6 @@ const MainInfoContainer = () => {
     queryFn: fetchDashboardData,
     retry: false,
   });
-
-  console.log(data);
   
   if (isLoading) return <div>Loading...</div>;
   if (isError) {
@@ -41,10 +39,10 @@ const MainInfoContainer = () => {
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MainInfoCard title="totalDonators" type="info" content={data.totalDonators} />
-        <MainInfoCard title="totalDonationsMonth" type="success" content={data.totalDonations} />
-        <MainInfoCard title="totalTasks" type="warning" content={data.totalTasks} />
-        <MainInfoCard title="totalCriticalTasks" type="error" content={data.totalCriticalTasks} />
+        <MainInfoCard title="general.totalDonators" type="info" content={data.totalDonators} />
+        <MainInfoCard title="general.totalDonationsMonth" type="success" content={data.totalDonations} />
+        <MainInfoCard title="general.totalTasks" type="warning" content={data.totalTasks} />
+        <MainInfoCard title="general.totalCriticalTasks" type="error" content={data.totalCriticalTasks} />
       </div>
     </>
   );

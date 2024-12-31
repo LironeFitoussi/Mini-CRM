@@ -7,13 +7,13 @@ import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider'; // For adding a linear line
 import { useNavigate } from 'react-router-dom';
 
-import useNotifications from '../../queryhooks/useNotifications';
+import useUserNotifications from '../../queryhooks/useUserNotifications';
 
 const NotificationsButton = () => {
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const { notifications, isLoading, setNotificationAsRead, refetch } = useNotifications();
+    const { notifications, isLoading, setNotificationAsRead, refetch } = useUserNotifications();
 
     if (isLoading) {
         return null;

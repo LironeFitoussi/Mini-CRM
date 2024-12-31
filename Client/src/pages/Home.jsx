@@ -31,14 +31,6 @@ const Home = () => {
             : "Please log in to access your account."}
         </p>
 
-        {/* <div>
-          <h1>{t("welcome")}</h1>
-          <button onClick={() => changeLanguage("en")}>English</button>
-          <button onClick={() => changeLanguage("es")}>Español</button>
-          <button onClick={() => changeLanguage("fr")}>Français</button>
-          <button onClick={() => changeLanguage("de")}>Deutsch</button>
-        </div> */}
-
         <div className="flex justify-center gap-4">
           {isAuthenticated ? (
             <>
