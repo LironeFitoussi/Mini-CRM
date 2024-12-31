@@ -110,7 +110,11 @@
     },
     "actions": {
         "backToDonors": "Back to Donors",
-        "close": "Close"
+        "close": "Close",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "submit": "Submit",
+        "save": "Save"
     },
     "tasks": {
         "task": "Task",
@@ -133,7 +137,7 @@
     },
     "customerManagement": {
         "title": "Customers",
-        "add": "Add Customer",
+        "add": "Add Donor",
         "edit": "Edit Donor",
         "delete": "Delete Donor",
         "details": "Donor Details",
@@ -234,6 +238,9 @@
         "export": "Export Reports"
     },
     "userManagement": {
+        "add": "Add User",
+        "edit": "Edit User",
+        "delete": "Delete User",
         "title": "User Management",
         "users": "Users",
         "roles": "Roles",
@@ -246,7 +253,9 @@
         "assignRole": "Assign Role",
         "userRoleUser": "User",
         "userRoleAdmin": "Admin",
-        "deleteConfirmation": "Are you sure you want to delete this user?"
+        "deleteConfirmation": "Are you sure you want to delete this user?",
+        "selectOneEdit": "Select one user to edit",
+        "selectDelete": "Select one user to delete"
     },
     "settings": {
         "title": "Settings",
@@ -324,6 +333,7 @@
         "fName": "First Name",
         "lName": "Last Name",
         "email": "Email",
-        "phone": "Phone"
+        "phone": "Phone",
+        "role": "Role"
     }
 }

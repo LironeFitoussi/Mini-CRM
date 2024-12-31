@@ -22,16 +22,16 @@ const AddUserModal = ({
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{t("userManagementAddUser")}</DialogTitle>
+      <DialogTitle>{t("userManagement.add")}</DialogTitle>
       <DialogContent>
         <UserForm formValues={formValues} handleChange={handleChange} />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary">
-          {t("cancel")}
+          {t("actions.cancel")}
         </Button>
         <Button onClick={() => handleSubmit(formValues)} color="primary">
-          {t("submit")}
+          {t("actions.save")}
         </Button>
       </DialogActions>
     </Dialog>

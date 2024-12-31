@@ -22,7 +22,7 @@ const EditUserModal = ({
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{t("userManagementEditUser")}</DialogTitle>
+      <DialogTitle>{t("userManagement.editUser")}</DialogTitle>
       <DialogContent>
         <UserForm formValues={formValues} handleChange={handleChange} />
       </DialogContent>

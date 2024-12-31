@@ -95,7 +95,11 @@
     },
     "actions": {
         "backToDonors": "Retour aux Donateurs",
-        "close": "Fermer"
+        "close": "Fermer",
+        "cancel": "Annuler",
+        "delete": "Supprimer",
+        "submit": "Soumettre",
+        "save": "Enregistrer"
     },
     "tasks": {
         "task": "Tâche",
@@ -118,7 +122,7 @@
     },
     "customerManagement": {
         "title": "Clients",
-        "add": "Ajouter un client",
+        "add": "Ajouter un donateur",
         "edit": "Modifier le donateur",
         "delete": "Supprimer le donateur",
         "details": "Détails du donateur",
@@ -141,7 +145,8 @@
         "tags": "Étiquettes",
         "assignedTo": "Attribué à",
         "status": "Statut",
-        "contactBackDate": "Date de rappel"
+        "contactBackDate": "Date de rappel",
+        "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer ce donateur?"
     },
     "leadsManagement": {
         "title": "Gestion des Leads",
@@ -219,6 +224,9 @@
         "export": "Exporter les rapports"
     },
     "userManagement": {
+        "add": "Ajouter un utilisateur",
+        "edit": "Modifier l'utilisateur",
+        "delete": "Supprimer l'utilisateur",
         "title": "Gestion des utilisateurs",
         "users": "Utilisateurs",
         "roles": "Rôles",
@@ -231,7 +239,9 @@
         "assignRole": "Attribuer un rôle",
         "userRoleUser": "Utilisateur",
         "userRoleAdmin": "Administrateur",
-        "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cet utilisateur?"
+        "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cet utilisateur?",
+        "selectOneEdit": "Sélectionnez un utilisateur à modifier",
+        "selectDelete": "Sélectionnez un utilisateur à supprimer"
     },
     "settings": {
         "title": "Paramètres",
@@ -324,6 +334,7 @@
         "fName": "Prénom",
         "lName": "Nom de famille",
         "email": "Email",
-        "phone": "Téléphone"
+        "phone": "Téléphone",
+        "role": "Rôle"
     }
 }

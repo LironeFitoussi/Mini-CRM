@@ -10,7 +10,7 @@ const UserForm = ({ formValues, handleChange }) => {
     <>
       <TextField
         margin="normal"
-        label={t("contactFirstName")}
+        label={t("clientInfo.fName")}
         name="fName"
         value={formValues.fName}
         onChange={handleChange}
@@ -18,7 +18,7 @@ const UserForm = ({ formValues, handleChange }) => {
       />
       <TextField
         margin="normal"
-        label={t("contactLastName")}
+        label={t("clientInfo.lName")}
         name="lName"
         value={formValues.lName}
         onChange={handleChange}
@@ -26,7 +26,7 @@ const UserForm = ({ formValues, handleChange }) => {
       />
       <TextField
         margin="normal"
-        label={t("contactEmail")}
+        label={t("clientInfo.email")}
         name="email"
         value={formValues.email}
         onChange={handleChange}
@@ -44,8 +44,8 @@ const UserForm = ({ formValues, handleChange }) => {
           native: true,
         }}
       >
-        <option value="user">{t("userManagementUserRoleUser")}</option>
-        <option value="admin">{t("userManagementUserRoleAdmin")}</option>
+        <option value="user">{t("userManagement.userRoleUser")}</option>
+        <option value="admin">{t("userManagement.userRoleAdmin")}</option>
       </TextField>
     </>
   );

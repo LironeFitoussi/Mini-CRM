@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Button } from "@mui/material";
+import { Button, Snackbar, Alert } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
 import UsersTable from "../../components/Molecules/UsersTable";
@@ -14,8 +14,6 @@ const fetchUsers = async () => {
   const { data } = await axios.get(
     import.meta.env.VITE_API_URL + "/api/v1/users"
   );
-  // console.log(data);
-  
   return data.users;
 };
 
@@ -45,6 +43,7 @@ const Users = () => {
   });
 
   const [selectedRows, setSelectedRows] = useState([]);
+  const [alert, setAlert] = useState({ open: false, message: "", severity: "info" });
 
   const handleOpenAddModal = () => {
     setIsAddModalOpen(true);
@@ -57,7 +56,11 @@ const Users = () => {
 
   const handleOpenEditModal = () => {
     if (selectedRows.length !== 1) {
-      alert("Please select exactly one user to edit.");
+      setAlert({
+        open: true,
+        message: t("userManagement.selectOneEdit"),
+        severity: "warning",
+      });
       return;
     }
     const userToEdit = data.find((user) => user._id === selectedRows[0]);
@@ -85,8 +88,18 @@ const Users = () => {
       );
       queryClient.invalidateQueries(["users"]);
       handleCloseAddModal();
+      setAlert({
+        open: true,
+        message: t("userManagement.userAdded"),
+        severity: "success",
+      });
     } catch (err) {
       console.error("Error adding user", err.response?.data || err);
+      setAlert({
+        open: true,
+        message: t("userManagement.addError"),
+        severity: "error",
+      });
     }
   };
 
@@ -98,14 +111,28 @@ const Users = () => {
       );
       queryClient.invalidateQueries(["users"]);
       handleCloseEditModal();
+      setAlert({
+        open: true,
+        message: t("userManagement.userUpdated"),
+        severity: "success",
+      });
     } catch (err) {
       console.error("Error editing user", err.response?.data || err);
+      setAlert({
+        open: true,
+        message: t("userManagement.editError"),
+        severity: "error",
+      });
     }
   };
 
   const handleDelete = async () => {
     if (selectedRows.length === 0) {
-      alert("No users selected for deletion.");
+      setAlert({
+        open: true,
+        message: t("userManagement.selectDelete"),
+        severity: "warning",
+      });
       return;
     }
 
@@ -114,27 +141,51 @@ const Users = () => {
       queryClient.invalidateQueries(["users"]);
       setIsDeleteModalOpen(false);
       setSelectedRows([]);
+      setAlert({
+        open: true,
+        message: t("userManagement.usersDeleted"),
+        severity: "success",
+      });
     } catch (err) {
       console.error("Error deleting users", err);
+      setAlert({
+        open: true,
+        message: t("userManagement.deleteError"),
+        severity: "error",
+      });
     }
+  };
+
+  const handleOpenDeleteModal = () => {
+    if (selectedRows.length === 0) {
+      setAlert({
+        open: true,
+        message: t("userManagement.selectDelete"),
+        severity: "warning",
+      });
+      return;
+    }
+    setIsDeleteModalOpen(true);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // console.log(name, value);
     setFormValues((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
   };
 
   if (isLoading) return <div className="text-center mt-10">Loading...</div>;
   if (error)
     return <div className="text-center mt-10">Error fetching users</div>;
 
-  // Filter out invalid rows to ensure data integrity
   const validData = data?.filter((row) => row && row._id) || [];
 
   return (
     <div className="h-screen p-4">
-      <h1 className="text-2xl font-bold mb-4">{t("userManagementUsers")}</h1>
+      <h1 className="text-2xl font-bold mb-4">{t("navigation.userManagement")}</h1>
 
       <div className="bg-white p-4 rounded-lg shadow-md">
         <UsersTable
@@ -151,15 +202,15 @@ const Users = () => {
           onClick={handleOpenAddModal}
           style={{ marginRight: "10px" }}
         >
-          {t("userManagementAddUser")}
+          {t("userManagement.add")}
         </Button>
         <Button
           variant="contained"
           color="error"
-          onClick={() => setIsDeleteModalOpen(true)}
+          onClick={handleOpenDeleteModal}
           style={{ marginRight: "10px" }}
         >
-          {t("userManagementDeleteUser")}
+          {t("userManagement.delete")}
         </Button>
         <Button
           variant="contained"
@@ -167,11 +218,10 @@ const Users = () => {
           onClick={handleOpenEditModal}
           style={{ marginRight: "10px" }}
         >
-          {t("userManagementEditUser")}
+          {t("userManagement.edit")}
         </Button>
       </div>
 
-      {/* Add User Modal */}
       <AddUserModal
         open={isAddModalOpen}
         onClose={handleCloseAddModal}
@@ -180,14 +230,12 @@ const Users = () => {
         handleSubmit={handleAddUser}
       />
 
-      {/* Delete User Modal */}
       <DeleteUserModal
         open={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onDelete={handleDelete}
       />
 
-      {/* Edit User Modal */}
       <EditUserModal
         open={isEditModalOpen}
         onClose={handleCloseEditModal}
@@ -195,6 +243,21 @@ const Users = () => {
         handleChange={handleChange}
         handleSubmit={handleEditUser}
       />
+
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={6000}
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity={alert.severity}
+          sx={{ width: "100%" }}
+        >
+          {alert.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
