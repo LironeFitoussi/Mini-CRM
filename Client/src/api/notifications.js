@@ -14,13 +14,13 @@ export const fetchUsersDayliNotifications = async (userId) => {
 };
 
 export const fetchAllNotifications = async () => {  
-  console.log("Fetching notifications");
+  // console.log("Fetching notifications");
   try {
     const response = await axios.get(
       `${import.meta.env.VITE_API_URL}/api/v1/notifications`
     );
     
-    console.log(response.data);
+    // console.log(response.data);
     
     return response.data;
   } catch (error) {

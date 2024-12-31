@@ -10,7 +10,7 @@ const MainInfoCard = ({ title, type, content }) => {
     error: "bg-red-500",
   };
 
-  console.log(title);
+  // console.log(title);
   
   return (
     <div className={`p-4 rounded-lg shadow-md text-white ${colors[type]}`}>

@@ -7,7 +7,7 @@ const MainInfoContainer = () => {
       const res = await axios.get(
         import.meta.env.VITE_API_URL + "/api/v1/dashboard"
       );
-      console.log(res.data);
+      // console.log(res.data);
       
       return res.data;
     } catch (error) {

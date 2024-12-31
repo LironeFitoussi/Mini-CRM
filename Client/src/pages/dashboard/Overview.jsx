@@ -96,7 +96,6 @@ const DashboardOverview = () => {
               alignItems="flex-start"
               component={Link} // Transformation du ListItem en un lien
               to={`/dashboard/donators/${notification.donatorId}`} // Destination du lien
-              button // Ajout de la propriété 'button' pour les styles de lien
               secondaryAction={
                 notification.isRead && <CheckCircleIcon color="success" />
               }
