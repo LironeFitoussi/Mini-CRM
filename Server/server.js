@@ -17,6 +17,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use("/api/upload", uploadRoutes);
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: false }));
 
 connectDB();
 
