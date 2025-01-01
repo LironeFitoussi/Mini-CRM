@@ -571,3 +571,58 @@
 2024-12-31 13:33:54 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2024-12-31 13:34:31 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2024-12-31 14:05:08 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:28:27 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:29:53 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:29:55 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:30:04 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:30:06 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:32:25 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:33:09 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:33:55 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:34:54 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:35:24 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:36:48 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:36:52 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:38:15 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:38:49 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:39:15 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:39:24 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:39:32 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:39:56 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:40:08 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:40:17 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:41:07 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:41:19 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:41:25 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:41:31 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:41:48 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:42:22 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:42:24 [INFO]: Sending SMS using Twilio
+2025-01-01 09:42:24 [INFO]: To: +972585109829
+2025-01-01 09:42:24 [INFO]: Message: Hello from Twillio
+2025-01-01 09:42:24 [INFO]: Account SID: undefined
+2025-01-01 09:42:24 [INFO]: Auth Token: undefined
+2025-01-01 09:42:24 [INFO]: Twilio Phone Number: undefined
+2025-01-01 09:44:05 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:44:10 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:44:11 [INFO]: Sending SMS using Twilio
+2025-01-01 09:44:11 [INFO]: To: +972585109829
+2025-01-01 09:44:11 [INFO]: Message: Hello from Twillio
+2025-01-01 09:44:11 [INFO]: Account SID: undefined
+2025-01-01 09:44:11 [INFO]: Auth Token: undefined
+2025-01-01 09:44:11 [INFO]: Twilio Phone Number: undefined
+2025-01-01 09:44:51 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:44:51 [INFO]: Sending SMS using Twilio
+2025-01-01 09:44:51 [INFO]: To: +972585109829
+2025-01-01 09:44:51 [INFO]: Message: Hello from Twillio
+2025-01-01 09:44:52 [INFO]: Sending SMS using Twilio
+2025-01-01 09:44:52 [INFO]: To: +972585109829
+2025-01-01 09:44:52 [INFO]: Message: Hello from Twillio
+2025-01-01 09:45:28 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:45:53 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:46:05 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:53:25 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:53:27 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:53:48 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:53:51 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-01 09:54:27 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM

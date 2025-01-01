@@ -1,0 +1,25 @@
+{
+    "id": "613d3f84-5d78-4a11-a2a9-f62b7066f828",
+    "name": "Twilio Dev Environment",
+    "values": [
+      {
+        "key": "serverUrl",
+        "value": "http://localhost:3000",
+        "enabled": true
+      },
+      {
+        "key": "toPhoneNumber",
+        "value": "+18005551234",
+        "enabled": true
+      },
+      {
+        "key": "message",
+        "value": "Hello from Twilio via Postman!",
+        "enabled": true
+      }
+    ],
+    "_postman_variable_scope": "environment",
+    "_postman_exported_at": "2025-01-01T10:00:00.000Z",
+    "_postman_exported_using": "Postman/10.0.0"
+  }
+  

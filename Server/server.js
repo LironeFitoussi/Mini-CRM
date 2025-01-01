@@ -1,12 +1,10 @@
-const express = require("express");
 const dotenv = require("dotenv");
+const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const uploadRoutes = require("./routes/upload");
 const morgan = require("morgan");
-const logger = require("./utils/logger"); // Using winston for logging
 const initializeMailCronJob = require("./cronJobs/mailCron");
-const mongoose = require("mongoose");
 const Authorized = require("./models/Authorized");
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +33,8 @@ app.use("/api/v1/leads", require("./routes/leadRoutes"));
 app.use("/api/v1/notes", require("./routes/noteRoutes"));
 app.use("/api/v1/notifications", require("./routes/notificationRoutes.js"));
 app.use("/unsubscribe", require("./routes/unsubscribeRoutes.js"));
+app.use('/api/v1/sms', require('./routes/sms.js'));
+app.use('/api/v1/twilio', require('./routes/twilioInbound.js'));
 
 app.get("/api/v1/get-auth-user", (req, res) => {
   try {

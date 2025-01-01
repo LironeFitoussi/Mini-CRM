@@ -1,0 +1,66 @@
+{
+    "info": {
+      "name": "Twilio SMS Integration",
+      "_postman_id": "eba2cabe-fd47-4c91-80e3-2c5a6ff39c88",
+      "description": "Collection to test Twilio SMS sending endpoint in a Node.js CRM.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Send SMS",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"to\": \"{{toPhoneNumber}}\",\n  \"message\": \"{{message}}\"\n}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          },
+          "url": {
+            "raw": "{{serverUrl}}/sms/send",
+            "host": [
+              "{{serverUrl}}"
+            ],
+            "path": [
+              "sms",
+              "send"
+            ]
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test(\"Status code is 200\", function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "",
+                "pm.test(\"Response JSON should contain success:true\", function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('success', true);",
+                "});",
+                "",
+                "pm.test(\"Response JSON should contain Twilio SID\", function () {",
+                "    const jsonData = pm.response.json();",
+                "    pm.expect(jsonData).to.have.property('sid');",
+                "});"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ]
+      }
+    ]
+  }
+  
