@@ -37,7 +37,9 @@ router.post('/inbound', async (req, res) => {
     const twimlResponse = `
       <?xml version="1.0" encoding="UTF-8"?>
       <Response>
-        <Message>Thanks for your message! We'll get back to you soon.</Message>
+        <Message>
+            Ceci est une réponse automatique. Si vous souhaitez nous contacter, veuillez nous appeler au +972509688456
+        </Message>
       </Response>
     `;
 
