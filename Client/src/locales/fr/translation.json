@@ -46,6 +46,7 @@
         "type": "Type"
     },
     "general": {
+        "addToLead": "Ajouter a un lead",
         "date": "Date",
         "welcome": "Bienvenue",
         "home": "Accueil",

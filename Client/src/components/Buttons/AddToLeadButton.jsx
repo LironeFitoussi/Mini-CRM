@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
 import AddToLeadModal from '../Modals/AddToLeadModal.jsx';
-
+import { useTranslation } from 'react-i18next';
 const AddToLeadButton = ({ selectedDonorIds }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const { t } = useTranslation();
     const handleOpenModal = () => {
         setIsModalOpen(true);
     };
@@ -24,7 +24,7 @@ const AddToLeadButton = ({ selectedDonorIds }) => {
                 disabled={selectedDonorIds.length === 0}
                 sx={{ ml: 2 }}
             >
-                Add to Lead List
+                {t('general.addToLead')}
             </Button>
 
             {/* AddToLead Modal */}
