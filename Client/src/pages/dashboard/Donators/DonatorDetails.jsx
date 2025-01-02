@@ -155,7 +155,7 @@ const ClientDetailsPage = () => {
         {/* ---------- Left Paper: Client Info ---------- */}
         <Paper sx={{ flex: 1, boxShadow: 3 }}>
           <Box sx={{ p: 3 }}>
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" gutterBottom className="flex justify-between">
               {fName} {lName} {!fName && !lName && "This client has no name."}
               <EditDonatorButton donatorData={client} />
             </Typography>
