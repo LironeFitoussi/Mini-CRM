@@ -52,6 +52,11 @@ const donatorSchema = new mongoose.Schema(
       type: Date,
       // required: false,
     },
+    related_user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
     email_1: mailSchema, // Directly assign the sub-schema
     email_2: mailSchema, // Directly assign the sub-schema
     email_3: mailSchema, // Directly assign the sub-schema
