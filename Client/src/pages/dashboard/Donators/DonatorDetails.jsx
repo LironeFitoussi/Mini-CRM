@@ -1,7 +1,8 @@
+// src/pages/ClientDetailsPage.jsx
+
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDonator } from "../../../queryhooks/useDonator";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import SmsIcon from "@mui/icons-material/Sms";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import EditDonatorButton from "../../../components/Buttons/EditDonatorButton";
@@ -13,26 +14,19 @@ import {
   Button,
   Paper,
   Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   CircularProgress,
 } from "@mui/material";
-import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from "recharts";
 
 // Components
 import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
 import TaskCalendar from "../../../components/TaskCalendar";
 import EmailModal from "../../../components/Modals/EmailModal";
 import SendEmailButton from "../../../components/Atoms/SendEmailButton";
-import DonatorNotes from "../../../components/Molecules/DonatorNotes";
+import DonatorNotes from "../../../components/Molecules/DonatorNotes"; // Ensure correct import path
 import { getDonationTypes } from "../../../utils";
 import SendWhatsappButton from "../../../components/Buttons/SendWhatsappButton";
 import AddToLeadButton from "../../../components/Buttons/AddToLeadButton";
-
+import DonationsComponent from "../../../components/Molecules/MainDonations";
 // Redux
 import { useSelector } from "react-redux";
 
@@ -137,6 +131,7 @@ const ClientDetailsPage = () => {
     phone_number_1,
     birthdate,
     donations = [],
+    notes, // Ensure that 'notes' is part of the client object
   } = client;
 
   const groupedDonations = donations.reduce((acc, donation) => {
@@ -158,9 +153,9 @@ const ClientDetailsPage = () => {
   return (
     <Box sx={{ padding: 4 }}>
       {/* ========== Main Info & Chart (Side by Side but separate Papers) ========== */}
-      <Box sx={{ display: "flex", gap: 2, marginBottom: 3 }}>
+      <Box sx={{ display: "flex", gap: 2, marginBottom: 3, flexWrap: "wrap" }}>
         {/* ---------- Left Paper: Client Info ---------- */}
-        <Paper sx={{ flex: 1, boxShadow: 3 }}>
+        <Paper sx={{ flex: 1, boxShadow: 3, minWidth: 300 }}>
           <Box sx={{ p: 3 }}>
             <Typography
               variant="h4"
@@ -217,7 +212,7 @@ const ClientDetailsPage = () => {
             </Typography>
 
             {/* ========== Contact Buttons ========== */}
-            <Box sx={{ display: "flex", gap: 1 }}>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               <SendEmailButton recipient={email_1?.email} />
 
               <SendWhatsappButton recipientPhone={phone_number_1?.number} />
@@ -238,92 +233,19 @@ const ClientDetailsPage = () => {
         </Paper>
 
         {/* ---------- Right Paper: Donation Chart ---------- */}
-        <Paper sx={{ flex: 1, boxShadow: 3 }}>
-          <Box sx={{ p: 3 }}>
-            <Box className="flex justify-between">
-              <Typography
-                variant="h6"
-                gutterBottom
-                className="flex justify-between"
-              >
-                {t("general.totalDonations")}
-              </Typography>
-              {Object.entries(groupedDonations).map(([currency, total]) => (
-                <Typography
-                  key={currency}
-                  variant="h5"
-                  sx={{
-                    color: "primary.main",
-                    width: "100%",
-                    textAlign: "center",
-                  }}
-                >
-                  {currency} {currencyIcons[currency]}: {total}
-                </Typography>
-              ))}
-            </Box>
-            <Box sx={{ width: "100%", height: "100%", display: "flex" }}>
-              {/* ========== Donation History Table ========== */}
-              <Box sx={{ mb: 4 }}>
-                {/* <Typography variant="h6" gutterBottom>
-                  {t("general.donationsHistory")}
-                </Typography> */}
-                <TableContainer component={Paper}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        {/* <TableCell>{t("general.date")}</TableCell> */}
-                        <TableCell>{t("donations.amount")}</TableCell>
-                        <TableCell>Type</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {donations.map((donation) => (
-                        <TableRow key={donation._id}>
-                          {/* <TableCell>{donation.date}</TableCell> */}
-                          <TableCell>${donation.amount}</TableCell>
-                          <TableCell>{donation.type}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Box>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={donationTypes}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                  >
-                    {donationTypes.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </Box>
-          </Box>
-        </Paper>
+        <DonationsComponent
+          t={t}
+          groupedDonations={groupedDonations}
+          currencyIcons={currencyIcons}
+          donations={donations}
+          donationTypes={donationTypes}
+        />
       </Box>
 
       {/* ========== Donator Notes ========== */}
       <Paper sx={{ p: 2, boxShadow: 3, mb: 3 }}>
-        <DonatorNotes donatorId={id} note={client.notes} />
+        <DonatorNotes donatorId={id} note={notes} />
       </Paper>
-
-      {/* ========== Donator Tasks ==========
-      <Box sx={{ mb: 4 }}>
-        <DonatorTasks donatorId={id} />
-      </Box> */}
 
       {/* ========== Task Calendar ========== */}
       <Box sx={{ mb: 4 }}>
@@ -337,6 +259,8 @@ const ClientDetailsPage = () => {
           justifyContent: "space-between",
           alignItems: "center",
           mt: 4,
+          flexWrap: "wrap",
+          gap: 2,
         }}
       >
         <Button

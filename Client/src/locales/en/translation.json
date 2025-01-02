@@ -1,8 +1,9 @@
 {
     "leads": "Leads",
     "donatorNotes": {
-        "title": "Donator Notes",
+        "title": "Comments",
         "addNote": "Add Note",
+        "addNotePlaceholder": "Add a note...",
         "noNotes": "No notes available.",
         "addNewNote": "Add a New Note",
         "deleteTitle": "Delete Note",

@@ -1,33 +1,26 @@
+// src/components/Molecules/DonatorNotes.jsx
+
 import React, { useState, useEffect } from "react";
 import {
-  Button,
   List,
   ListItem,
-  ListItemText,
-  CircularProgress,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
   IconButton,
-    Box,
+  Box,
+  Typography,
+  TextField,
+  CircularProgress,
+  Paper,
+  Button,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import ConfirmationModal from "../Modals/ConfirmationModal";
-import AddCommentIcon from '@mui/icons-material/AddComment';
 import { useSelector } from "react-redux";
 
 // Function to add a new note
 const addNote = async ({ donatorId, note, userId }) => {
-  console.log("donatorId", donatorId);
-  console.log("note", note);
-  console.log("userId", userId);
-  
   try {
     const { data } = await axios.post(
       `${import.meta.env.VITE_API_URL}/api/v1/notes`,
@@ -35,14 +28,19 @@ const addNote = async ({ donatorId, note, userId }) => {
     );
     return data;
   } catch (error) {
-    console.error("Error adding note:", error.response.data);
+    console.error("Error adding note:", error.response?.data || error.message);
     throw error;
   }
 };
 
 // Function to delete a note
 const deleteNote = async (noteId) => {
-  await axios.delete(`${import.meta.env.VITE_API_URL}/api/v1/notes/${noteId}`);
+  try {
+    await axios.delete(`${import.meta.env.VITE_API_URL}/api/v1/notes/${noteId}`);
+  } catch (error) {
+    console.error("Error deleting note:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 const DonatorNotes = ({ donatorId, note: initialNotes }) => {
@@ -50,12 +48,11 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
   const queryClient = useQueryClient();
   const [notes, setNotes] = useState(initialNotes || []);
   const [newNote, setNewNote] = useState("");
-  const [isModalOpen, setModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
 
   const currentUser = useSelector((state) => state.user.user);
-  
+
   // Add note mutation
   const addNoteMutation = useMutation({
     mutationFn: ({ note }) => addNote({ donatorId, note, userId: currentUser?._id }),
@@ -70,7 +67,12 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
 
       setNotes((prevNotes) => [noteWithUserDetails, ...prevNotes]);
       queryClient.invalidateQueries(["notes", donatorId]);
-      setModalOpen(false);
+      setNewNote("");
+    },
+    onError: (error) => {
+      // Optionally handle error (e.g., show a notification)
+      console.error("Failed to add note:", error);
+      alert("Failed to add note.");
     },
   });
 
@@ -82,22 +84,20 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
       queryClient.invalidateQueries(["notes", donatorId]);
       setDeleteModalOpen(false);
     },
+    onError: (error) => {
+      // Optionally handle error (e.g., show a notification)
+      console.error("Failed to delete note:", error);
+      alert("Failed to delete note.");
+    },
   });
 
   useEffect(() => {
     setNotes(initialNotes || []);
   }, [initialNotes]);
 
-  const handleOpenModal = () => setModalOpen(true);
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setNewNote("");
-  };
-
   const handleAddNote = () => {
     if (newNote.trim()) {
       addNoteMutation.mutate({ note: newNote });
-      setNewNote("");
     }
   };
 
@@ -117,33 +117,55 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
     }
   };
 
+  // Handle Enter key press for submitting the note
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleAddNote();
+    }
+  };
+
   // Sort notes by date (latest first)
   const sortedNotes = [...notes].sort(
     (a, b) => new Date(b.date) - new Date(a.date)
   );
 
+  // Handler for Add Reminder button
+  const handleAddReminder = (noteId) => {
+    alert("need to be implemented");
+    // Future implementation can include opening a modal or navigating to a reminder setup page
+  };
+
   return (
-    <div>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-      <Typography variant="h6">{t("donatorNotes.title")}</Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleOpenModal}
-        style={{ margin: "10px 0" }}
-      >
-        {/* {t("donatorNotes.addNote")} */}
-        <AddCommentIcon />
-      </Button>
-        </Box>
-      {addNoteMutation.isLoading && (
-        <CircularProgress size={24} style={{ margin: "10px 0" }} />
-      )}
-      <div
+    <Box>
+      {/* Header */}
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h6">{t("donatorNotes.title")}</Typography>
+      </Box>
+
+      {/* Inline TextField for Adding a New Note */}
+      <Box display="flex" alignItems="center" mb={2}>
+        <TextField
+          label={t("donatorNotes.addNotePlaceholder")}
+          variant="outlined"
+          fullWidth
+          value={newNote}
+          onChange={(e) => setNewNote(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={addNoteMutation.isLoading}
+          placeholder={t("donatorNotes.addNotePlaceholder")}
+        />
+        {addNoteMutation.isLoading && (
+          <CircularProgress size={24} style={{ marginLeft: 10 }} />
+        )}
+      </Box>
+
+      {/* Notes List */}
+      <Paper
+        variant="outlined"
         style={{
           maxHeight: "25vh",
           overflowY: "auto",
-          border: "1px solid #ccc",
           padding: "8px",
           borderRadius: "4px",
         }}
@@ -151,61 +173,54 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
         {sortedNotes.length > 0 ? (
           <List>
             {sortedNotes.map((note) => (
-              <ListItem key={note.id || note._id} divider>
-                <ListItemText
-                  primary={note.note}
-                  secondary={`${t("donatorNotes.by")}: ${
-                    note.userDetails?.fName || t("donatorNotes.unknown")
-                  } ${note.userDetails?.lName || ""} ${t(
-                    "donatorNotes.on"
-                  )} ${new Date(note.date).toLocaleDateString()}`}
-                />
-                <IconButton
-                  edge="end"
-                  aria-label="delete"
-                  onClick={() => handleOpenDeleteModal(note.id || note._id)}
+              <ListItem
+                key={note.id || note._id}
+                divider
+                alignItems="center"
+                style={{ padding: "8px 16px" }}
+              >
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  width="100%"
                 >
-                  <DeleteIcon />
-                </IconButton>
+                  {/* Note Content */}
+                  <Typography variant="body1" style={{ flex: 1, marginRight: 16 }}>
+                    {note.note}
+                  </Typography>
+
+                  {/* Add Reminder Button */}
+                  {!note.nextContactDate && (
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      size="small"
+                      onClick={() => handleAddReminder(note.id || note._id)}
+                      style={{ marginRight: 16 }}
+                    >
+                      {t("donatorNotes.addReminder")}
+                    </Button>
+                  )}
+
+                  {/* Delete Button */}
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => handleOpenDeleteModal(note.id || note._id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
               </ListItem>
             ))}
           </List>
         ) : (
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="textSecondary" align="center">
             {t("donatorNotes.noNotes")}
           </Typography>
         )}
-      </div>
-
-      {/* Modal for Adding a New Note */}
-      <Dialog open={isModalOpen} onClose={handleCloseModal}>
-        <DialogTitle>{t("donatorNotes.addNewNote")}</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label={t("donatorNotes.noteLabel")}
-            type="text"
-            fullWidth
-            value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="secondary">
-            {t("donatorNotes.cancel")}
-          </Button>
-          <Button
-            onClick={handleAddNote}
-            color="primary"
-            disabled={addNoteMutation.isLoading}
-          >
-            {addNoteMutation.isLoading
-              ? t("donatorNotes.adding")
-              : t("donatorNotes.addNote")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      </Paper>
 
       {/* Confirmation Modal for Deleting a Note */}
       <ConfirmationModal
@@ -216,7 +231,7 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
         description={t("donatorNotes.deleteDescription")}
         type="danger"
       />
-    </div>
+    </Box>
   );
 };
 

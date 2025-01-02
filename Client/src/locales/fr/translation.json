@@ -11,8 +11,9 @@
     },
     "leads": "Leads",
     "donatorNotes": {
-        "title": "Notes des Donateurs",
+        "title": "Commantaires",
         "addNote": "Ajouter une Note",
+        "addNotePlaceholder": "Ajouter une note...",
         "deleteTitle": "Supprimer la Note",
         "deleteDescription": "Êtes-vous sûr de vouloir supprimer cette note? Cette action ne peut pas être annulée.",
         "noNotes": "Aucune note disponible.",
