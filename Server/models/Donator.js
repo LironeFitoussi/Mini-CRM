@@ -52,7 +52,24 @@ const donatorSchema = new mongoose.Schema(
       type: Date,
       // required: false,
     },
-    related_user: {
+    status: {
+      type: String,
+      enum: [
+        "To Contact", // Translated from A contacter
+        "No Response", // Translated from Nrp
+        "To Call Back", // Translated from A rappeler
+        "Meeting Scheduled", // Translated from Rdv
+        "Not Interested", // Translated from Pas intéressé
+        "Nothing to Report", // Translated from RAS
+        "Done", // Translated from Fait
+        "To Validate", // Translated from A valider
+      ],
+      default: "To Contact",
+    },
+    nextContactDate: {
+      type: Date,
+    },
+    owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: false,

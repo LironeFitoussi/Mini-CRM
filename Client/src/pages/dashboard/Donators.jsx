@@ -14,6 +14,8 @@ import {
   CircularProgress,
   Alert,
   Typography,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 
@@ -40,6 +42,8 @@ const DonatorsPage = () => {
   const [totalClients, setTotalClients] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  console.log(clients);
 
   // New state for selected donor IDs
   const [selectedDonorIds, setSelectedDonorIds] = useState([]);
@@ -230,6 +234,8 @@ const DonatorsPage = () => {
                 <TableCell>{t("clientInfo.lName")}</TableCell>
                 <TableCell>{t("clientInfo.email")}</TableCell>
                 <TableCell>{t("clientInfo.phone")}</TableCell>
+                <TableCell>{t("clientInfo.status")}</TableCell>
+                <TableCell>{t("clientInfo.owner")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -268,12 +274,65 @@ const DonatorsPage = () => {
                             }`
                           : "N/A"}
                       </TableCell>
+                      <TableCell>
+                        <Select
+                          value={client?.status || ""}
+                          onClick={(e) => e.stopPropagation()} // Prevent row click
+                          onChange={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            // Handle status change here
+                            const newStatus = e.target.value;
+                            console.log(`Donor ID: ${client._id}, New Status: ${newStatus}`);
+                            // You might want to update the status in state or make an API call here
+                          }}
+                          // Optional: Prevent focus from bubbling up
+                          onFocus={(e) => e.stopPropagation()}
+                          // Optional: Prevent keyboard events from bubbling up
+                          onKeyDown={(e) => e.stopPropagation()}
+                          displayEmpty
+                          fullWidth
+                        >
+                          <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>
+                          <MenuItem value="To Contact">To Contact</MenuItem>
+                          <MenuItem value="No Response">No Response</MenuItem>
+                          <MenuItem value="To Call Back">To Call Back</MenuItem>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        {/* {client.owner || "N/A"} */}
+                        <Select
+                          value={client?.owner || ""}
+                          onClick={(e) => e.stopPropagation()} // Prevent row click
+                          onChange={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            // Handle owner change here
+                            const newOwner = e.target.value;
+                            console.log(`Donor ID: ${client._id}, New Owner: ${newOwner}`);
+                            // You might want to update the owner in state or make an API call here
+                          }}
+                          // Optional: Prevent focus from bubbling up
+                          onFocus={(e) => e.stopPropagation()}
+                          // Optional: Prevent keyboard events from bubbling up
+                          onKeyDown={(e) => e.stopPropagation()}
+                          displayEmpty
+                          fullWidth
+                        >
+                          <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>
+                          <MenuItem value="John Doe">John Doe</MenuItem>
+                          <MenuItem value="Jane Doe">Jane Doe</MenuItem>
+                          <MenuItem value="Alice Smith">Alice Smith</MenuItem>
+                        </Select>
+                      </TableCell>
                     </TableRow>
                   );
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">
+                  <TableCell colSpan={6} align="center">
                     No clients found.
                   </TableCell>
                 </TableRow>

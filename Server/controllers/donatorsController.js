@@ -1,20 +1,42 @@
+/**
+ * Donators Controller
+ * 
+ * This file contains all controller functions related to handling donators. 
+ * It includes operations such as:
+ * - Retrieving donators (with pagination and searching)
+ * - Creating a new donator
+ * - Updating an existing donator
+ * - Deleting a donator
+ * - Setting an owner for a single or multiple donators
+ * - Bulk-creating donators from an Excel file
+ * - Fetching total donators
+ * - Fetching tasks related to a donator
+ */
+
 const Donation = require("../models/Donation.js");
 const Donator = require("../models/Donator.js");
 const Task = require("../models/Task.js");
 const parseDonations = require("../helpers/parseDonations.js");
 
-// Zod Validation
-const { z } = require("zod");
-
-// Import EXCEL to JSON converter
-const excelToJson = require("convert-excel-to-json");
+const { z } = require("zod"); // Zod for validation
+const excelToJson = require("convert-excel-to-json"); // Excel to JSON converter
 const normalizePhoneNumber = require("../utils/libphonenumber.js");
 
-// Helper to capitalize strings
+/**
+ * Capitalizes the first letter of a string.
+ * @param {string} str - The input string to capitalize.
+ * @returns {string} The capitalized string.
+ */
 const capitalize = (str) =>
   str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
-// Helper to clean and split strings by multiple delimiters
+/**
+ * Splits and cleans a given string by multiple delimiters.
+ * Removes empty strings in the process.
+ * @param {string} str - The input string to split.
+ * @param {string[]} delimiters - Array of delimiters to use for splitting.
+ * @returns {string[]} An array of cleaned strings.
+ */
 const splitAndClean = (str, delimiters = ["\r\n", " "]) => {
   return str
     .split(new RegExp(delimiters.join("|"), "g"))
@@ -22,11 +44,22 @@ const splitAndClean = (str, delimiters = ["\r\n", " "]) => {
     .filter((s) => s.length > 0);
 };
 
-// Helper to format phone numbers
+/**
+ * Removes spaces, hyphens, parentheses, dots, and plus signs
+ * from a phone number string for uniform formatting.
+ * @param {string} phone - The original phone number string.
+ * @returns {string} Formatted phone number.
+ */
 const formatPhoneNumber = (phone) => {
   return phone.replace(/[\s\-\(\)\.\+]/g, "");
 };
 
+/**
+ * Retrieves all donators, with optional pagination and searching.
+ * @param {Object} req - Express request object.
+ * @param {Object} req.query - Query parameters (page, limit, search).
+ * @param {Object} res - Express response object.
+ */
 exports.getAllDonators = async (req, res) => {
   try {
     const { page = 1, limit = 10, search } = req.query;
@@ -42,7 +75,7 @@ exports.getAllDonators = async (req, res) => {
       const searchTerms = search.trim().split(/\s+/);
 
       // Create an array of $or conditions for each search term
-      const andConditions = searchTerms.map(term => {
+      const andConditions = searchTerms.map((term) => {
         const searchRegex = new RegExp(term, "i");
         return {
           $or: [
@@ -81,27 +114,33 @@ exports.getAllDonators = async (req, res) => {
       message: error.message,
       stack: error.stack,
     });
-
-    res
-      .status(500)
-      .json({ error: "Failed to fetch donators", details: error.message });
+    res.status(500).json({ error: "Failed to fetch donators", details: error.message });
   }
 };
 
-// Get Total Donators
+/**
+ * Retrieves the total number of donators.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 exports.getTotalDonators = async (req, res) => {
   try {
     const totalDonators = await Donator.countDocuments();
     res.status(200).json(totalDonators);
   } catch (error) {
+    console.error("Error fetching total donators:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get a single donator by ID
+/**
+ * Retrieves a single donator by its ID, including
+ * associated phone numbers, donations, tasks, and notes.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 exports.getDonatorById = async (req, res) => {
   try {
-    // Get Donator by ID and populate phone numbers and associated donations from donations collection
     const donator = await Donator.findById(req.params.id)
       .populate("phone_number_1")
       .populate("phone_number_2")
@@ -113,29 +152,34 @@ exports.getDonatorById = async (req, res) => {
       .populate({
         path: "tasks",
         model: "Task",
-        // Select only the fields we need
         select: "title description due_date status",
-      }).populate("notes");
+      })
+      .populate("notes");
 
     if (!donator) {
       return res.status(404).json({ message: "Donator not found" });
     }
+
     res.status(200).json(donator);
   } catch (error) {
+    console.error("Error fetching donator by ID:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Create a new donator
+/**
+ * Creates a new donator, validating the input using Zod.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 exports.createDonator = async (req, res) => {
   // Define a reusable phone number schema with error messages
-  console.log("Request body:", req.body);
-  
-  // Convert Date Strings to Date Objects
+  // Convert Date Strings to Date Objects if needed
   if (req.body.birthdate) {
     req.body.birthdate = new Date(req.body.birthdate);
   }
-  
+
+  // Zod sub-schemas
   const phoneNumberSchema = z.object({
     number: z
       .string()
@@ -146,7 +190,8 @@ exports.createDonator = async (req, res) => {
       .nonempty({ message: "Country is required for the phone number" }),
     is_whatsapp: z
       .enum(["true", "false", "unknown"], {
-        message: "Invalid value for is_whatsapp. Accepted values are 'true', 'false', or 'unknown'",
+        message:
+          "Invalid value for is_whatsapp. Accepted values are 'true', 'false', or 'unknown'",
       })
       .optional()
       .default("unknown"),
@@ -157,7 +202,7 @@ exports.createDonator = async (req, res) => {
     isSubscribed: z.boolean().optional().default(true),
   });
 
-  // Validate request body with error messages
+  // Main donator schema
   const donatorSchema = z.object({
     fName: z.string().nonempty({ message: "First name is required" }),
     lName: z.string().nonempty({ message: "Last name is required" }),
@@ -178,14 +223,14 @@ exports.createDonator = async (req, res) => {
     // Create a new donator object
     const donator = new Donator(validatedData);
 
-    // Save to database
+    // Save to the database
     const newDonator = await donator.save();
 
     // Respond with the created donator
     res.status(201).json(newDonator);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      // Handle validation errors and provide detailed error messages
+      // Handle validation errors with detailed messages
       res.status(400).json({
         message: "Validation Error",
         errors: error.errors.map((err) => ({
@@ -194,13 +239,17 @@ exports.createDonator = async (req, res) => {
         })),
       });
     } else {
-      // Handle other errors
+      console.error("Error creating donator:", error.message);
       res.status(500).json({ message: error.message });
     }
   }
 };
 
-// Update an existing donator
+/**
+ * Updates an existing donator by ID.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 exports.updateDonator = async (req, res) => {
   try {
     const updatedDonator = await Donator.findByIdAndUpdate(
@@ -213,11 +262,16 @@ exports.updateDonator = async (req, res) => {
     }
     res.status(200).json(updatedDonator);
   } catch (error) {
+    console.error("Error updating donator:", error.message);
     res.status(400).json({ message: error.message });
   }
 };
 
-// Delete a donator
+/**
+ * Deletes a donator by ID.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 exports.deleteDonator = async (req, res) => {
   try {
     const donator = await Donator.findByIdAndDelete(req.params.id);
@@ -226,10 +280,40 @@ exports.deleteDonator = async (req, res) => {
     }
     res.status(200).json({ message: "Donator deleted" });
   } catch (error) {
+    console.error("Error deleting donator:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
 
+/**
+ * Sets or updates the owner of a specific donator by ID.
+ * @param {Object} req - Express request object.
+ * @param {Object} req.body.owner - The new owner to assign.
+ * @param {Object} res - Express response object.
+ */
+exports.setDonatorOwner = async (req, res) => {
+  try {
+    const donator = await Donator.findByIdAndUpdate(
+      req.params.id,
+      { owner: req.body.owner },
+      { new: true }
+    );
+    if (!donator) {
+      return res.status(404).json({ message: "Donator not found" });
+    }
+    res.status(200).json(donator);
+  } catch (error) {
+    console.error("Error setting donator owner:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ * Bulk-create donators from an Excel file.
+ * Expects `req.file` to contain the uploaded Excel file.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
 exports.bulkCreateDonators = async (req, res) => {
   try {
     // Validate uploaded file
@@ -237,8 +321,6 @@ exports.bulkCreateDonators = async (req, res) => {
     if (!excelFile) {
       return res.status(400).json({ message: "No file uploaded." });
     }
-
-    // console.log("Excel file:", excelFile);
 
     // Convert Excel file to JSON
     const excelData = excelToJson({ sourceFile: excelFile.path });
@@ -250,20 +332,19 @@ exports.bulkCreateDonators = async (req, res) => {
     // Use Promise.all to handle asynchronous operations
     const contacts = await Promise.all(
       sheetData.map(async (row, index) => {
-        let contact = {
-          allo_dons_id: row.A || "", // Ensure it's a string
+        const contact = {
+          allo_dons_id: row.A || "",
           fullName: row.B || "",
+          donations: row.D || "",
           email: row.E || "",
           phoneNumber: row.F || "",
-          donations: row.D || "",
         };
 
-        // Split Full Name
+        // Split Full Name into fName and lName
         if (contact.fullName.includes(" ")) {
           const [fName, ...lNameParts] = contact.fullName.split(" ");
-          const lName = lNameParts.join(" ");
           contact.fName = capitalize(fName);
-          contact.lName = capitalize(lName.split(/[\n\r]/)[0]);
+          contact.lName = capitalize(lNameParts.join(" "));
         } else {
           contact.fName = capitalize(contact.fullName);
           contact.lName = "";
@@ -277,60 +358,51 @@ exports.bulkCreateDonators = async (req, res) => {
         });
         delete contact.email;
 
-        // Normalize Phone Numbers (Ensure Nested Schema Compliance)
+        // Normalize Phone Numbers
         const phones = splitAndClean(contact.phoneNumber);
         let phoneIndex = 1;
         phones.forEach((phone) => {
           const formattedPhone = formatPhoneNumber(phone);
           if (formattedPhone.length < 6) {
-            // console.log(`Row ${index + 1}: Invalid phone number skipped: ${formattedPhone}`);
             return; // Skip invalid numbers
           }
 
           const [number, country] = normalizePhoneNumber(formattedPhone);
-          // Create phone object matching phoneSchema
           contact[`phone_number_${phoneIndex}`] = {
             number,
-            country, // Update as needed
-            is_whatsapp: "unknown", // Ensure it's a string
+            country,
+            is_whatsapp: "unknown",
             isSubscribed: true,
           };
           phoneIndex++;
         });
         delete contact.phoneNumber;
 
-        // console.log(`Row ${index + 1}: Contact before saving:`, contact);
-
+        // Save donator
         const donator = new Donator(contact);
-        let savedDonator;
-        try {
-          savedDonator = await donator.save();
-          // console.log(`Row ${index + 1}: Saved Donator:`, savedDonator);
-        } catch (saveError) {
-          console.error(`Row ${index + 1}: Error saving Donator:`, saveError);
-          throw saveError; // Propagate the error to be caught by the outer catch
-        }
+        const savedDonator = await donator.save();
 
-        // Process Donations
+        // Process donations
         const donations = parseDonations(contact.donations, savedDonator._id);
-
-        // Save donations to the database
         await Donation.insertMany(donations);
 
         return contact;
       })
     );
 
-    // console.log("Processed Contacts:", contacts);
-
     res.status(200).json({ message: "Contacts processed successfully" });
   } catch (error) {
-    console.error("Error processing contacts:", error);
+    console.error("Error processing contacts:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get Tasks for Donator
+/**
+ * Retrieves all tasks associated with a given donator.
+ * @param {Object} req - Express request object.
+ * @param {Object} req.params.id - Donator ID.
+ * @param {Object} res - Express response object.
+ */
 exports.getDonatorTasks = async (req, res) => {
   try {
     const tasks = await Task.find({ donator: req.params.id });
@@ -340,3 +412,73 @@ exports.getDonatorTasks = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+/**
+ * Assigns or updates the owner for multiple donators simultaneously.
+ * Expects an array of donator IDs and a single owner in the request body.
+ * 
+ * @param {Object} req - Express request object
+ * @param {string[]} req.body.donatorIds - Array of Donator IDs
+ * @param {string} req.body.owner - The owner to assign
+ * @param {Object} res - Express response object
+ */
+exports.setOwnersForMultipleDonators = async (req, res) => {
+  try {
+    const { donatorIds, owner } = req.body;
+
+    if (!Array.isArray(donatorIds) || donatorIds.length === 0 || !owner) {
+      return res
+        .status(400)
+        .json({ message: "Invalid input data: missing donatorIds or owner" });
+    }
+
+    // Update all specified donators with the provided owner
+    await Donator.updateMany(
+      { _id: { $in: donatorIds } },
+      { $set: { owner } }
+    );
+
+    res.status(200).json({
+      message: "Owner assigned to multiple donators successfully",
+      donatorIds,
+      owner,
+    });
+  } catch (error) {
+    console.error("Error assigning owner to multiple donators:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * Assign Stauts to a specific donator by ID.
+ * Expects a string of status in the request body, such as "To Contact", "No Response", etc.
+ * 
+ * @param {Object} req - Express request object
+ * @param {string} req.body.status - The status to assign
+ * @param {Object} res - Express response object
+ * @returns {Object} - The updated donator object
+ */
+exports.setDonatorStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ message: "Invalid input data: missing status" });
+    }
+
+    const donator = await Donator.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!donator) {
+      return res.status(404).json({ message: "Donator not found" });
+    }
+
+    res.status(200).json(donator);
+  } catch (error) {
+    console.error("Error assigning status to donator:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+}

@@ -54,9 +54,8 @@ const ClientDetailsPage = () => {
   const navigate = useNavigate();
 
   // Get User Data
-  const {user} = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
   console.log("User Data: ", user);
-  
 
   const { data: client, isLoading, error } = useDonator(id);
 
@@ -163,11 +162,17 @@ const ClientDetailsPage = () => {
         {/* ---------- Left Paper: Client Info ---------- */}
         <Paper sx={{ flex: 1, boxShadow: 3 }}>
           <Box sx={{ p: 3 }}>
-            <Typography variant="h4" gutterBottom className="flex justify-between">
+            <Typography
+              variant="h4"
+              gutterBottom
+              className="flex justify-between"
+            >
               {fName} {lName} {!fName && !lName && "This client has no name."}
               <Box>
                 <EditDonatorButton donatorData={client} />
-                { (user.role === "developer" || user.role === "admin") && <AddToLeadButton selectedDonorIds={[id]} />}
+                {(user.role === "developer" || user.role === "admin") && (
+                  <AddToLeadButton selectedDonorIds={[id]} />
+                )}
               </Box>
             </Typography>
             <Divider sx={{ my: 2 }} />
@@ -188,30 +193,24 @@ const ClientDetailsPage = () => {
               </Typography>
             )}
             <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>
-                {t("customerManagement.phone")} 1:
-                </strong> {phone_number_1?.number || "N/A"}
+              <strong>{t("customerManagement.phone")} 1:</strong>{" "}
+              {phone_number_1?.number || "N/A"}
             </Typography>
             {client?.phone_number_2?.number && (
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>
-                  {t("customerManagement.phone")} 2:</strong>
+                <strong>{t("customerManagement.phone")} 2:</strong>
                 {client.phone_number_2?.number || "N/A"}
               </Typography>
             )}
             {client?.phone_number_3?.number && (
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>
-                  {t("customerManagement.phone")} 3:
-                  </strong>
+                <strong>{t("customerManagement.phone")} 3:</strong>
                 {client.phone_number_3?.number || "N/A"}
               </Typography>
             )}
 
             <Typography variant="body1" sx={{ mb: 2 }}>
-              <strong>
-                {t("contactsManagement.birthDate")}:
-                </strong>{" "}
+              <strong>{t("contactsManagement.birthDate")}:</strong>{" "}
               {birthdate
                 ? new Date(birthdate).toLocaleDateString("en-GB")
                 : "N/A"}
@@ -241,20 +240,55 @@ const ClientDetailsPage = () => {
         {/* ---------- Right Paper: Donation Chart ---------- */}
         <Paper sx={{ flex: 1, boxShadow: 3 }}>
           <Box sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              {t("general.totalDonations")}
-            </Typography>
-            {Object.entries(groupedDonations).map(([currency, total]) => (
+            <Box className="flex justify-between">
               <Typography
-                key={currency}
-                variant="h5"
-                sx={{ color: "primary.main" }}
+                variant="h6"
+                gutterBottom
+                className="flex justify-between"
               >
-                {currency} {currencyIcons[currency]}: {total}
+                {t("general.totalDonations")}
               </Typography>
-            ))}
-
-            <Box sx={{ width: "100%", height: 200, mt: 2 }}>
+              {Object.entries(groupedDonations).map(([currency, total]) => (
+                <Typography
+                  key={currency}
+                  variant="h5"
+                  sx={{
+                    color: "primary.main",
+                    width: "100%",
+                    textAlign: "center",
+                  }}
+                >
+                  {currency} {currencyIcons[currency]}: {total}
+                </Typography>
+              ))}
+            </Box>
+            <Box sx={{ width: "100%", height: "100%", display: "flex" }}>
+              {/* ========== Donation History Table ========== */}
+              <Box sx={{ mb: 4 }}>
+                {/* <Typography variant="h6" gutterBottom>
+                  {t("general.donationsHistory")}
+                </Typography> */}
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        {/* <TableCell>{t("general.date")}</TableCell> */}
+                        <TableCell>{t("donations.amount")}</TableCell>
+                        <TableCell>Type</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {donations.map((donation) => (
+                        <TableRow key={donation._id}>
+                          {/* <TableCell>{donation.date}</TableCell> */}
+                          <TableCell>${donation.amount}</TableCell>
+                          <TableCell>{donation.type}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -285,37 +319,6 @@ const ClientDetailsPage = () => {
       <Paper sx={{ p: 2, boxShadow: 3, mb: 3 }}>
         <DonatorNotes donatorId={id} note={client.notes} />
       </Paper>
-
-      {/* ========== Donation History Table ========== */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          {t("general.donationsHistory")}
-        </Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  {t("general.date")}
-                  </TableCell>
-                <TableCell>
-                  {t("donations.amount")}
-                  </TableCell>
-                <TableCell>Type</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {donations.map((donation) => (
-                <TableRow key={donation._id}>
-                  <TableCell>{donation.date}</TableCell>
-                  <TableCell>${donation.amount}</TableCell>
-                  <TableCell>{donation.type}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
 
       {/* ========== Donator Tasks ==========
       <Box sx={{ mb: 4 }}>
