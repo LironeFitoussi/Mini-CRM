@@ -27,13 +27,14 @@ import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from "recharts";
 import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
 import TaskCalendar from "../../../components/TaskCalendar";
 import EmailModal from "../../../components/Modals/EmailModal";
-import DonatorTasks from "../../../components/Molecules/DonatorTasks";
 import SendEmailButton from "../../../components/Atoms/SendEmailButton";
 import DonatorNotes from "../../../components/Molecules/DonatorNotes";
 import { getDonationTypes } from "../../../utils";
 import SendWhatsappButton from "../../../components/Buttons/SendWhatsappButton";
-import { Add } from "@mui/icons-material";
 import AddToLeadButton from "../../../components/Buttons/AddToLeadButton";
+
+// Redux
+import { useSelector } from "react-redux";
 
 const COLORS = [
   "#8884d8",
@@ -51,6 +52,11 @@ const ClientDetailsPage = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
+
+  // Get User Data
+  const {user} = useSelector((state) => state.user);
+  console.log("User Data: ", user);
+  
 
   const { data: client, isLoading, error } = useDonator(id);
 
@@ -161,7 +167,7 @@ const ClientDetailsPage = () => {
               {fName} {lName} {!fName && !lName && "This client has no name."}
               <Box>
                 <EditDonatorButton donatorData={client} />
-                <AddToLeadButton selectedDonorIds={[id]} />
+                { (user.role === "developer" || user.role === "admin") && <AddToLeadButton selectedDonorIds={[id]} />}
               </Box>
             </Typography>
             <Divider sx={{ my: 2 }} />
