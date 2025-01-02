@@ -119,7 +119,7 @@ const AddToLeadModal = ({ open, onClose, selectedDonorIds }) => {
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            label="Select Lead"
+                            label={t('leadsManagement.select')}
                             variant="outlined"
                             required
                             InputProps={{
