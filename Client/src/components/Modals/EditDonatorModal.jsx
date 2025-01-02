@@ -10,10 +10,9 @@ import {
   Stack,
 } from "@mui/material";
 import { DateField } from "@mui/x-date-pickers";
-import { CalendarToday } from "@mui/icons-material";
+import { CalendarToday, Add, Remove, Close } from "@mui/icons-material"; // <-- Import Close here
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { Add, Remove } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 
 const EditDonatorModal = ({
@@ -126,146 +125,174 @@ const EditDonatorModal = ({
     <Modal open={open} onClose={onClose}>
       <Box
         sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 500,
-          bgcolor: "background.paper",
-          border: "1px solid #ddd",
-          boxShadow: 24,
-          borderRadius: 2,
-          p: 4,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
         }}
       >
-        <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-          {t("customerManagement.edit")}
-        </Typography>
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-        <TextField
-          margin="normal"
-          fullWidth
-          label={t("clientInfo.fName")}
-          value={fName}
-          onChange={(e) => setFName(e.target.value)}
-          required
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          margin="normal"
-          fullWidth
-          label={t("clientInfo.lName")}
-          value={lName}
-          onChange={(e) => setLName(e.target.value)}
-          required
-          sx={{ mb: 2 }}
-        />
-        <DateField
-          label={t("contactsManagement.birthDate")}
-          value={birthdate ? new Date(birthdate) : null}
-          onChange={(newValue) =>
-            setBirthdate(newValue ? newValue.toISOString().split("T")[0] : "")
-          }
-          format="dd/MM/yyyy"
-          slots={{
-            openPickerIcon: CalendarToday, // Add a calendar button
+        <Box
+          sx={{
+            width: 800,
+            bgcolor: "background.paper",
+            border: "1px solid #ddd",
+            boxShadow: 24,
+            borderRadius: 2,
+            p: 4,
+            position: "relative", // Allow absolute positioning for the close button
           }}
-          sx={{ mb: 2 }}
-          fullWidth
-          required
-        />
-
-        {/* Email Section */}
-        <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
-          {t("customerManagement.emails")}
-        </Typography>
-        {donatorEmail.map((email, index) => (
-          <Stack
-            key={index}
-            direction="row"
-            alignItems="center"
-            spacing={1}
-            sx={{ mb: 1 }}
-          >
-            <TextField
-              fullWidth
-              label={`Email ${index + 1}`}
-              value={email.email}
-              onChange={(e) =>
-                handleEmailChange(index, "email", e.target.value)
-              }
-            />
-            <IconButton
-              color="error"
-              onClick={() => removeEmailField(index)}
-              disabled={donatorEmail.length === 1}
-            >
-              <Remove />
-            </IconButton>
-          </Stack>
-        ))}
-        {donatorEmail.length < 3 && (
-          <Button startIcon={<Add />} onClick={addEmailField} sx={{ mt: 1 }}>
-            {t("customerManagement.addEmail")}
-          </Button>
-        )}
-
-        {/* Phone Section */}
-        <Typography variant="subtitle1" sx={{ mt: 4, mb: 1 }}>
-          {t("customerManagement.phones")}
-        </Typography>
-        {donatorPhone.map((phone, index) => (
-          <Stack
-            key={index}
-            direction="row"
-            alignItems="center"
-            spacing={1}
-            sx={{ mb: 1 }}
-          >
-            <PhoneInput
-              country={phone.country}
-              value={phone.number}
-              onChange={(value, countryData) =>
-                handlePhoneChange(index, "number", `+${value}`, countryData)
-              }
-              containerStyle={{ flex: 1 }}
-              inputStyle={{ width: "100%" }}
-            />
-            <IconButton
-              color="error"
-              onClick={() => removePhoneField(index)}
-              disabled={donatorPhone.length === 1}
-            >
-              <Remove />
-            </IconButton>
-          </Stack>
-        ))}
-        {donatorPhone.length < 3 && (
-          <Button startIcon={<Add />} onClick={addPhoneField} sx={{ mt: 1 }}>
-            Add Phone
-          </Button>
-        )}
-
-        <TextField
-          margin="normal"
-          fullWidth
-          label="Allodon ID"
-          value={alloDonId}
-          onChange={(e) => setAlloDonId(e.target.value)}
-          sx={{ mb: 2 }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-          sx={{ mt: 4 }}
         >
-          {t("buttons.saveChanges")}
-        </Button>
+          {/* Close Button */}
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={onClose}
+            aria-label="close"
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+            }}
+          >
+            <Close />
+          </IconButton>
+
+          <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+            {t("customerManagement.edit")}
+          </Typography>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box className="flex flex-row gap-4">
+            <TextField
+              margin="normal"
+              fullWidth
+              label={t("clientInfo.fName")}
+              value={fName}
+              onChange={(e) => setFName(e.target.value)}
+              required
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              margin="normal"
+              fullWidth
+              label={t("clientInfo.lName")}
+              value={lName}
+              onChange={(e) => setLName(e.target.value)}
+              required
+              sx={{ mb: 2 }}
+            />
+          </Box>
+
+          <Box className="flex flex-row gap-4 items-center">
+            <DateField
+              label={t("contactsManagement.birthDate")}
+              value={birthdate ? new Date(birthdate) : null}
+              onChange={(newValue) =>
+                setBirthdate(
+                  newValue ? newValue.toISOString().split("T")[0] : ""
+                )
+              }
+              format="dd/MM/yyyy"
+              slots={{
+                openPickerIcon: CalendarToday, // Add a calendar button
+              }}
+              fullWidth
+              required
+            />
+            <TextField
+              margin="normal"
+              fullWidth
+              label="Allodon ID"
+              value={alloDonId}
+              onChange={(e) => setAlloDonId(e.target.value)}
+              sx={{ m: 0 }}
+            />
+          </Box>
+
+          {/* Email Section */}
+          <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+            {t("customerManagement.emails")}
+          </Typography>
+          {donatorEmail.map((email, index) => (
+            <Stack
+              key={index}
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{ mb: 1 }}
+            >
+              <TextField
+                fullWidth
+                label={`Email ${index + 1}`}
+                value={email.email}
+                onChange={(e) =>
+                  handleEmailChange(index, "email", e.target.value)
+                }
+              />
+              <IconButton
+                color="error"
+                onClick={() => removeEmailField(index)}
+                disabled={donatorEmail.length === 1}
+              >
+                <Remove />
+              </IconButton>
+            </Stack>
+          ))}
+          {donatorEmail.length < 3 && (
+            <Button startIcon={<Add />} onClick={addEmailField} sx={{ mt: 1 }}>
+              {t("customerManagement.addEmail")}
+            </Button>
+          )}
+
+          {/* Phone Section */}
+          <Typography variant="subtitle1" sx={{ mt: 4, mb: 1 }}>
+            {t("customerManagement.phones")}
+          </Typography>
+          {donatorPhone.map((phone, index) => (
+            <Stack
+              key={index}
+              direction="row"
+              alignItems="center"
+              spacing={1}
+              sx={{ mb: 1 }}
+            >
+              <PhoneInput
+                country={phone.country}
+                value={phone.number}
+                onChange={(value, countryData) =>
+                  handlePhoneChange(index, "number", `+${value}`, countryData)
+                }
+                containerStyle={{ flex: 1 }}
+                inputStyle={{ width: "100%" }}
+              />
+              <IconButton
+                color="error"
+                onClick={() => removePhoneField(index)}
+                disabled={donatorPhone.length === 1}
+              >
+                <Remove />
+              </IconButton>
+            </Stack>
+          ))}
+          {donatorPhone.length < 3 && (
+            <Button startIcon={<Add />} onClick={addPhoneField} sx={{ mt: 1 }}>
+              Add Phone
+            </Button>
+          )}
+
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            sx={{ mt: 4 }}
+          >
+            {t("buttons.saveChanges")}
+          </Button>
+        </Box>
       </Box>
     </Modal>
   );

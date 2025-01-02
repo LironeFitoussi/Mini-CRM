@@ -46,6 +46,7 @@ const EditDonatorButton = ({ donatorData }) => {
 
       {/* EditDonator Modal */}
       <EditDonatorModal
+        key={donatorData._id}
         open={isModalOpen}
         onClose={handleCloseModal}
         handleEditDonator={handleEditDonator}
