@@ -7,9 +7,8 @@ const NoteSchema = new Schema({
         type: String,
         required: true
     },
-    date: {
+    dueDate: {
         type: Date,
-        default: Date.now
     },
     donator: {
         type: Schema.Types.ObjectId,

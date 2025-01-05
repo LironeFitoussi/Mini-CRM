@@ -1,33 +1,36 @@
-// queryhooks/useDonators.js
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { fetchDonators } from '../api/donators';
+// hooks/useDonators.js
 
-const useDonators = ({ initialPage = 1, limit = 10, search = '' }) => {
-    const [currentPage, setCurrentPage] = useState(initialPage);
+import { useQuery } from "@tanstack/react-query";
 
-    // console.log(initialPage, limit, search);
-    
-    const { data, isLoading, isError, refetch } = useQuery({
-        queryKey: ['donators', currentPage, limit, search],
-        queryFn: () => fetchDonators({ page: currentPage, limit, search }),
-        keepPreviousData: true, // To prevent loading states during pagination
-    });
+const fetchDonators = async ({ page, pageSize, search }) => {
+  // Convert MUI's 0-based page to your API's 1-based if needed
+  const params = new URLSearchParams({
+    page: page + 1, // Because server expects page starting from 1
+    limit: pageSize,
+  });
+  if (search) {
+    params.append("search", search);
+  }
 
-    const donators = data?.donators || [];
-    const totalPages = data?.totalPages || 1;
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/api/v1/donators?${params.toString()}`
+  );
+  if (!response.ok) {
+    throw new Error(`Error fetching donators: ${response.statusText}`);
+  }
 
-    // console.log(donators);
-    
-    return {
-        donators,
-        currentPage,
-        totalPages,
-        setPage: setCurrentPage,
-        isLoading,
-        isError,
-        refetch,
-    };
+  const data = await response.json();
+  return data; // { donators: [...], totalDocuments: number }
+};
+
+const useDonators = ({ page, pageSize, search }) => {
+  return useQuery({
+    // Use a stable key that includes your pagination/search state
+    // so React Query can cache each combination of {page, pageSize, search}
+    queryKey: ["donators", page, pageSize, search],
+    queryFn: () => fetchDonators({ page, pageSize, search }),
+    keepPreviousData: true, // Keep old data around while fetching new
+  });
 };
 
 export default useDonators;

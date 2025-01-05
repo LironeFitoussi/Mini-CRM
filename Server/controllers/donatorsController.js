@@ -309,6 +309,29 @@ exports.setDonatorOwner = async (req, res) => {
 };
 
 /**
+ * Updates the next contact date for a specific donator by ID.
+ * @param {Object} req - Express request object.
+ * @param {Object} req.body.nextContactDate - The new next contact date.
+ * @param {Object} res - Express response object.
+ */
+exports.updateDonatorCallback = async (req, res) => {
+  try {
+    const donator = await Donator.findByIdAndUpdate(
+      req.params.id,
+      { nextContactDate: req.body.nextContactDate },
+      { new: true }
+    );
+    if (!donator) {
+      return res.status(404).json({ message: "Donator not found" });
+    }
+    res.status(200).json(donator);
+  } catch (error) {
+    console.error("Error updating donator callback:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
  * Bulk-create donators from an Excel file.
  * Expects `req.file` to contain the uploaded Excel file.
  * @param {Object} req - Express request object.

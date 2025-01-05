@@ -5,7 +5,8 @@ const {
     getNoteById, 
     createNote, 
     updateNote, 
-    deleteNote 
+    deleteNote,
+    setDueDate
 } = require('../controllers/noteController');
 const { validateCreateNote, validateUpdateNote } = require('../middlewares/noteValidation');
 
@@ -22,6 +23,9 @@ router.post('/', validateCreateNote, createNote);
 
 // Update an existing note
 router.put('/:id', validateUpdateNote, updateNote);
+
+// Set due date
+router.patch('/:id/dueDate', setDueDate);
 
 // Delete a note
 router.delete('/:id', deleteNote);

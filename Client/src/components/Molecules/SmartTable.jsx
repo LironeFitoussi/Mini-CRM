@@ -1,84 +1,63 @@
-// SmartTable.jsx
-
 import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Select, MenuItem, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom"; // <-- import useNavigate
 import NextContactDateModal from "../Modals/NextContactDateModal";
-import useLeadList from "../../queryhooks/useLeadList";
-import axios from "axios";
+
+// 1) Import the new React Query mutation hook
+import { useUpdateDonatorCallbackDate } from "../../queryhooks/useUpdateDonatorCallbackDate";
 
 const SmartTable = ({
-  leadId,
-  loading: externalLoading,
+  data = [],
+  loading = false,
   onStatusToggle,
-  onDonatorSelect,
-  size,
+  size = "100%",
+  page,
+  rowsPerPage,
+  totalCount,
+  setPage,
+  setRowsPerPage,
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  // Modal state
+  // If you have a search param, pass it here too. For example:
+  const search = "";
+
+  // 2) Initialize the mutation
+  const { mutate: updateCallbackDate } = useUpdateDonatorCallbackDate({
+    page,
+    pageSize: rowsPerPage,
+    search,
+  });
+
+  // State + Modal for callback date
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedLeadCardId, setLeadCardId] = useState(null);
+  const [selectedDonatorId, setSelectedDonatorId] = useState(null);
 
-  // Use custom hook for fetching lead list
-  const { data, isLoading, isError, error, invalidateLeadList } =
-    useLeadList(leadId);
-
-  const donators = data?.leadCards || [];
-
-  const handleStatusToggle = (leadCardId, newStatus) => {
-    // console.log("Updating status for lead:", leadCardId, "to", newStatus);
-
-    // Optionally trigger a mutation here if updating on the server
-    onStatusToggle && onStatusToggle(leadCardId, newStatus);
-    invalidateLeadList(); // Refresh data after update
-  };
-
-  const handleOpenModal = (leadCardId) => {
-    setLeadCardId(leadCardId);
+  const handleOpenModal = (donatorId) => {
+    setSelectedDonatorId(donatorId);
     setIsModalOpen(true);
   };
-
   const handleCloseModal = () => {
-    setLeadCardId(null);
+    setSelectedDonatorId(null);
     setIsModalOpen(false);
   };
 
-  const handleDateSelect = async (isoDate) => {
-    if (!selectedLeadCardId) {
-      console.log("No lead card selected");
-      return;
-    }
+  // 3) Instead of axios directly, call the mutation
+  const handleDateSelect = (isoDate) => {
+    if (!selectedDonatorId) return;
 
-    try {
-      await axios.post(
-        `${
-          import.meta.env.VITE_API_URL
-        }/api/v1/leads/callback/${selectedLeadCardId}`,
-        { nextContactDate: isoDate }
-      );
-      console.log("Next contact date updated successfully");
-      invalidateLeadList(); // Refresh data after update
-    } catch (error) {
-      console.error("Failed to update next contact date:", error);
-    }
+    updateCallbackDate({
+      donorId: selectedDonatorId,
+      nextContactDate: isoDate,
+    });
 
     handleCloseModal();
   };
 
-  if (isLoading || externalLoading) {
-    return <div>{t("loading")}</div>;
-  }
-
-  if (isError) {
-    return <div>{t("error", { message: error.message })}</div>;
-  }
-
-  if (!leadId) {
-    return <div>{t("selectLead")}</div>;
-  }
-
+  // Define columns
   const columns = [
     {
       field: "fName",
@@ -103,28 +82,34 @@ const SmartTable = ({
     {
       field: "status",
       headerName: t("customerManagement.status"),
-      flex: 2,
+      flex: 1,
       renderCell: (params) => {
-        if (!params.row || typeof params.row.status === "undefined") {
-          return "N/A";
-        }
+        if (!params.row) return "N/A";
+        const currentStatus = params.row.status || "";
 
         const handleChange = (event) => {
-          if (
-            event.target.value === "To Call Back" ||
-            event.target.value === "To Validate" ||
-            event.target.value === "No Response"
-          ) {
-            handleOpenModal(params.row.leadCardId);
-          }
           const newStatus = event.target.value;
-          handleStatusToggle(params.row.leadCardId, newStatus);
+          // Example of showing modal if certain statuses are selected
+          if (
+            newStatus === "To Call Back" ||
+            newStatus === "To Validate" ||
+            newStatus === "No Response"
+          ) {
+            handleOpenModal(params.row.id);
+          }
+          onStatusToggle && onStatusToggle(params.row.id, newStatus);
+        };
+
+        // Prevent row click from firing when user interacts with the select
+        const handleClick = (e) => {
+          e.stopPropagation();
         };
 
         return (
           <Select
-            value={params.row.status || ""}
+            value={currentStatus}
             onChange={handleChange}
+            onClick={handleClick} // stops row click
             variant="outlined"
             size="small"
             fullWidth
@@ -134,15 +119,9 @@ const SmartTable = ({
             <MenuItem value="To Call Back">
               {t("menuItems.toCallBack")}
             </MenuItem>
-            {/* <MenuItem value="Meeting Scheduled">
-              {t("menuItems.meetingScheduled")}
-            </MenuItem> */}
             <MenuItem value="Not Interested">
               {t("menuItems.notInterested")}
             </MenuItem>
-            {/* <MenuItem value="Nothing to Report">
-              {t("menuItems.nothingToReport")}
-            </MenuItem> */}
             <MenuItem value="To Validate">{t("menuItems.toValidate")}</MenuItem>
             <MenuItem value="Done">{t("menuItems.done")}</MenuItem>
           </Select>
@@ -152,92 +131,74 @@ const SmartTable = ({
     {
       field: "nextContactDate",
       headerName: t("customerManagement.contactBackDate"),
-      flex: 2,
+      flex: 1,
       renderCell: (params) => {
-        const formattedDate = params.row.nextContactDate
-          ? new Date(params.row.nextContactDate).toLocaleString(undefined, {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false, // Ensures 24-hour format
-            })
-          : "N/A";
-
-        return (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-            }}
-          >
-            <Typography variant="body2">{formattedDate}</Typography>
-          </div>
-        );
+        if (!params.row?.nextContactDate) return "N/A";
+        const dateObj = new Date(params.row.nextContactDate);
+        const formattedDate = dateObj.toLocaleString(undefined, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        });
+        return formattedDate
       },
     },
   ];
 
-  const rows = donators.map((donatorEntry) => ({
-    id: donatorEntry._id,
-    leadCardId: donatorEntry._id,
-    status: donatorEntry.status,
-    phoneNumber: donatorEntry.donator[0].phone_number_1?.number || "N/A",
-    email: donatorEntry.donator[0].email_1?.email || "N/A",
-    nextContactDate: donatorEntry.nextContactDate || null,
-    ...donatorEntry.donator[0],
+  // MUI DataGrid requires an array of objects with `id`
+  const rows = data.map((donor) => ({
+    id: donor._id,
+    fName: donor.fName || "",
+    lName: donor.lName || "",
+    email: donor.email_1?.email || "N/A",
+    phoneNumber: donor.phone_number_1?.number || "N/A",
+    status: donor.status || "",
+    nextContactDate: donor.nextContactDate || null,
   }));
 
-  // Function to determine row class based on nextContactDate
   const getRowClassName = (params) => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const status = params.row.status;
+    if (status === "Done") return "row-done";
+    if (status === "To Validate") return "row-to-validate";
+    return "";
+  };
 
-    if (params.row.status === "Done") {
-      return "row-done";
-    }
-
-    if (params.row.status === "To Validate") {
-      return "row-to-validate";
-    }
-
-    if (!params.row.nextContactDate) {
-      return "row-upcoming"; // Default to today styling if no date is set
-    }
-
-    const contactDate = new Date(params.row.nextContactDate);
-    const contactDay = new Date(
-      contactDate.getFullYear(),
-      contactDate.getMonth(),
-      contactDate.getDate()
-    );
-
-    if (contactDay.getTime() === today.getTime()) {
-      return "row-today";
-    } else if (contactDay > today) {
-      return "row-upcoming";
-    } else {
-      return "row-past";
-    }
+  // Handle row click -> navigate to /donators/:id
+  const handleRowClick = (params) => {
+    navigate(`/dashboard/donators/${params.id}`);
   };
 
   return (
-    <div style={{ height: 600, width: size }}>
+    <div style={{ width: size }}>
       <DataGrid
+        sx={{
+          "& .MuiDataGrid-row:hover": {
+            cursor: "pointer",
+          },
+          height: "72.5vh",
+        }}
         rows={rows}
         columns={columns}
-        loading={isLoading || externalLoading}
+        loading={loading}
+        getRowClassName={getRowClassName}
+        // Server-side pagination
+        pagination
+        paginationMode="server"
+        rowCount={totalCount}
+        paginationModel={{ page, pageSize: rowsPerPage }}
+        onPaginationModelChange={(model) => {
+          setPage(model.page);
+          setRowsPerPage(model.pageSize);
+        }}
+        rowsPerPageOptions={[5, 10, 25, 50]}
         disableSelectionOnClick
-        pageSize={10}
-        rowsPerPageOptions={[10, 20, 50]}
-        autoHeight
-        onRowClick={(row) => onDonatorSelect(row.row._id)}
-        getRowClassName={getRowClassName} // Add this prop for dynamic styling
+        onRowClick={handleRowClick} // <-- use onRowClick
       />
 
+      {/* Modal for date selection */}
       <NextContactDateModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

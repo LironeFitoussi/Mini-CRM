@@ -32,6 +32,7 @@ const {
   setDonatorOwner,
   setOwnersForMultipleDonators,
   setDonatorStatus,
+  updateDonatorCallback,
 } = require("../controllers/donatorsController");
 
 /**
@@ -68,6 +69,13 @@ router.put("/:id/owner", setDonatorOwner);
  * @access  Public
  */
 router.put("/:id/status", setDonatorStatus);
+
+/**
+ * @route   PUT /donators/:id/callback
+ * @desc    Update the next contact date for a specific donator
+ * @access  Public
+ */
+router.put("/:id/callback", updateDonatorCallback);
 
 /**
  * @route   GET /donators/:id
