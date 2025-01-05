@@ -1,5 +1,4 @@
 // hooks/useUpdateDonatorStatus.js
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -8,58 +7,54 @@ export const useUpdateDonatorStatus = ({ page, pageSize, search }) => {
 
   return useMutation({
     mutationFn: async ({ donorId, newStatus }) => {
-      // The actual API call
       await axios.put(
         `${import.meta.env.VITE_API_URL}/api/v1/donators/${donorId}/status`,
         { status: newStatus }
       );
     },
-    // Optimistic Update
     onMutate: async ({ donorId, newStatus }) => {
-      // 1) Cancel any outgoing refetches (so they don’t overwrite our optimistic update)
-      await queryClient.cancelQueries({
-        queryKey: ["donators", page, pageSize, search],
+      // (Same as before) Optimistic update for the list query
+      await queryClient.cancelQueries(["donators", page, pageSize, search]);
+      const previousData = queryClient.getQueryData(["donators", page, pageSize, search]);
+
+      // Update the list
+      queryClient.setQueryData(["donators", page, pageSize, search], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          donators: oldData.donators.map((donor) =>
+            donor._id === donorId ? { ...donor, status: newStatus } : donor
+          ),
+        };
       });
 
-      // 2) Snapshot the current data
-      const previousData = queryClient.getQueryData([
-        "donators",
-        page,
-        pageSize,
-        search,
-      ]);
+      // (Optional) Also update the single donator's cached data optimistically
+      // if you know the single query key is ["donator", donorId].
+      const previousSingle = queryClient.getQueryData(["donator", donorId]);
+      queryClient.setQueryData(["donator", donorId], (oldDonator) => {
+        if (!oldDonator) return oldDonator;
+        return {
+          ...oldDonator,
+          status: newStatus,
+        };
+      });
 
-      // 3) Optimistically update the cache
-      queryClient.setQueryData(
-        ["donators", page, pageSize, search],
-        (oldData) => {
-          if (!oldData) return oldData; // safety check
-          return {
-            ...oldData,
-            donators: oldData.donators.map((donor) =>
-              donor._id === donorId
-                ? { ...donor, status: newStatus }
-                : donor
-            ),
-          };
-        }
-      );
-
-      // Return the snapshot so we can rollback if there’s an error
-      return { previousData };
+      return { previousData, previousSingle };
     },
-    onError: (_error, _variables, context) => {
-      // Roll back if the mutation fails
+    onError: (_error, { donorId }, context) => {
+      // Roll back the list if needed
       if (context?.previousData) {
-        queryClient.setQueryData(
-          ["donators", page, pageSize, search],
-          context.previousData
-        );
+        queryClient.setQueryData(["donators", page, pageSize, search], context.previousData);
+      }
+      // Roll back the single if needed
+      if (context?.previousSingle) {
+        queryClient.setQueryData(["donator", donorId], context.previousSingle);
       }
     },
-    onSettled: () => {
-      // Finally, refetch to ensure data is in sync with server
+    onSettled: (_, __, { donorId }) => {
+      // Invalidate both queries so they refetch fresh data
       queryClient.invalidateQueries(["donators"]);
+      queryClient.invalidateQueries(["donator", donorId]);
     },
   });
 };

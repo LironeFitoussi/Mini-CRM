@@ -7,6 +7,7 @@ import SmsIcon from "@mui/icons-material/Sms";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import EditDonatorButton from "../../../components/Buttons/EditDonatorButton";
 import { useTranslation } from "react-i18next";
+
 // MUI Components
 import {
   Box,
@@ -22,11 +23,15 @@ import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
 import TaskCalendar from "../../../components/TaskCalendar";
 import EmailModal from "../../../components/Modals/EmailModal";
 import SendEmailButton from "../../../components/Atoms/SendEmailButton";
-import DonatorNotes from "../../../components/Molecules/DonatorNotes"; // Ensure correct import path
+import DonatorNotes from "../../../components/Molecules/DonatorNotes";
 import { getDonationTypes } from "../../../utils";
 import SendWhatsappButton from "../../../components/Buttons/SendWhatsappButton";
 import AddToLeadButton from "../../../components/Buttons/AddToLeadButton";
 import DonationsComponent from "../../../components/Molecules/MainDonations";
+
+// (NEW) Import your reusable StatusSelect
+import StatusSelect from "../../../components/Atoms/StatusSelect";
+
 // Redux
 import { useSelector } from "react-redux";
 
@@ -49,13 +54,12 @@ const ClientDetailsPage = () => {
 
   // Get User Data
   const { user } = useSelector((state) => state.user);
-  console.log("User Data: ", user);
 
+  // Fetch this specific client data
   const { data: client, isLoading, error } = useDonator(id);
 
-  // Email Modal State
+  // ======= Email Modal State =======
   const [emailModalOpen, setEmailModalOpen] = useState(false);
-
   const [formValues, setFormValues] = useState({
     from: "contact.lesenfantsderachi@gmail.com",
     to: client?.email_1?.email || "",
@@ -79,6 +83,7 @@ const ClientDetailsPage = () => {
     }
   };
 
+  // ======= Loading & Error States =======
   if (isLoading) {
     return (
       <Box sx={{ padding: 4, textAlign: "center" }}>
@@ -124,6 +129,7 @@ const ClientDetailsPage = () => {
     );
   }
 
+  // Destructure needed fields
   const {
     fName,
     lName,
@@ -131,9 +137,11 @@ const ClientDetailsPage = () => {
     phone_number_1,
     birthdate,
     donations = [],
-    notes, // Ensure that 'notes' is part of the client object
+    notes,
+    status,
   } = client;
 
+  // Summarize donations by currency
   const groupedDonations = donations.reduce((acc, donation) => {
     const { currency, amount } = donation;
     if (!acc[currency]) acc[currency] = 0;
@@ -141,18 +149,18 @@ const ClientDetailsPage = () => {
     return acc;
   }, {});
 
+  // For the DonationsComponent
   const donationTypes = getDonationTypes(donations);
-
   const currencyIcons = {
     USD: "$",
     EUR: "€",
     GBP: "£",
     NIS: "₪",
   };
-  // ======= Render UI =======
+
   return (
     <Box sx={{ padding: 4 }}>
-      {/* ========== Main Info & Chart (Side by Side but separate Papers) ========== */}
+      {/* ========== Main Info & Donations Chart ========== */}
       <Box sx={{ display: "flex", gap: 2, marginBottom: 3, flexWrap: "wrap" }}>
         {/* ---------- Left Paper: Client Info ---------- */}
         <Paper sx={{ flex: 1, boxShadow: 3, minWidth: 300 }}>
@@ -163,6 +171,17 @@ const ClientDetailsPage = () => {
               className="flex justify-between"
             >
               {fName} {lName} {!fName && !lName && "This client has no name."}
+
+              {/* ========== Use Your StatusSelect Component ========== */}
+              <StatusSelect
+                currentStatus={status} 
+                donatorId={client._id}
+                // If you want pagination info for your mutation keys, pass them here:
+                page={0}
+                pageSize={10}
+                search=""
+              />
+
               <Box>
                 <EditDonatorButton donatorData={client} />
                 {(user.role === "developer" || user.role === "admin") && (
@@ -172,34 +191,34 @@ const ClientDetailsPage = () => {
             </Typography>
             <Divider sx={{ my: 2 }} />
 
+            {/* Contact Info */}
             <Typography variant="body1" sx={{ mb: 1 }}>
               <strong>Email:</strong> {email_1?.email || "N/A"}
             </Typography>
             {client?.email_2?.email && (
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Email 2:</strong>
-                {client.email_2?.email || "N/A"}
+                <strong>Email 2:</strong> {client.email_2?.email || "N/A"}
               </Typography>
             )}
             {client?.email_3?.email && (
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>Email 3:</strong>
-                {client.email_3?.email || "N/A"}
+                <strong>Email 3:</strong> {client.email_3?.email || "N/A"}
               </Typography>
             )}
+
             <Typography variant="body1" sx={{ mb: 1 }}>
               <strong>{t("customerManagement.phone")} 1:</strong>{" "}
               {phone_number_1?.number || "N/A"}
             </Typography>
             {client?.phone_number_2?.number && (
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>{t("customerManagement.phone")} 2:</strong>
+                <strong>{t("customerManagement.phone")} 2:</strong>{" "}
                 {client.phone_number_2?.number || "N/A"}
               </Typography>
             )}
             {client?.phone_number_3?.number && (
               <Typography variant="body1" sx={{ mb: 1 }}>
-                <strong>{t("customerManagement.phone")} 3:</strong>
+                <strong>{t("customerManagement.phone")} 3:</strong>{" "}
                 {client.phone_number_3?.number || "N/A"}
               </Typography>
             )}
@@ -211,12 +230,10 @@ const ClientDetailsPage = () => {
                 : "N/A"}
             </Typography>
 
-            {/* ========== Contact Buttons ========== */}
+            {/* ========== Quick Contact Buttons ========== */}
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               <SendEmailButton recipient={email_1?.email} />
-
               <SendWhatsappButton recipientPhone={phone_number_1?.number} />
-
               <Button
                 variant="contained"
                 startIcon={<SmsIcon />}

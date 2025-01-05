@@ -1,75 +1,96 @@
-// src/components/StatusSelect.jsx
-import React from 'react';
-import {
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Box,
-} from '@mui/material';
-import { getStatusColor } from '../../utils';
+import React, { useState } from "react";
+import { Select, MenuItem } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
-const StatusSelect = ({ task, onStatusChange, statusOptions }) => {
-    const handleChange = (e) => {
-        const newStatus = e.target.value;
-        if (newStatus !== task.status) {
-            onStatusChange(task._id, newStatus);
-        }
-    };
+import NextContactDateModal from "../Modals/NextContactDateModal";
+import { useUpdateDonatorCallbackDate } from "../../queryhooks/useUpdateDonatorCallbackDate";
+import { useUpdateDonatorStatus } from "../../queryhooks/useUpdateDonatorStatus";
 
-    const selectedOption = statusOptions.find((option) => option.value === task.status);
+const StatusSelect = ({
+  currentStatus = "",
+  donatorId,
+  page = 0,
+  pageSize = 10,
+  search = "",
+}) => {
+  const { t } = useTranslation();
+  const [status, setStatus] = useState(currentStatus);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    return (
-        <FormControl
-            variant="outlined"
-            size="small"
-            style={{ minWidth: 140, marginRight: '1rem' }}
-            onClick={(e) => e.stopPropagation()} // Prevent triggering the details toggle
-        >
-            <InputLabel id={`status-select-label-${task._id}`}>Status</InputLabel>
-            <Select
-                labelId={`status-select-label-${task._id}`}
-                id={`status-select-${task._id}`}
-                value={task.status}
-                onChange={handleChange}
-                label="Status"
-                renderValue={(selected) => {
-                    const option = statusOptions.find((opt) => opt.value === selected);
-                    return (
-                        <Box display="flex" alignItems="center">
-                            <Box
-                                sx={{
-                                    width: 12,
-                                    height: 12,
-                                    bgcolor: getStatusColor(option.color),
-                                    borderRadius: '50%',
-                                    marginRight: '0.5rem',
-                                }}
-                            />
-                            {option.label}
-                        </Box>
-                    );
-                }}
-            >
-                {statusOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                        <Box display="flex" alignItems="center">
-                            <Box
-                                sx={{
-                                    width: 12,
-                                    height: 12,
-                                    bgcolor: getStatusColor(option.color),
-                                    borderRadius: '50%',
-                                    marginRight: '0.5rem',
-                                }}
-                            />
-                            {option.label}
-                        </Box>
-                    </MenuItem>
-                ))}
-            </Select>
-        </FormControl>
-    );
+  // React Query mutation for updating status
+  const { mutate: updateStatus } = useUpdateDonatorStatus({
+    page,
+    pageSize,
+    search,
+  });
+
+  // React Query mutation for updating callback date
+  const { mutate: updateCallbackDate } = useUpdateDonatorCallbackDate({
+    page,
+    pageSize,
+    search,
+  });
+
+  // -- NextContactDateModal logic --
+  const handleOpenModal = () => setIsModalOpen(true);
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  const handleDateSelect = (isoDate) => {
+    updateCallbackDate({ donorId: donatorId, nextContactDate: isoDate });
+    handleCloseModal();
+  };
+
+  // -- Status Dropdown onChange --
+  const handleChange = (event) => {
+    const newStatus = event.target.value;
+    setStatus(newStatus);
+
+    // 1) Call the backend to update status
+    updateStatus({ donorId: donatorId, newStatus });
+
+    // 2) Open NextContactDateModal if status requires scheduling a callback
+    if (
+      newStatus === "To Call Back" ||
+      newStatus === "To Validate" ||
+      newStatus === "No Response"
+    ) {
+      handleOpenModal();
+    }
+  };
+
+  // We define our status options, mapping each "value" to its i18n label
+  const statusOptions = [
+    { value: "To Contact",     label: t("menuItems.toContact") },
+    { value: "No Response",    label: t("menuItems.noResponse") },
+    { value: "To Call Back",   label: t("menuItems.toCallBack") },
+    { value: "Not Interested", label: t("menuItems.notInterested") },
+    { value: "To Validate",    label: t("menuItems.toValidate") },
+    { value: "Done",           label: t("menuItems.done") },
+  ];
+
+  return (
+    <>
+      <Select
+        variant="outlined"
+        size="small"
+        value={status}
+        onChange={handleChange}
+      >
+        {statusOptions.map(({ value, label }) => (
+          <MenuItem key={value} value={value}>
+            {label}
+          </MenuItem>
+        ))}
+      </Select>
+
+      {/* NextContactDateModal -> same one you’re using elsewhere */}
+      <NextContactDateModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onDateSelect={handleDateSelect}
+      />
+    </>
+  );
 };
 
 export default StatusSelect;

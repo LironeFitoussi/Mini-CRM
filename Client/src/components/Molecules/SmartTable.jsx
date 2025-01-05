@@ -1,17 +1,22 @@
+// src/components/SmartTable.jsx (or wherever)
+
 import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Select, MenuItem, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom"; // <-- import useNavigate
+import { useNavigate } from "react-router-dom";
 import NextContactDateModal from "../Modals/NextContactDateModal";
 
-// 1) Import the new React Query mutation hook
+// 1) If you have a callback-date mutation:
 import { useUpdateDonatorCallbackDate } from "../../queryhooks/useUpdateDonatorCallbackDate";
+
+// 2) Import your StatusSelect
+import StatusSelect from "../Atoms/StatusSelect";
 
 const SmartTable = ({
   data = [],
   loading = false,
-  onStatusToggle,
+  onStatusToggle, // maybe you have a parent callback
   size = "100%",
   page,
   rowsPerPage,
@@ -22,17 +27,17 @@ const SmartTable = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // If you have a search param, pass it here too. For example:
+  // Example search param
   const search = "";
 
-  // 2) Initialize the mutation
+  // Callback-date mutation (optional)
   const { mutate: updateCallbackDate } = useUpdateDonatorCallbackDate({
     page,
     pageSize: rowsPerPage,
     search,
   });
 
-  // State + Modal for callback date
+  // State + Modal for next contact date
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDonatorId, setSelectedDonatorId] = useState(null);
 
@@ -45,15 +50,10 @@ const SmartTable = ({
     setIsModalOpen(false);
   };
 
-  // 3) Instead of axios directly, call the mutation
+  // Called when user picks a date in the modal
   const handleDateSelect = (isoDate) => {
     if (!selectedDonatorId) return;
-
-    updateCallbackDate({
-      donorId: selectedDonatorId,
-      nextContactDate: isoDate,
-    });
-
+    updateCallbackDate({ donorId: selectedDonatorId, nextContactDate: isoDate });
     handleCloseModal();
   };
 
@@ -85,46 +85,22 @@ const SmartTable = ({
       flex: 1,
       renderCell: (params) => {
         if (!params.row) return "N/A";
-        const currentStatus = params.row.status || "";
-
-        const handleChange = (event) => {
-          const newStatus = event.target.value;
-          // Example of showing modal if certain statuses are selected
-          if (
-            newStatus === "To Call Back" ||
-            newStatus === "To Validate" ||
-            newStatus === "No Response"
-          ) {
-            handleOpenModal(params.row.id);
-          }
-          onStatusToggle && onStatusToggle(params.row.id, newStatus);
-        };
-
-        // Prevent row click from firing when user interacts with the select
-        const handleClick = (e) => {
-          e.stopPropagation();
-        };
 
         return (
-          <Select
-            value={currentStatus}
-            onChange={handleChange}
-            onClick={handleClick} // stops row click
-            variant="outlined"
-            size="small"
-            fullWidth
-          >
-            <MenuItem value="To Contact">{t("menuItems.toContact")}</MenuItem>
-            <MenuItem value="No Response">{t("menuItems.noResponse")}</MenuItem>
-            <MenuItem value="To Call Back">
-              {t("menuItems.toCallBack")}
-            </MenuItem>
-            <MenuItem value="Not Interested">
-              {t("menuItems.notInterested")}
-            </MenuItem>
-            <MenuItem value="To Validate">{t("menuItems.toValidate")}</MenuItem>
-            <MenuItem value="Done">{t("menuItems.done")}</MenuItem>
-          </Select>
+          <StatusSelect
+            currentStatus={params.row.status}
+            donatorId={params.row.id}
+            page={page}
+            pageSize={rowsPerPage}
+            search={search}
+            // If you want the table to do the actual status mutation:
+            onStatusToggle={(donatorId, newStatus) => {
+              // e.g. call parent’s prop or do a local mutation here
+              if (onStatusToggle) onStatusToggle(donatorId, newStatus);
+            }}
+            // Let the StatusSelect tell us if the user needs to schedule a next contact date
+            onNeedDate={(donatorId) => handleOpenModal(donatorId)}
+          />
         );
       },
     },
@@ -143,12 +119,12 @@ const SmartTable = ({
           minute: "2-digit",
           hour12: false,
         });
-        return formattedDate
+        return formattedDate;
       },
     },
   ];
 
-  // MUI DataGrid requires an array of objects with `id`
+  // Convert your data => DataGrid-friendly rows
   const rows = data.map((donor) => ({
     id: donor._id,
     fName: donor.fName || "",
@@ -184,7 +160,6 @@ const SmartTable = ({
         columns={columns}
         loading={loading}
         getRowClassName={getRowClassName}
-        // Server-side pagination
         pagination
         paginationMode="server"
         rowCount={totalCount}
@@ -195,10 +170,10 @@ const SmartTable = ({
         }}
         rowsPerPageOptions={[5, 10, 25, 50]}
         disableSelectionOnClick
-        onRowClick={handleRowClick} // <-- use onRowClick
+        onRowClick={handleRowClick}
       />
 
-      {/* Modal for date selection */}
+      {/* Modal for scheduling next contact date */}
       <NextContactDateModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
