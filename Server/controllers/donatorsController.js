@@ -98,7 +98,8 @@ exports.getAllDonators = async (req, res) => {
       .limit(limitNum)
       .populate("phone_number_1")
       .populate("phone_number_2")
-      .populate("phone_number_3");
+      .populate("phone_number_3")
+      .populate("owner")
 
     const totalDocuments = await Donator.countDocuments(filter);
     const totalPages = Math.ceil(totalDocuments / limitNum);
@@ -154,7 +155,8 @@ exports.getDonatorById = async (req, res) => {
         model: "Task",
         select: "title description due_date status",
       })
-      .populate("notes");
+      .populate("notes")
+      .populate("owner");
 
     if (!donator) {
       return res.status(404).json({ message: "Donator not found" });

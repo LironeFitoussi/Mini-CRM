@@ -26,7 +26,7 @@ import SendEmailButton from "../../../components/Atoms/SendEmailButton";
 import DonatorNotes from "../../../components/Molecules/DonatorNotes";
 import { getDonationTypes } from "../../../utils";
 import SendWhatsappButton from "../../../components/Buttons/SendWhatsappButton";
-import AddToLeadButton from "../../../components/Buttons/AddToLeadButton";
+import AddOwnerButton from "../../../components/Buttons/AddOwnerButton";
 import DonationsComponent from "../../../components/Molecules/MainDonations";
 
 // (NEW) Import your reusable StatusSelect
@@ -58,6 +58,7 @@ const ClientDetailsPage = () => {
   // Fetch this specific client data
   const { data: client, isLoading, error } = useDonator(id);
 
+  console.log(client);
   // ======= Email Modal State =======
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({
@@ -185,7 +186,7 @@ const ClientDetailsPage = () => {
               <Box>
                 <EditDonatorButton donatorData={client} />
                 {(user.role === "developer" || user.role === "admin") && (
-                  <AddToLeadButton selectedDonorIds={[id]} />
+                  <AddOwnerButton selectedDonorId={id} />
                 )}
               </Box>
             </Typography>
@@ -229,7 +230,11 @@ const ClientDetailsPage = () => {
                 ? new Date(birthdate).toLocaleDateString("en-GB")
                 : "N/A"}
             </Typography>
-
+            {/* owner */}
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              <strong>{t("contactsManagement.owner")}:</strong>{" "}
+              {client.owner ? client.owner.fName : "N/A"}
+            </Typography>
             {/* ========== Quick Contact Buttons ========== */}
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               <SendEmailButton recipient={email_1?.email} />

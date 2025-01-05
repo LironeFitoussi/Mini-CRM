@@ -1,9 +1,11 @@
 // src/components/AddToLeadButton.jsx
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
-import AddToLeadModal from '../Modals/AddToOwnerModal.jsx';
+import AddToOwnerModal from '../Modals/AddToOwnerModal.jsx';
 import { useTranslation } from 'react-i18next';
-const AddToLeadButton = ({ selectedDonorIds }) => {
+const AddToOwnerButton = ({ selectedDonorId }) => {
+    console.log(selectedDonorId);
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { t } = useTranslation();
     const handleOpenModal = () => {
@@ -21,20 +23,19 @@ const AddToLeadButton = ({ selectedDonorIds }) => {
                 variant="contained"
                 color="primary"
                 onClick={handleOpenModal}
-                disabled={selectedDonorIds.length === 0}
                 sx={{ ml: 2 }}
             >
-                {t('general.addToLead')}
+                {t('general.addToTelepro')}
             </Button>
 
             {/* AddToLead Modal */}
-            <AddToLeadModal
+            <AddToOwnerModal
                 open={isModalOpen}
                 onClose={handleCloseModal}
-                selectedDonorIds={selectedDonorIds}
+                selectedDonorId={selectedDonorId}
             />
         </>
     );
 };
 
-export default AddToLeadButton;
+export default AddToOwnerButton;

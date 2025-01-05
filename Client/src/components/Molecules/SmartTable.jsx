@@ -122,6 +122,16 @@ const SmartTable = ({
         return formattedDate;
       },
     },
+    // Owner column
+    {
+      field: "owner",
+      headerName: t("customerManagement.owner"),
+      flex: 1,
+      renderCell: (params) => {
+        return `${params.row.owner?.fName || ""} ${params.row.owner?.lName || "N/A"}`;
+      },
+    },
+
   ];
 
   // Convert your data => DataGrid-friendly rows
@@ -133,6 +143,7 @@ const SmartTable = ({
     phoneNumber: donor.phone_number_1?.number || "N/A",
     status: donor.status || "",
     nextContactDate: donor.nextContactDate || null,
+    owner: donor.owner || null,
   }));
 
   const getRowClassName = (params) => {

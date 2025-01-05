@@ -108,6 +108,13 @@ donatorSchema.virtual("notes", {
   foreignField: "donator", // The field in Note that points to Donator
 });
 
+// Virtual field for owner
+donatorSchema.virtual("ownerDetails", {
+  ref: "User", // The model to use
+  localField: "owner", // The field in Donator
+  foreignField: "_id", // The field in User that points to Donator
+});
+
 const Donator = mongoose.model("Donator", donatorSchema);
 
 module.exports = Donator;

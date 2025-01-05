@@ -17,7 +17,6 @@ import { useUpdateDonatorStatus } from "../../queryhooks/useUpdateDonatorStatus"
 
 // Components
 import AddDonatorButton from "../../components/Buttons/AddDonatorButton";
-import AddToLeadButton from "../../components/Buttons/AddToLeadButton";
 import SmartTable from "../../components/Molecules/SmartTable";
 
 const DonatorsPage = () => {
@@ -64,6 +63,8 @@ const DonatorsPage = () => {
   const totalClients = data?.totalDocuments ?? 0;
   const clients = data?.donators ?? [];
 
+  // console.log(clients);
+  
   // For status updates with optimistic UI
   const updateStatusMutation = useUpdateDonatorStatus({
     page: paginationModel.page,
@@ -110,7 +111,6 @@ const DonatorsPage = () => {
         </Typography>
 
         <Box sx={{ display: "flex", gap: 2 }}>
-          {/* Add Donator Button */}
           <AddDonatorButton />
         </Box>
       </Box>

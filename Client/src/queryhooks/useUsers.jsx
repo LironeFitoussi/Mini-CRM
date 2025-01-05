@@ -7,11 +7,11 @@ const useUsers = ({ initialPage = 1, limit = 10, search = '' }) => {
     const [currentPage, setCurrentPage] = useState(initialPage);
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ['users', currentPage, limit, search],
-        queryFn: () => fetchUsers({ page: currentPage, limit, search }),
+        queryKey: ['users'],
+        queryFn: () => fetchUsers(),
         keepPreviousData: true, // To prevent loading states during pagination
     });
-
+    
     const users = data?.users || [];
     const totalPages = data?.totalPages || 1;
 
