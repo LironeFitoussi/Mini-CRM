@@ -62,8 +62,6 @@ const DonatorsPage = () => {
 
   const totalClients = data?.totalDocuments ?? 0;
   const clients = data?.donators ?? [];
-
-  // console.log(clients);
   
   // For status updates with optimistic UI
   const updateStatusMutation = useUpdateDonatorStatus({

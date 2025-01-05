@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Button,
@@ -10,40 +10,60 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import useUsers from "../../queryhooks/useUsers"; // Hook to fetch users
 
+const fetchDonorOwner = async (donorId) => {
+  const response = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/v1/donators/${donorId}/owner`
+  );
+  return response.data;
+};
+
+const assignDonorOwner = async ({ donorId, ownerId }) => {
+  await axios.put(
+    `${import.meta.env.VITE_API_URL}/api/v1/donators/${donorId}/owner`,
+    { owner: ownerId }
+  );
+};
+
 const AddToOwnerModal = ({ open, onClose, selectedDonorId }) => {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
   const [selectedUser, setSelectedUser] = useState("");
-  const [assigning, setAssigning] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const { users, isLoading: isUsersLoading } = useUsers("");
 
-  // console.log(users);
-  
-  const handleAssignToTelepro = async () => {
+  // Fetch donor owner data
+  const { data: donorOwner, isLoading: isDonorLoading, refetch: refetchDonor } = useQuery(
+    ["donorOwner", selectedDonorId],
+    () => fetchDonorOwner(selectedDonorId),
+    { enabled: !!selectedDonorId }
+  );
+
+  // Mutation for assigning owner
+  const mutation = useMutation(assignDonorOwner, {
+    onSuccess: () => {
+      // Refetch donor owner data
+      queryClient.invalidateQueries(["donorOwner", selectedDonorId]);
+      onClose();
+    },
+    onError: (error) => {
+      console.error("Failed to assign donor:", error);
+      setErrorMessage(t("Failed to assign donors to the telepro. Please try again."));
+    },
+  });
+
+  const handleAssignToTelepro = () => {
     if (!selectedUser) {
       setErrorMessage(t("Please select a telepro."));
       return;
     }
 
-    setAssigning(true);
-    try {
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/v1/donators/${selectedDonorId}/owner`,
-        { owner: selectedUser }
-      );
-      onClose();
-      setSelectedUser("");
-      setErrorMessage("");
-    } catch (error) {
-      console.error("Failed to assign donor:", error);
-      setErrorMessage(t("Failed to assign donors to the telepro. Please try again."));
-    } finally {
-      setAssigning(false);
-    }
+    mutation.mutate({ donorId: selectedDonorId, ownerId: selectedUser });
   };
 
   const handleClose = () => {
@@ -51,6 +71,12 @@ const AddToOwnerModal = ({ open, onClose, selectedDonorId }) => {
     setSelectedUser("");
     setErrorMessage("");
   };
+
+  useEffect(() => {
+    if (open && selectedDonorId) {
+      refetchDonor();
+    }
+  }, [open, selectedDonorId, refetchDonor]);
 
   return (
     <Modal
@@ -80,6 +106,17 @@ const AddToOwnerModal = ({ open, onClose, selectedDonorId }) => {
         >
           {t("Assign Selected Donors to Telepro")}
         </Typography>
+
+        {/* Donor Owner Info */}
+        {isDonorLoading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Typography sx={{ mt: 2 }}>
+            {t("Current Owner")}: {donorOwner?.owner?.fName || t("Unassigned")}
+          </Typography>
+        )}
 
         {/* User Selection */}
         {isUsersLoading ? (
@@ -120,9 +157,9 @@ const AddToOwnerModal = ({ open, onClose, selectedDonorId }) => {
             variant="contained"
             color="primary"
             onClick={handleAssignToTelepro}
-            disabled={assigning}
+            disabled={mutation.isLoading}
           >
-            {assigning ? t("Assigning...") : t("Assign")}
+            {mutation.isLoading ? t("Assigning...") : t("Assign")}
           </Button>
           <Button variant="outlined" color="secondary" onClick={handleClose}>
             {t("Cancel")}
