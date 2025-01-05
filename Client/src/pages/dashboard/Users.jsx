@@ -63,7 +63,7 @@ const Users = () => {
       });
       return;
     }
-    const userToEdit = data.find((user) => user._id === selectedRows[0]);
+    const userToEdit = data?.find((user) => user._id === selectedRows[0]);
     if (userToEdit) {
       setFormValues({
         fName: userToEdit.fName,

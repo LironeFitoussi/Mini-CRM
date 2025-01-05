@@ -10,16 +10,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useQuery, useMutation, useQueryClient } from "react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import useUsers from "../../queryhooks/useUsers"; // Hook to fetch users
 
-const fetchDonorOwner = async (donorId) => {
-  const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/v1/donators/${donorId}/owner`
-  );
-  return response.data;
-};
+
 
 const assignDonorOwner = async ({ donorId, ownerId }) => {
   await axios.put(
@@ -37,23 +32,18 @@ const AddToOwnerModal = ({ open, onClose, selectedDonorId }) => {
 
   const { users, isLoading: isUsersLoading } = useUsers("");
 
-  // Fetch donor owner data
-  const { data: donorOwner, isLoading: isDonorLoading, refetch: refetchDonor } = useQuery(
-    ["donorOwner", selectedDonorId],
-    () => fetchDonorOwner(selectedDonorId),
-    { enabled: !!selectedDonorId }
-  );
-
   // Mutation for assigning owner
-  const mutation = useMutation(assignDonorOwner, {
+  const mutation = useMutation({
+    mutationFn: assignDonorOwner,
     onSuccess: () => {
-      // Refetch donor owner data
       queryClient.invalidateQueries(["donorOwner", selectedDonorId]);
       onClose();
     },
     onError: (error) => {
       console.error("Failed to assign donor:", error);
-      setErrorMessage(t("Failed to assign donors to the telepro. Please try again."));
+      setErrorMessage(
+        t("Failed to assign donors to the telepro. Please try again.")
+      );
     },
   });
 
@@ -71,12 +61,6 @@ const AddToOwnerModal = ({ open, onClose, selectedDonorId }) => {
     setSelectedUser("");
     setErrorMessage("");
   };
-
-  useEffect(() => {
-    if (open && selectedDonorId) {
-      refetchDonor();
-    }
-  }, [open, selectedDonorId, refetchDonor]);
 
   return (
     <Modal
@@ -107,8 +91,7 @@ const AddToOwnerModal = ({ open, onClose, selectedDonorId }) => {
           {t("Assign Selected Donors to Telepro")}
         </Typography>
 
-        {/* Donor Owner Info */}
-        {isDonorLoading ? (
+        {/* {isDonorLoading ? (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             <CircularProgress />
           </Box>
@@ -116,9 +99,8 @@ const AddToOwnerModal = ({ open, onClose, selectedDonorId }) => {
           <Typography sx={{ mt: 2 }}>
             {t("Current Owner")}: {donorOwner?.owner?.fName || t("Unassigned")}
           </Typography>
-        )}
+        )} */}
 
-        {/* User Selection */}
         {isUsersLoading ? (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             <CircularProgress />
@@ -142,14 +124,12 @@ const AddToOwnerModal = ({ open, onClose, selectedDonorId }) => {
           </Select>
         )}
 
-        {/* Error Message */}
         {errorMessage && (
           <Alert severity="error" sx={{ mt: 2 }}>
             {errorMessage}
           </Alert>
         )}
 
-        {/* Action Buttons */}
         <Box
           sx={{ display: "flex", justifyContent: "flex-end", mt: 3, gap: 2 }}
         >

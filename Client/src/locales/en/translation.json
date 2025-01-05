@@ -64,6 +64,7 @@
         "type": "Type"
     },
     "general": {
+        "addToTelepro": "Add to Telepro",
         "addToLead": "Add to Lead",
         "date": "Date",
         "welcome": "Welcome",
@@ -193,6 +194,7 @@
         "stage": "Stage"
     },
     "contactsManagement": {
+        "owner": "Owner",
         "title": "Contacts",
         "add": "Add Contact",
         "edit": "Edit Contact",

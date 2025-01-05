@@ -58,7 +58,7 @@ const ClientDetailsPage = () => {
   // Fetch this specific client data
   const { data: client, isLoading, error } = useDonator(id);
 
-  console.log(client);
+  // console.log(client);
   // ======= Email Modal State =======
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({
