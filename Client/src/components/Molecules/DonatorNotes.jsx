@@ -18,6 +18,7 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 import ConfirmationModal from "../Modals/ConfirmationModal";
 import { useSelector } from "react-redux";
+import NextContactDateModal from "../Modals/NextContactDateModal";
 
 // Function to add a new note
 const addNote = async ({ donatorId, note, userId }) => {
@@ -50,8 +51,23 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
   const [newNote, setNewNote] = useState("");
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
+  const [noteForDateUpdate, setNoteForDateUpdate] = useState(null);
 
   const currentUser = useSelector((state) => state.user.user);
+
+  const setDueDate = async (noteId, date) => {
+    try {
+      const { data } = await axios.patch(
+        `${import.meta.env.VITE_API_URL}/api/v1/notes/${noteId}/dueDate`,
+        { dueDate: date }
+      );
+      return data;
+    } catch (error) {
+      console.error("Error setting due date:", error.response?.data || error.message);
+      throw error;
+    }
+  };
 
   // Add note mutation
   const addNoteMutation = useMutation({
@@ -70,7 +86,6 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
       setNewNote("");
     },
     onError: (error) => {
-      // Optionally handle error (e.g., show a notification)
       console.error("Failed to add note:", error);
       alert("Failed to add note.");
     },
@@ -85,9 +100,27 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
       setDeleteModalOpen(false);
     },
     onError: (error) => {
-      // Optionally handle error (e.g., show a notification)
       console.error("Failed to delete note:", error);
       alert("Failed to delete note.");
+    },
+  });
+
+  // Update due date mutation
+  const setDueDateMutation = useMutation({
+    mutationFn: ({ noteId, date }) => setDueDate(noteId, date),
+    onSuccess: (updatedNote) => {
+      setNotes((prevNotes) =>
+        prevNotes.map((note) =>
+          note._id === updatedNote._id ? { ...note, nextContactDate: updatedNote.nextContactDate } : note
+        )
+      );
+      queryClient.invalidateQueries(["notes", donatorId]);
+      setIsDateModalOpen(false);
+      setNoteForDateUpdate(null);
+    },
+    onError: (error) => {
+      console.error("Failed to set due date:", error);
+      alert("Failed to set due date.");
     },
   });
 
@@ -117,7 +150,17 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
     }
   };
 
-  // Handle Enter key press for submitting the note
+  const handleOpenDateModal = (note) => {
+    setNoteForDateUpdate(note);
+    setIsDateModalOpen(true);
+  };
+
+  const handleDateSelect = (date) => {
+    if (noteForDateUpdate) {
+      setDueDateMutation.mutate({ noteId: noteForDateUpdate._id, date });
+    }
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -125,25 +168,16 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
     }
   };
 
-  // Sort notes by date (latest first)
   const sortedNotes = [...notes].sort(
     (a, b) => new Date(b.date) - new Date(a.date)
   );
 
-  // Handler for Add Reminder button
-  const handleAddReminder = (noteId) => {
-    alert("need to be implemented");
-    // Future implementation can include opening a modal or navigating to a reminder setup page
-  };
-
   return (
     <Box>
-      {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6">{t("donatorNotes.title")}</Typography>
       </Box>
 
-      {/* Inline TextField for Adding a New Note */}
       <Box display="flex" alignItems="center" mb={2}>
         <TextField
           label={t("donatorNotes.addNotePlaceholder")}
@@ -153,14 +187,12 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
           onChange={(e) => setNewNote(e.target.value)}
           onKeyPress={handleKeyPress}
           disabled={addNoteMutation.isLoading}
-          placeholder={t("donatorNotes.addNotePlaceholder")}
         />
         {addNoteMutation.isLoading && (
           <CircularProgress size={24} style={{ marginLeft: 10 }} />
         )}
       </Box>
 
-      {/* Notes List */}
       <Paper
         variant="outlined"
         style={{
@@ -173,37 +205,24 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
         {sortedNotes.length > 0 ? (
           <List>
             {sortedNotes.map((note) => (
-              <ListItem
-                key={note.id || note._id}
-                divider
-                alignItems="center"
-                style={{ padding: "8px 16px" }}
-              >
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  width="100%"
-                >
-                  {/* Note Content */}
+              <ListItem key={note.id || note._id} divider alignItems="center" style={{ padding: "8px 16px" }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
                   <Typography variant="body1" style={{ flex: 1, marginRight: 16 }}>
                     {note.note}
                   </Typography>
 
-                  {/* Add Reminder Button */}
                   {!note.nextContactDate && (
                     <Button
                       variant="outlined"
                       color="secondary"
                       size="small"
-                      onClick={() => handleAddReminder(note.id || note._id)}
+                      onClick={() => handleOpenDateModal(note)}
                       style={{ marginRight: 16 }}
                     >
                       {t("donatorNotes.addReminder")}
                     </Button>
                   )}
 
-                  {/* Delete Button */}
                   <IconButton
                     edge="end"
                     aria-label="delete"
@@ -222,7 +241,6 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
         )}
       </Paper>
 
-      {/* Confirmation Modal for Deleting a Note */}
       <ConfirmationModal
         open={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
@@ -230,6 +248,12 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
         title={t("donatorNotes.deleteTitle")}
         description={t("donatorNotes.deleteDescription")}
         type="danger"
+      />
+
+      <NextContactDateModal
+        isOpen={isDateModalOpen}
+        onClose={() => setIsDateModalOpen(false)}
+        onDateSelect={handleDateSelect}
       />
     </Box>
   );
