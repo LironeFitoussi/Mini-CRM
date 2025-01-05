@@ -169,7 +169,7 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
   };
 
   const sortedNotes = [...notes].sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
   return (
@@ -211,7 +211,7 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
                     {note.note}
                   </Typography>
 
-                  {!note.nextContactDate && (
+                  {!note.dueDate ? (
                     <Button
                       variant="outlined"
                       color="secondary"
@@ -221,7 +221,12 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
                     >
                       {t("donatorNotes.addReminder")}
                     </Button>
+                  ) : (
+                    <Typography variant="body2" color="textSecondary" style={{ marginRight: 16 }}>
+                      {t("donatorNotes.nextContactDate")}: {new Date(note.dueDate).toLocaleString()}
+                    </Typography>
                   )}
+                  
 
                   <IconButton
                     edge="end"

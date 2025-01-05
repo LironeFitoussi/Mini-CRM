@@ -1,5 +1,6 @@
 // controllers/noteController.js
 const Note = require("../models/Note.js");
+const Donator = require("../models/Donator.js");
 
 // Get all notes
 const getAllNotes = async (req, res) => {
@@ -61,6 +62,12 @@ const setDueDate = async (req, res) => {
     if (!updatedNote) {
       return res.status(404).json({ message: "Note not found" });
     }
+
+    // update Donator's nextContactDate
+    const donator = await Donator.findById(updatedNote.donator);
+    donator.nextContactDate = updatedNote.dueDate;
+    await donator.save();
+
     res.status(200).json(updatedNote);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });

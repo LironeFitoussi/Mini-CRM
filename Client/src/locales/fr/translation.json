@@ -11,6 +11,8 @@
     },
     "leads": "Leads",
     "donatorNotes": {
+        "addReminder": "Ajouter un Rappel",
+        "nextContactDate": "Prochaine date de rappel",
         "title": "Commantaires",
         "addNote": "Ajouter une Note",
         "addNotePlaceholder": "Ajouter une note...",

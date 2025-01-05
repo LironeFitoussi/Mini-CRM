@@ -1,6 +1,8 @@
 {
     "leads": "Leads",
     "donatorNotes": {
+        "addReminder": "Add Reminder",
+        "nextContactDate": "Next Contact Date",
         "title": "Comments",
         "addNote": "Add Note",
         "addNotePlaceholder": "Add a note...",
