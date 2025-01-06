@@ -13,7 +13,7 @@ const Conversation = ({ contact, lastMessage, timestamp }) => {
                     {lastMessage}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    {new Date(timestamp).toLocaleString()}
+                    {new Date(timestamp).toLocaleString('en-GB')}
                 </Typography>
             </CardContent>
         </Card>

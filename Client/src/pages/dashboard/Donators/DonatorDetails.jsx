@@ -46,7 +46,7 @@ const ClientDetailsPage = () => {
   // Fetch this specific client data
   const { data: client, isLoading, error } = useDonator(id);
 
-  // console.log(client);
+  console.log(client);
   // ======= Email Modal State =======
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({
@@ -249,6 +249,11 @@ const ClientDetailsPage = () => {
                 SMS
               </Button>
             </Box>
+            {/* Donator nextContact */}
+            <Typography variant="body1" sx={{ mt: 2 }}>
+              <strong>{t("contactsManagement.nextContact")}:</strong>
+              {new Date(client.nextContactDate).toLocaleString('en-GB')}
+            </Typography>
           </Box>
         </Paper>
 
@@ -264,7 +269,7 @@ const ClientDetailsPage = () => {
 
       {/* ========== Donator Notes ========== */}
       <Paper sx={{ p: 2, boxShadow: 3, mb: 3 }}>
-        <DonatorNotes donatorId={id} note={notes} />
+        <DonatorNotes donatorId={id} note={notes} key={id} />
       </Paper>
 
       {/* ========== Task Calendar ========== */}

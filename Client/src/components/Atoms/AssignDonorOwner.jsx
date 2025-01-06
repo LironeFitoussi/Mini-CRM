@@ -18,7 +18,7 @@ const AssignDonorOwner = ({ currentOwner, selectedDonorId }) => {
   const [error, setError] = useState("");
   const [selectedOwner, setSelectedOwner] = useState("");
 
-  console.log(currentOwner);
+  // console.log(currentOwner);
   
   const {
     users,

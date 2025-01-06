@@ -7,7 +7,8 @@ const {
     updateNote, 
     deleteNote,
     setDueDate,
-    toggleIsCompleted
+    toggleIsCompleted,
+    getAllUserNotes
 } = require('../controllers/noteController');
 const { validateCreateNote, validateUpdateNote } = require('../middlewares/noteValidation');
 
@@ -15,6 +16,9 @@ const router = express.Router();
 
 // Get all notes
 router.get('/', getAllNotes);
+
+// Get all notes by user
+router.get('/donator/:donatorId', getAllUserNotes);
 
 // Get a single note by ID
 router.get('/:id', getNoteById);

@@ -66,9 +66,6 @@ const donatorSchema = new mongoose.Schema(
       ],
       default: "To Contact",
     },
-    nextContactDate: {
-      type: Date,
-    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -114,6 +111,53 @@ donatorSchema.virtual("ownerDetails", {
   localField: "owner", // The field in Donator
   foreignField: "_id", // The field in User that points to Donator
 });
+
+// Virtual to set the next contact date based on the latest note
+donatorSchema.virtual("nextContactDate", {
+  ref: "Note", // Reference the Note model
+  localField: "_id", // Link with the Donator's _id
+  foreignField: "donator", // Field in Note that points to Donator
+  justOne: true, // Only retrieve one note
+  options: {
+    sort: { createdAt: -1 }, // Sort by createdAt in descending order
+    match: { isCompleted: false }, // Only include notes with isCompleted: false
+  },
+});
+
+// Always populate the nextContactDate virtual field
+donatorSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "nextContactDate",
+    select: "dueDate createdAt", // Fetch dueDate and createdAt
+  });
+  next();
+});
+
+// Transform the schema to extract only the `dueDate` from the populated nextContactDate
+donatorSchema.set("toObject", {
+  virtuals: true,
+  transform: (doc, ret) => {
+    if (ret.nextContactDate && ret.nextContactDate.dueDate) {
+      ret.nextContactDate = ret.nextContactDate.dueDate; // Replace the object with just the dueDate
+    } else {
+      ret.nextContactDate = null; // Ensure consistency when no note is found
+    }
+    return ret;
+  },
+});
+
+donatorSchema.set("toJSON", {
+  virtuals: true,
+  transform: (doc, ret) => {
+    if (ret.nextContactDate && ret.nextContactDate.dueDate) {
+      ret.nextContactDate = ret.nextContactDate.dueDate; // Replace the object with just the dueDate
+    } else {
+      ret.nextContactDate = null; // Ensure consistency when no note is found
+    }
+    return ret;
+  },
+});
+
 
 const Donator = mongoose.model("Donator", donatorSchema);
 

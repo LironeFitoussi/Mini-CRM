@@ -12,6 +12,17 @@ const getAllNotes = async (req, res) => {
   }
 };
 
+// Get all notes by user
+const getAllUserNotes = async (req, res) => {
+
+  try {
+    const notes = await Note.find({ donator: req.params.donatorId });
+    res.status(200).json(notes);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
+
 // Get a single note by ID
 const getNoteById = async (req, res) => {
   try {
@@ -107,4 +118,5 @@ module.exports = {
   deleteNote,
   setDueDate,
   toggleIsCompleted,
+  getAllUserNotes,
 };

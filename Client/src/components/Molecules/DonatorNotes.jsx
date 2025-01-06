@@ -23,9 +23,11 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 // API Calls
 const fetchNotes = async ({ queryKey }) => {
-  const [, donatorId] = queryKey;
+  const [_, donatorId] = queryKey;
+  console.log(donatorId);
+  
   const { data } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/v1/notes?donator=${donatorId}`
+    `${import.meta.env.VITE_API_URL}/api/v1/notes/donator/${donatorId}`
   );
   return data;
 };
@@ -79,6 +81,9 @@ const DonatorNotes = ({ donatorId }) => {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  console.log(notes);
+  
+
   // Add Note Mutation with Optimistic Update (Updated for v5)
   const addNoteMutation = useMutation({
     mutationFn: ({ note }) =>
@@ -99,7 +104,10 @@ const DonatorNotes = ({ donatorId }) => {
         user: currentUser,
       };
 
-      queryClient.setQueryData(["notes", donatorId], (old) => [...old, newNoteEntry]);
+      queryClient.setQueryData(["notes", donatorId], (old) => [
+        ...old,
+        newNoteEntry,
+      ]);
 
       return { previousNotes, tempId };
     },
@@ -350,7 +358,6 @@ const DonatorNotes = ({ donatorId }) => {
                           : "none",
                         display: "flex",
                         alignItems: "center",
-                        marginRight: 2,
                       }}
                     >
                       <ModeEditIcon
@@ -361,24 +368,23 @@ const DonatorNotes = ({ donatorId }) => {
                         onClick={() => handleOpenDateModal(note)}
                       />
                       {t("donatorNotes.nextContactDate")}:{" "}
-                      {new Date(note.dueDate).toLocaleString()}
+                      {new Date(note.dueDate).toLocaleString("en-GB")}
+                      {/* Toggle Status Button */}
+                      <IconButton
+                        edge="end"
+                        aria-label="toggle-status"
+                        onClick={() => toggleNoteMutation.mutate(note._id)}
+                        disabled={toggleNoteMutation.isLoading}
+                        sx={{ mr: 1 }}
+                      >
+                        {note.isCompleted ? (
+                          <AccessTimeIcon sx={{ color: "orange" }} />
+                        ) : (
+                          <DoneIcon sx={{ color: "green" }} />
+                        )}
+                      </IconButton>
                     </Typography>
                   )}
-
-                  {/* Toggle Status Button */}
-                  <IconButton
-                    edge="end"
-                    aria-label="toggle-status"
-                    onClick={() => toggleNoteMutation.mutate(note._id)}
-                    disabled={toggleNoteMutation.isLoading}
-                    sx={{ mr: 1 }}
-                  >
-                    {note.isCompleted ? (
-                      <AccessTimeIcon sx={{ color: "orange" }} />
-                    ) : (
-                      <DoneIcon sx={{ color: "green" }} />
-                    )}
-                  </IconButton>
 
                   {/* Delete Button */}
                   <IconButton

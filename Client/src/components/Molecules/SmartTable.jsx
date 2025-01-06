@@ -111,7 +111,7 @@ const SmartTable = ({
       renderCell: (params) => {
         if (!params.row?.nextContactDate) return "N/A";
         const dateObj = new Date(params.row.nextContactDate);
-        const formattedDate = dateObj.toLocaleString(undefined, {
+        const formattedDate = dateObj.toLocaleString('en-GB', {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
