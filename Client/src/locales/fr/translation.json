@@ -202,7 +202,8 @@
         "position": "Poste",
         "mobile": "Mobile",
         "fax": "Fax",
-        "skype": "Skype"
+        "skype": "Skype",
+        "nextContact": "Prochaine date de contact"
     },
     "accountsManagement": {
         "title": "Comptes",
@@ -290,6 +291,7 @@
         "sendFailure": "Échec de l'envoi de l'email. Veuillez réessayer.",
         "modalTitle": "Envoyer un Email",
         "fromHelper": "Sélectionnez une adresse email pour envoyer depuis.",
+        "toHelper": "Sélectionnez une adresse email pour envoyer à.",
         "imagePosition": "Position de l'image",
         "imageTop": "En haut",
         "imageBottom": "En bas"

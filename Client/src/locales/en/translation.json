@@ -48,6 +48,7 @@
         "sendFailure": "Failed to send email. Please try again.",
         "modalTitle": "Send Email",
         "fromHelper": "Select an email address to send from.",
+        "toHelper": "Enter the recipient's email address.",
         "imagePosition": "Image Position",
         "imageTop": "Top",
         "imageBottom": "Bottom"
@@ -216,7 +217,8 @@
         "position": "Position",
         "mobile": "Mobile",
         "fax": "Fax",
-        "skype": "Skype"
+        "skype": "Skype",
+        "nextContact": "Next Contact Date"
     },
     "accountsManagement": {
         "title": "Accounts",

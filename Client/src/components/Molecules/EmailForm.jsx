@@ -18,18 +18,18 @@ import { useTranslation } from "react-i18next";
 import UseTemplateButton from "../Atoms/UseTemplateButton";
 
 const EmailForm = ({
-  formValues: { from, subject, body, emailFooter, imagePosition, imageUrl },
+  formValues: { from, subject, body, imagePosition, imageUrl, to },
   mailContent,
   handleChange,
   handleSubmit,
 }) => {
   const { t } = useTranslation();
-
+  console.log(to);
+  
   const [emailPreviewOpen, setEmailPreviewOpen] = useState(false);
   const [isSending, setIsSending] = useState(false); // New state for loading spinner
 
   const fromEmails = [
-    "lironefit@gmail.com",
     "contact.lesenfantsderachi@gmail.com",
   ];
 
@@ -89,6 +89,15 @@ const EmailForm = ({
         ))}
       </TextField>
 
+        <TextField
+        label={t("email.to") || "To"}
+        value={to}
+        name="to"
+        onChange={handleFormChange}
+        fullWidth
+        margin="normal"
+        helperText={t("email.toHelper") || "Enter the recipient email"}
+        />
       <TextField
         label={t("email.subject") || "Subject"}
         value={subject}

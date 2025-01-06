@@ -40,3 +40,12 @@
 2025-01-06 13:08:54 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2025-01-06 13:10:32 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2025-01-06 13:10:33 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-01-06 14:07:11 [INFO]: ✅ SMTP server is ready to take our messages
+2025-01-06 14:07:13 [INFO]: ✅ Message sent: %s
+2025-01-06 14:07:13 [INFO]: 🗂️ Mail job marked as sent: 677bc7647fb9e5404681d782
+2025-01-06 14:07:33 [INFO]: ✅ SMTP server is ready to take our messages
+2025-01-06 14:07:34 [INFO]: ✅ Message sent: %s
+2025-01-06 14:07:34 [INFO]: 🗂️ Mail job marked as sent: 677bc7847fb9e5404681d786
+2025-01-06 14:10:21 [INFO]: ✅ SMTP server is ready to take our messages
+2025-01-06 14:10:22 [INFO]: ✅ Message sent: %s
+2025-01-06 14:10:22 [INFO]: 🗂️ Mail job marked as sent: 677bc82c7fb9e5404681d78b

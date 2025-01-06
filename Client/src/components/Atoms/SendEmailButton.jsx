@@ -47,6 +47,8 @@ const SendEmailButton = ({ recipient }) => {
 
   // Function to handle sending the email
   const sendMail = async () => {
+    console.log(mailContent);
+    
     const mailData = {
       to: formValues.to,
       from: formValues.from,

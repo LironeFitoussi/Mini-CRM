@@ -250,10 +250,12 @@ const ClientDetailsPage = () => {
               </Button>
             </Box>
             {/* Donator nextContact */}
-            <Typography variant="body1" sx={{ mt: 2 }}>
-              <strong>{t("contactsManagement.nextContact")}:</strong>
-              {new Date(client.nextContactDate).toLocaleString('en-GB')}
-            </Typography>
+            {client.nextContactDate && (
+              <Typography variant="body1" sx={{ mt: 2 }}>
+                <strong>{t("contactsManagement.nextContact")}:</strong>
+                {new Date(client.nextContactDate).toLocaleString("en-GB")}
+              </Typography>
+            )}
           </Box>
         </Paper>
 
