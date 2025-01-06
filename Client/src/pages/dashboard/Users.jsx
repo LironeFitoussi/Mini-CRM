@@ -30,7 +30,7 @@ const Users = () => {
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
-
+  
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

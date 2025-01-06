@@ -133,9 +133,9 @@ const TaskDetails = ({ task }) => {
             <Grid item xs={12}>
               <Typography variant="subtitle2">Email:</Typography>
               <Typography variant="body1">
-                {donator.email_1.email ? (
-                  <a href={`mailto:${donator.email_1.email}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
-                    {donator.email_1.email}
+                {donator?.email_1?.email ? (
+                  <a href={`mailto:${donator?.email_1?.email}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
+                    {donator?.email_1?.email}
                   </a>
                 ) : (
                   "No email provided"
@@ -146,9 +146,9 @@ const TaskDetails = ({ task }) => {
             <Grid item xs={12}>
               <Typography variant="subtitle2">Phone Number:</Typography>
               <Typography variant="body1">
-                {donator.phone_number_1 && donator.phone_number_1.number ? (
-                  <a href={`tel:${donator.phone_number_1.number}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
-                    {donator.phone_number_1.number}
+                {donator.phone_number_1 && donator?.phone_number_1?.number ? (
+                  <a href={`tel:${donator?.phone_number_1?.number}`} style={{ textDecoration: 'none', color: '#1976d2' }}>
+                    {donator?.phone_number_1?.number}
                   </a>
                 ) : (
                   "No phone number provided"
