@@ -377,7 +377,7 @@ const DonatorNotes = ({ donatorId }) => {
                         disabled={toggleNoteMutation.isLoading}
                         sx={{ mr: 1 }}
                       >
-                        {note.isCompleted ? (
+                        {!note.isCompleted ? (
                           <AccessTimeIcon sx={{ color: "orange" }} />
                         ) : (
                           <DoneIcon sx={{ color: "green" }} />
