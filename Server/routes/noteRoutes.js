@@ -6,7 +6,8 @@ const {
     createNote, 
     updateNote, 
     deleteNote,
-    setDueDate
+    setDueDate,
+    toggleIsCompleted
 } = require('../controllers/noteController');
 const { validateCreateNote, validateUpdateNote } = require('../middlewares/noteValidation');
 
@@ -23,6 +24,9 @@ router.post('/', validateCreateNote, createNote);
 
 // Update an existing note
 router.put('/:id', validateUpdateNote, updateNote);
+
+// Toggle isCompleted
+router.patch('/:id/toggleIsCompleted', toggleIsCompleted);
 
 // Set due date
 router.patch('/:id/dueDate', setDueDate);

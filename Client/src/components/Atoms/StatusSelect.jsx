@@ -49,13 +49,13 @@ const StatusSelect = ({
     updateStatus({ donorId: donatorId, newStatus });
 
     // 2) Open NextContactDateModal if status requires scheduling a callback
-    if (
-      newStatus === "To Call Back" ||
-      newStatus === "To Validate" ||
-      newStatus === "No Response"
-    ) {
-      handleOpenModal();
-    }
+    // if (
+    //   newStatus === "To Call Back" ||
+    //   newStatus === "To Validate" ||
+    //   newStatus === "No Response"
+    // ) {
+    //   handleOpenModal();
+    // }
   };
 
   // We define our status options, mapping each "value" to its i18n label

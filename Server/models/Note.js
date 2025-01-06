@@ -10,6 +10,10 @@ const NoteSchema = new Schema({
     dueDate: {
         type: Date,
     },
+    isCompleted: {
+        type: Boolean,
+        default: false
+    },
     donator: {
         type: Schema.Types.ObjectId,
         ref: 'Donator',

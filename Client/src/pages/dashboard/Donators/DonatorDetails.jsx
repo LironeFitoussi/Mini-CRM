@@ -26,26 +26,14 @@ import SendEmailButton from "../../../components/Atoms/SendEmailButton";
 import DonatorNotes from "../../../components/Molecules/DonatorNotes";
 import { getDonationTypes } from "../../../utils";
 import SendWhatsappButton from "../../../components/Buttons/SendWhatsappButton";
-import AddOwnerButton from "../../../components/Buttons/AddOwnerButton";
 import DonationsComponent from "../../../components/Molecules/MainDonations";
 
-// (NEW) Import your reusable StatusSelect
+// Import your reusable StatusSelect
 import StatusSelect from "../../../components/Atoms/StatusSelect";
+import AssignDonorOwner from "../../../components/Atoms/AssignDonorOwner";
 
 // Redux
 import { useSelector } from "react-redux";
-
-const COLORS = [
-  "#8884d8",
-  "#82ca9d",
-  "#ffc658",
-  "#ff7300",
-  "#d3d3d3",
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-];
 
 const ClientDetailsPage = () => {
   const { t } = useTranslation();
@@ -172,22 +160,20 @@ const ClientDetailsPage = () => {
               className="flex justify-between"
             >
               {fName} {lName} {!fName && !lName && "This client has no name."}
-
               {/* ========== Use Your StatusSelect Component ========== */}
               <StatusSelect
-                currentStatus={status} 
+                currentStatus={status}
                 donatorId={client._id}
                 // If you want pagination info for your mutation keys, pass them here:
                 page={0}
                 pageSize={10}
                 search=""
               />
-
               <Box>
                 <EditDonatorButton donatorData={client} />
-                {(user.role === "developer" || user.role === "admin") && (
+                {/* {(user.role === "developer" || user.role === "admin") && (
                   <AddOwnerButton selectedDonorId={id} />
-                )}
+                )} */}
               </Box>
             </Typography>
             <Divider sx={{ my: 2 }} />
@@ -224,17 +210,29 @@ const ClientDetailsPage = () => {
               </Typography>
             )}
 
-            <Typography variant="body1" sx={{ mb: 2 }}>
+            <Typography variant="body1" sx={{ mb: 1 }}>
               <strong>{t("contactsManagement.birthDate")}:</strong>{" "}
               {birthdate
                 ? new Date(birthdate).toLocaleDateString("en-GB")
                 : "N/A"}
             </Typography>
-            {/* owner */}
+
             <Typography variant="body1" sx={{ mb: 2 }}>
               <strong>{t("contactsManagement.owner")}:</strong>{" "}
-              {client.owner ? client.owner.fName : "N/A"}
+              {user.role !== "user" ? (
+                <AssignDonorOwner
+                  currentOwner={client.owner}
+                  selectedDonorId={id}
+                />
+              ) : client.owner ? (
+                <>
+                  {client.owner.fName} {client.owner.lName}
+                </>
+              ) : (
+                "N/A"
+              )}
             </Typography>
+
             {/* ========== Quick Contact Buttons ========== */}
             <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
               <SendEmailButton recipient={email_1?.email} />

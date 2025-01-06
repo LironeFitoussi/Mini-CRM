@@ -1,4 +1,13 @@
 {
+    "Set Next Contact Date": "Définir la prochaine date de contact",
+    "In 1 Hour": "Dans 1 heure",
+    "In 2 Hours": "Dans 2 heures",
+    "This Afternoon": "Cet après-midi",
+    "This Evening": "Ce soir",
+    "Next Week": "La semaine prochaine",
+    "OR": "OU",
+    "Custom Date & Time": "Date et heure personnalisées",
+    "Set Custom Date": "Définir une date personnalisée",
     "menuItems": {
         "toContact": "À contacter",
         "noResponse": "Pas de réponse",

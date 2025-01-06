@@ -1,4 +1,13 @@
 {
+    "Set Next Contact Date": "Set Next Contact Date",
+    "In 1 Hour": "In 1 Hour",
+    "In 2 Hours": "In 2 Hours",
+    "This Afternoon": "This Afternoon",
+    "This Evening": "This Evening",
+    "Next Week": "Next Week",
+    "OR": "OR",
+    "Custom Date & Time": "Custom Date & Time",
+    "Set Custom Date": "Set Custom Date",
     "leads": "Leads",
     "donatorNotes": {
         "addReminder": "Add Reminder",

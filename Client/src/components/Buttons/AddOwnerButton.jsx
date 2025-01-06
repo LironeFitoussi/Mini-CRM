@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Button } from '@mui/material';
 import AddToOwnerModal from '../Modals/AddToOwnerModal.jsx';
 import { useTranslation } from 'react-i18next';
+import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
+
 const AddToOwnerButton = ({ selectedDonorId }) => {
     // console.log(selectedDonorId);
     
@@ -21,11 +23,12 @@ const AddToOwnerButton = ({ selectedDonorId }) => {
             {/* Add To Lead Button */}
             <Button
                 variant="contained"
-                color="primary"
+                color="success"
                 onClick={handleOpenModal}
                 sx={{ ml: 2 }}
             >
-                {t('general.addToTelepro')}
+                <HeadsetMicIcon />
+                {/* {t('actions.addToOwner')} */}
             </Button>
 
             {/* AddToLead Modal */}

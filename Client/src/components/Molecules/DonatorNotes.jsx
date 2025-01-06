@@ -1,6 +1,4 @@
-// src/components/Molecules/DonatorNotes.jsx
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   List,
   ListItem,
@@ -13,121 +11,202 @@ import {
   Button,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import ConfirmationModal from "../Modals/ConfirmationModal";
 import { useSelector } from "react-redux";
 import NextContactDateModal from "../Modals/NextContactDateModal";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import DoneIcon from "@mui/icons-material/Done";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
-// Function to add a new note
+// API Calls
+const fetchNotes = async ({ queryKey }) => {
+  const [, donatorId] = queryKey;
+  const { data } = await axios.get(
+    `${import.meta.env.VITE_API_URL}/api/v1/notes?donator=${donatorId}`
+  );
+  return data;
+};
+
 const addNote = async ({ donatorId, note, userId }) => {
-  try {
-    const { data } = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/v1/notes`,
-      { note, donator: donatorId, user: userId }
-    );
-    return data;
-  } catch (error) {
-    console.error("Error adding note:", error.response?.data || error.message);
-    throw error;
-  }
+  const { data } = await axios.post(
+    `${import.meta.env.VITE_API_URL}/api/v1/notes`,
+    { note, donator: donatorId, user: userId }
+  );
+  return data;
 };
 
-// Function to delete a note
 const deleteNote = async (noteId) => {
-  try {
-    await axios.delete(`${import.meta.env.VITE_API_URL}/api/v1/notes/${noteId}`);
-  } catch (error) {
-    console.error("Error deleting note:", error.response?.data || error.message);
-    throw error;
-  }
+  await axios.delete(`${import.meta.env.VITE_API_URL}/api/v1/notes/${noteId}`);
 };
 
-const DonatorNotes = ({ donatorId, note: initialNotes }) => {
+const toggleNoteStatus = async (noteId) => {
+  const { data } = await axios.patch(
+    `${import.meta.env.VITE_API_URL}/api/v1/notes/${noteId}/toggleIsCompleted`
+  );
+  return data;
+};
+
+const setDueDate = async ({ noteId, date }) => {
+  const { data } = await axios.patch(
+    `${import.meta.env.VITE_API_URL}/api/v1/notes/${noteId}/dueDate`,
+    { dueDate: date }
+  );
+  return data;
+};
+
+const DonatorNotes = ({ donatorId }) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [notes, setNotes] = useState(initialNotes || []);
+  const currentUser = useSelector((state) => state.user.user);
   const [newNote, setNewNote] = useState("");
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
   const [noteForDateUpdate, setNoteForDateUpdate] = useState(null);
 
-  const currentUser = useSelector((state) => state.user.user);
+  // Fetch Notes using useQuery (Updated for v5)
+  const {
+    data: notes = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["notes", donatorId],
+    queryFn: fetchNotes,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 
-  const setDueDate = async (noteId, date) => {
-    try {
-      const { data } = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/api/v1/notes/${noteId}/dueDate`,
-        { dueDate: date }
-      );
-      return data;
-    } catch (error) {
-      console.error("Error setting due date:", error.response?.data || error.message);
-      throw error;
-    }
-  };
-
-  // Add note mutation
+  // Add Note Mutation with Optimistic Update (Updated for v5)
   const addNoteMutation = useMutation({
-    mutationFn: ({ note }) => addNote({ donatorId, note, userId: currentUser?._id }),
-    onSuccess: (newNote) => {
-      const noteWithUserDetails = {
-        ...newNote,
-        userDetails: {
-          fName: currentUser?.fName,
-          lName: currentUser?.lName,
-        },
+    mutationFn: ({ note }) =>
+      addNote({ donatorId, note, userId: currentUser?._id }),
+    onMutate: async ({ note }) => {
+      await queryClient.cancelQueries({ queryKey: ["notes", donatorId] });
+
+      const previousNotes = queryClient.getQueryData(["notes", donatorId]);
+
+      const tempId = `temp-${new Date().getTime()}`;
+
+      const newNoteEntry = {
+        _id: tempId, // Temporary ID
+        note,
+        isCompleted: false,
+        createdAt: new Date().toISOString(),
+        dueDate: null,
+        user: currentUser,
       };
 
-      setNotes((prevNotes) => [noteWithUserDetails, ...prevNotes]);
-      queryClient.invalidateQueries(["notes", donatorId]);
+      queryClient.setQueryData(["notes", donatorId], (old) => [...old, newNoteEntry]);
+
+      return { previousNotes, tempId };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousNotes) {
+        queryClient.setQueryData(["notes", donatorId], context.previousNotes);
+      }
+      // Optionally, display an error message (e.g., toast notification)
+    },
+    onSuccess: (data, variables, context) => {
+      queryClient.setQueryData(["notes", donatorId], (old) =>
+        old.map((note) => (note._id === context.tempId ? data : note))
+      );
       setNewNote("");
     },
-    onError: (error) => {
-      console.error("Failed to add note:", error);
-      alert("Failed to add note.");
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes", donatorId] });
     },
   });
 
-  // Delete note mutation
+  // Delete Note Mutation with Optimistic Update (Updated for v5)
   const deleteNoteMutation = useMutation({
     mutationFn: (noteId) => deleteNote(noteId),
-    onSuccess: () => {
-      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteToDelete));
-      queryClient.invalidateQueries(["notes", donatorId]);
-      setDeleteModalOpen(false);
+    onMutate: async (noteId) => {
+      await queryClient.cancelQueries({ queryKey: ["notes", donatorId] });
+
+      const previousNotes = queryClient.getQueryData(["notes", donatorId]);
+
+      queryClient.setQueryData(["notes", donatorId], (old) =>
+        old.filter((note) => note._id !== noteId && note.id !== noteId)
+      );
+
+      return { previousNotes };
     },
-    onError: (error) => {
-      console.error("Failed to delete note:", error);
-      alert("Failed to delete note.");
+    onError: (err, noteId, context) => {
+      if (context?.previousNotes) {
+        queryClient.setQueryData(["notes", donatorId], context.previousNotes);
+      }
+      // Optionally, display an error message
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes", donatorId] });
+      setDeleteModalOpen(false);
     },
   });
 
-  // Update due date mutation
-  const setDueDateMutation = useMutation({
-    mutationFn: ({ noteId, date }) => setDueDate(noteId, date),
-    onSuccess: (updatedNote) => {
-      setNotes((prevNotes) =>
-        prevNotes.map((note) =>
-          note._id === updatedNote._id ? { ...note, nextContactDate: updatedNote.nextContactDate } : note
+  // Toggle Note Status Mutation with Optimistic Update (Updated for v5)
+  const toggleNoteMutation = useMutation({
+    mutationFn: (noteId) => toggleNoteStatus(noteId),
+    onMutate: async (noteId) => {
+      await queryClient.cancelQueries({ queryKey: ["notes", donatorId] });
+
+      const previousNotes = queryClient.getQueryData(["notes", donatorId]);
+
+      queryClient.setQueryData(["notes", donatorId], (old) =>
+        old.map((note) =>
+          note._id === noteId || note.id === noteId
+            ? { ...note, isCompleted: !note.isCompleted }
+            : note
         )
       );
-      queryClient.invalidateQueries(["notes", donatorId]);
+
+      return { previousNotes };
+    },
+    onError: (err, noteId, context) => {
+      if (context?.previousNotes) {
+        queryClient.setQueryData(["notes", donatorId], context.previousNotes);
+      }
+      // Optionally, display an error message
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes", donatorId] });
+    },
+  });
+
+  // Set Due Date Mutation with Optimistic Update (Updated for v5)
+  const setDueDateMutation = useMutation({
+    mutationFn: ({ noteId, date }) => setDueDate({ noteId, date }),
+    onMutate: async ({ noteId, date }) => {
+      await queryClient.cancelQueries({ queryKey: ["notes", donatorId] });
+
+      const previousNotes = queryClient.getQueryData(["notes", donatorId]);
+
+      queryClient.setQueryData(["notes", donatorId], (old) =>
+        old.map((note) =>
+          note._id === noteId || note.id === noteId
+            ? { ...note, dueDate: date }
+            : note
+        )
+      );
+
+      return { previousNotes };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousNotes) {
+        queryClient.setQueryData(["notes", donatorId], context.previousNotes);
+      }
+      // Optionally, display an error message
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["notes", donatorId] });
       setIsDateModalOpen(false);
       setNoteForDateUpdate(null);
     },
-    onError: (error) => {
-      console.error("Failed to set due date:", error);
-      alert("Failed to set due date.");
-    },
   });
 
-  useEffect(() => {
-    setNotes(initialNotes || []);
-  }, [initialNotes]);
-
+  // Handlers
   const handleAddNote = () => {
     if (newNote.trim()) {
       addNoteMutation.mutate({ note: newNote });
@@ -168,16 +247,33 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
     }
   };
 
+  // Sort notes by createdAt descending
   const sortedNotes = [...notes].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
+  // Render Loading and Error States
+  if (isLoading) return <CircularProgress />;
+  if (isError)
+    return (
+      <Typography color="error">
+        {t("error.loadingNotes")}: {error.message}
+      </Typography>
+    );
+
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      {/* Header */}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
         <Typography variant="h6">{t("donatorNotes.title")}</Typography>
       </Box>
 
+      {/* Add Note Section */}
       <Box display="flex" alignItems="center" mb={2}>
         <TextField
           label={t("donatorNotes.addNotePlaceholder")}
@@ -189,13 +285,14 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
           disabled={addNoteMutation.isLoading}
         />
         {addNoteMutation.isLoading && (
-          <CircularProgress size={24} style={{ marginLeft: 10 }} />
+          <CircularProgress size={24} sx={{ marginLeft: 2 }} />
         )}
       </Box>
 
+      {/* Notes List */}
       <Paper
         variant="outlined"
-        style={{
+        sx={{
           maxHeight: "25vh",
           overflowY: "auto",
           padding: "8px",
@@ -205,35 +302,92 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
         {sortedNotes.length > 0 ? (
           <List>
             {sortedNotes.map((note) => (
-              <ListItem key={note.id || note._id} divider alignItems="center" style={{ padding: "8px 16px" }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
-                  <Typography variant="body1" style={{ flex: 1, marginRight: 16 }}>
+              <ListItem
+                key={note.id || note._id}
+                divider
+                alignItems="center"
+                sx={{ padding: "8px 16px" }}
+              >
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  width="100%"
+                >
+                  {/* Note Text */}
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      flex: 1,
+                      marginRight: 2,
+                      textDecoration: note.isCompleted
+                        ? "line-through"
+                        : "none",
+                    }}
+                  >
                     {note.note}
                   </Typography>
 
+                  {/* Due Date */}
                   {!note.dueDate ? (
                     <Button
                       variant="outlined"
                       color="secondary"
                       size="small"
                       onClick={() => handleOpenDateModal(note)}
-                      style={{ marginRight: 16 }}
+                      sx={{ marginRight: 2 }}
+                      disabled={setDueDateMutation.isLoading}
                     >
                       {t("donatorNotes.addReminder")}
                     </Button>
                   ) : (
-                    <Typography variant="body2" color="textSecondary" style={{ marginRight: 16 }}>
-                      {t("donatorNotes.nextContactDate")}: {new Date(note.dueDate).toLocaleString()}
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      sx={{
+                        textDecoration: note.isCompleted
+                          ? "line-through"
+                          : "none",
+                        display: "flex",
+                        alignItems: "center",
+                        marginRight: 2,
+                      }}
+                    >
+                      <ModeEditIcon
+                        sx={{
+                          mr: 0.5,
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleOpenDateModal(note)}
+                      />
+                      {t("donatorNotes.nextContactDate")}:{" "}
+                      {new Date(note.dueDate).toLocaleString()}
                     </Typography>
                   )}
-                  
 
+                  {/* Toggle Status Button */}
+                  <IconButton
+                    edge="end"
+                    aria-label="toggle-status"
+                    onClick={() => toggleNoteMutation.mutate(note._id)}
+                    disabled={toggleNoteMutation.isLoading}
+                    sx={{ mr: 1 }}
+                  >
+                    {note.isCompleted ? (
+                      <AccessTimeIcon sx={{ color: "orange" }} />
+                    ) : (
+                      <DoneIcon sx={{ color: "green" }} />
+                    )}
+                  </IconButton>
+
+                  {/* Delete Button */}
                   <IconButton
                     edge="end"
                     aria-label="delete"
                     onClick={() => handleOpenDeleteModal(note.id || note._id)}
+                    disabled={deleteNoteMutation.isLoading}
                   >
-                    <DeleteIcon />
+                    <DeleteIcon sx={{ color: "red" }} />
                   </IconButton>
                 </Box>
               </ListItem>
@@ -246,6 +400,14 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
         )}
       </Paper>
 
+      {/* Add Note Error */}
+      {addNoteMutation.isError && (
+        <Typography color="error" sx={{ mt: 1 }}>
+          {t("donatorNotes.addNoteError")}: {addNoteMutation.error.message}
+        </Typography>
+      )}
+
+      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         open={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}
@@ -255,6 +417,7 @@ const DonatorNotes = ({ donatorId, note: initialNotes }) => {
         type="danger"
       />
 
+      {/* Next Contact Date Modal */}
       <NextContactDateModal
         isOpen={isDateModalOpen}
         onClose={() => setIsDateModalOpen(false)}

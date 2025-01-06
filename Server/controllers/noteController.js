@@ -56,7 +56,7 @@ const setDueDate = async (req, res) => {
   try {
     const updatedNote = await Note.findByIdAndUpdate(
       req.params.id,
-      { dueDate: req.body.dueDate },
+      { dueDate: req.body.dueDate, isCompleted: false },
       { new: true }
     );
     if (!updatedNote) {
@@ -86,6 +86,19 @@ const deleteNote = async (req, res) => {
   }
 };
 
+// Toggle isCompleted
+const toggleIsCompleted = async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    if (!note) return res.status(404).json({ message: "Note not found" });
+    note.isCompleted = !note.isCompleted;
+    await note.save();
+    res.status(200).json(note);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
+
 module.exports = {
   getAllNotes,
   getNoteById,
@@ -93,4 +106,5 @@ module.exports = {
   updateNote,
   deleteNote,
   setDueDate,
+  toggleIsCompleted,
 };
