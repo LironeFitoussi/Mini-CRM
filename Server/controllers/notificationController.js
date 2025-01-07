@@ -3,12 +3,24 @@ const Notification = require("../models/Notification");
 // Get all notifications
 exports.getAllNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find().sort({ createdAt: -1 }).populate('user').populate('donator');
-    
+    // Query Parameters
+    const { archived = "false" } = req.query; // Default to true if not provided
+
+    // Convert the archived query parameter to a boolean value
+    const isArchived = archived === "true";
+
+    // Fetch notifications based on the archived filter
+    const notifications = await Notification.find({ archived: isArchived })
+      .sort({ createdAt: -1 })
+      .populate('user')
+      .populate('donator');
+
     console.log(notifications);
-    
+
+    // Respond with the fetched notifications
     res.status(200).json(notifications);
   } catch (error) {
+    console.error("Error fetching notifications:", error);
     res.status(500).json({ error: "Failed to fetch notifications" });
   }
 };

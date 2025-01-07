@@ -1,7 +1,7 @@
 // controllers/noteController.js
 const Note = require("../models/Note.js");
 const Donator = require("../models/Donator.js");
-
+const Notification = require("../models/Notification.js");
 // Get all notes
 const getAllNotes = async (req, res) => {
   try {
@@ -14,7 +14,6 @@ const getAllNotes = async (req, res) => {
 
 // Get all notes by user
 const getAllUserNotes = async (req, res) => {
-
   try {
     const notes = await Note.find({ donator: req.params.donatorId });
     res.status(200).json(notes);
@@ -74,10 +73,18 @@ const setDueDate = async (req, res) => {
       return res.status(404).json({ message: "Note not found" });
     }
 
-    // update Donator's nextContactDate
-    const donator = await Donator.findById(updatedNote.donator);
-    donator.nextContactDate = updatedNote.dueDate;
-    await donator.save();
+    // Set notification
+    const notification = new Notification({
+      title: "Note Due",
+      type: "callback",
+      userId: updatedNote.user,
+      donatorId: updatedNote.donator,
+    });
+
+    await notification.save();
+
+    updatedNote.notification = notification._id;
+    await updatedNote.save();
 
     res.status(200).json(updatedNote);
   } catch (error) {
@@ -104,6 +111,29 @@ const toggleIsCompleted = async (req, res) => {
     if (!note) return res.status(404).json({ message: "Note not found" });
     note.isCompleted = !note.isCompleted;
     await note.save();
+
+    // if note is completed, archive notification
+    if (note.isCompleted) {
+      const notification = await Notification.findOneAndUpdate(
+        note.notification,
+        { archived: true }
+      );
+
+      if (!notification) {
+        return res.status(404).json({ message: "Notification not found" });
+      }
+    } else if (!note.isCompleted) {
+      // if note is not completed and has a due date, set notification
+      const notification = await Notification.findOneAndUpdate(
+        note.notification,
+        { archived: false }
+      );
+
+      if (!notification) {
+        return res.status(404).json({ message: "Notification not found" });
+      } 
+    }
+
     res.status(200).json(note);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });

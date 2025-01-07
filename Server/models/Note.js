@@ -24,6 +24,10 @@ const NoteSchema = new Schema({
         ref: 'User',
         required: true
     },
+    notification: {
+        type: Schema.Types.ObjectId,
+        ref: 'Notification'
+    },
     createdAt: {
         type: Date,
         default: Date.now

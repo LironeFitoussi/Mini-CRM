@@ -120,7 +120,7 @@ donatorSchema.virtual("nextContactDate", {
   justOne: true, // Only retrieve one note
   options: {
     sort: { createdAt: -1 }, // Sort by createdAt in descending order
-    match: { isCompleted: false }, // Only include notes with isCompleted: false
+    match: { isCompleted: false, dueDate: { $exists: true } }, // Filter notes that are not completed and have a dueDate
   },
 });
 

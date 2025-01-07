@@ -214,6 +214,11 @@ const DonatorNotes = ({ donatorId }) => {
     },
   });
 
+  const isLatestNote = (note) => {
+    if (notes.length === 1) return true;
+    return notes[notes.length - 1]._id === note._id;
+  };
+
   // Handlers
   const handleAddNote = () => {
     if (newNote.trim()) {
@@ -338,7 +343,8 @@ const DonatorNotes = ({ donatorId }) => {
 
                   {/* Due Date */}
                   {!note.dueDate ? (
-                    <Button
+                    isLatestNote(note) && (
+                      <Button
                       variant="outlined"
                       color="secondary"
                       size="small"
@@ -348,6 +354,7 @@ const DonatorNotes = ({ donatorId }) => {
                     >
                       {t("donatorNotes.addReminder")}
                     </Button>
+                    )
                   ) : (
                     <Typography
                       variant="body2"
@@ -360,13 +367,15 @@ const DonatorNotes = ({ donatorId }) => {
                         alignItems: "center",
                       }}
                     >
-                      <ModeEditIcon
+                      {isLatestNote(note) && (
+                        <ModeEditIcon
                         sx={{
                           mr: 0.5,
                           cursor: "pointer",
                         }}
                         onClick={() => handleOpenDateModal(note)}
                       />
+                      )}
                       {t("donatorNotes.nextContactDate")}:{" "}
                       {new Date(note.dueDate).toLocaleString("en-GB")}
                       {/* Toggle Status Button */}

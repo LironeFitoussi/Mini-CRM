@@ -27,6 +27,10 @@ const notificationSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Donator',
     },
+    archived: {
+        type: Boolean,
+        default: false,
+    },
     notificationDate: {
         type: Date,
         default: Date.now,
