@@ -74,8 +74,6 @@
         "totalDonations": "Total Donations",
         "totalDonationsMonth": "Total Donations du Mois",
         "donationsHistory": "Historique des Donations",
-        "totalTasks": "Total Tâches",
-        "totalCriticalTasks": "Tâches Critiques",
         "profile": "Profil",
         "logout": "Déconnexion",
         "login": "Connexion",
@@ -123,12 +121,6 @@
         "save": "Enregistrer",
         "assign": "Attribuer",
         "assigning": "Attribution..."
-    },
-    "tasks": {
-        "task": "Tâche",
-        "tasks": "Tâches",
-        "taskUpdateSuccess": "Statut de la tâche mis à jour avec succès!",
-        "taskUpdateFailure": "Échec de la mise à jour du statut de la tâche. Veuillez réessayer."
     },
     "navigation": {
         "home": "Accueil",

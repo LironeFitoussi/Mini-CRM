@@ -92,8 +92,6 @@
         "totalDonations": "Total Donations",
         "totalDonationsMonth": "Total Donations of the Month",
         "donationsHistory": "Donations History",
-        "totalTasks": "Total Tasks",
-        "totalCriticalTasks": "Critical Tasks",
         "profile": "Profile",
         "logout": "Logout",
         "login": "Login",
@@ -139,12 +137,6 @@
         "save": "Save",
         "assign": "Assign",
         "assigning": "Assigning..."
-    },
-    "tasks": {
-        "task": "Task",
-        "tasks": "Tasks",
-        "updateSuccess": "Task status updated successfully!",
-        "updateFailure": "Failed to update task status. Please try again."
     },
     "navigation": {
         "home": "Home",

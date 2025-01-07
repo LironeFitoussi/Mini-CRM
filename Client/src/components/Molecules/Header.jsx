@@ -17,7 +17,6 @@ const pages = [
   { name: "home", path: "/" },
   { name: "dashboard", path: "/dashboard" },
   { name: "profile", path: "/profile" },
-  // { name: "login", path: "/login" },
 ];
 
 const Header = () => {

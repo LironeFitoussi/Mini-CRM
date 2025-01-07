@@ -25,12 +25,6 @@ const HorizontalNavbar = () => {
               className="h-10 w-10"
              alt="" />
           </Link>
-          {/* <Link
-            to="tasks"
-            className="px-3 py-2 hover:bg-gray-100 rounded-md transition flex items-center"
-          >
-            {t("tasks")}
-          </Link> */}
           <Link
             to="donators"
             className="px-3 py-2 hover:bg-gray-100 rounded-md transition flex items-center"

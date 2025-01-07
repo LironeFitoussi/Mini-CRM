@@ -5,7 +5,6 @@ import App from "./App.jsx";
 import Home from "./pages/Home.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Profile from "./pages/Profile.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import ProtectedRoute from "./components/Atoms/Protected.jsx";
 const LeadsPage = React.lazy(() => import("./pages/dashboard/Leads.jsx"));
@@ -24,7 +23,6 @@ const WhatsAppPage = React.lazy(() =>
   import("./pages/dashboard/WhatsAppPage.jsx")
 ); // Added import
 const UsersPage = React.lazy(() => import("./pages/dashboard/Users.jsx"));
-const TasksPage = React.lazy(() => import("./pages/dashboard/TasksPage.jsx"));
 const SmsPage = React.lazy(() => import("./pages/dashboard/Sms.jsx")); // Added import
 
 const router = [
@@ -76,14 +74,6 @@ const router = [
             ),
           },
           {
-            path: "tasks",
-            element: (
-              <ProtectedRoute level="user">
-                <TasksPage />
-              </ProtectedRoute>
-            ), // Tasks route
-          },
-          {
             path: "donations",
             element: (
               <ProtectedRoute level="user">
@@ -133,7 +123,6 @@ const router = [
           </ProtectedRoute>
         ), // Protected route for profile
       },
-      { path: "login", element: <LoginPage /> }, // Login page (unprotected)
       { path: "*", element: <NotFound /> }, // Catch-all route for 404s
     ],
   },
