@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 
 const fetchDonators = async ({ page, pageSize, search }) => {
-  // Convert MUI's 0-based page to your API's 1-based if needed
   const params = new URLSearchParams({
     page: page + 1, // Because server expects page starting from 1
     limit: pageSize,
@@ -25,11 +24,10 @@ const fetchDonators = async ({ page, pageSize, search }) => {
 
 const useDonators = ({ page, pageSize, search }) => {
   return useQuery({
-    // Use a stable key that includes your pagination/search state
-    // so React Query can cache each combination of {page, pageSize, search}
-    queryKey: ["donators", page, pageSize, search],
+    queryKey: ["donators", { page, pageSize, search }],
     queryFn: () => fetchDonators({ page, pageSize, search }),
-    keepPreviousData: true, // Keep old data around while fetching new
+    keepPreviousData: true,
+    staleTime: 5000,
   });
 };
 

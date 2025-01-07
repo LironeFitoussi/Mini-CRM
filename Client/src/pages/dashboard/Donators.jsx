@@ -3,17 +3,11 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   Box,
   TextField,
-  CircularProgress,
   Alert,
   Typography,
 } from "@mui/material";
-import { useNavigate, Outlet, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
-import { useTranslation } from "react-i18next";
-
-// React Query hooks
-import useDonators from "../../queryhooks/useDonators";
-import { useUpdateDonatorStatus } from "../../queryhooks/useUpdateDonatorStatus";
 
 // Components
 import AddDonatorButton from "../../components/Buttons/AddDonatorButton";
@@ -21,17 +15,23 @@ import SmartTable from "../../components/Molecules/SmartTable";
 
 const DonatorsPage = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const { t } = useTranslation();
-
-  // Debounced search
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0, // zero-based
+    pageSize: 25,
+  });
+  const [data, setData] = useState({
+    donators: [],
+    totalDocuments: 0,
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const debouncedChangeHandler = useCallback(
     debounce((value) => {
       const trimmed = value.replace(/^0+/, "").trim();
       setDebouncedSearch(trimmed);
-      // Reset to first page whenever search changes
       setPaginationModel((prev) => ({ ...prev, page: 0 }));
     }, 500),
     []
@@ -42,57 +42,77 @@ const DonatorsPage = () => {
     debouncedChangeHandler(e.target.value);
   };
 
-  // MUI DataGrid v7 approach for server pagination
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0, // zero-based
-    pageSize: 25,
-  });
+  const fetchDonators = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams({
+        page: paginationModel.page + 1, // 1-based
+        limit: paginationModel.pageSize,
+      });
+      if (debouncedSearch) {
+        params.append("search", debouncedSearch);
+      }
 
-  // React Query: fetch donators
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  } = useDonators({
-    page: paginationModel.page,
-    pageSize: paginationModel.pageSize,
-    search: debouncedSearch,
-  });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/v1/donators?${params.toString()}`
+      );
+      if (!response.ok) {
+        throw new Error(`Error fetching donators: ${response.statusText}`);
+      }
 
-  const totalClients = data?.totalDocuments ?? 0;
-  const clients = data?.donators ?? [];
-  
-  // For status updates with optimistic UI
-  const updateStatusMutation = useUpdateDonatorStatus({
-    page: paginationModel.page,
-    pageSize: paginationModel.pageSize,
-    search: debouncedSearch,
-  });
+      const result = await response.json();
+      setData({
+        donators: result.donators,
+        totalDocuments: result.totalDocuments,
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // If an ID param is present, show nested route
-  if (id) {
-    return <Outlet />;
-  }
+  useEffect(() => {
+    fetchDonators();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paginationModel.page, paginationModel.pageSize, debouncedSearch]);
 
-  // Called by the DataGrid
-  const handlePageChange = (newPage) => {
+  const handlePageChange = useCallback((newPage) => {
     setPaginationModel((prev) => ({ ...prev, page: newPage }));
-  };
-  const handlePageSizeChange = (newPageSize) => {
+  }, []);
+
+  const handlePageSizeChange = useCallback((newPageSize) => {
     setPaginationModel({ page: 0, pageSize: newPageSize });
-  };
+  }, []);
 
-  // Our status toggle now goes through the mutation
   const handleStatusToggle = async (donorId, newStatus) => {
-    // The mutation is automatically optimistic (as defined in useUpdateDonatorStatus)
-    updateStatusMutation.mutate({ donorId, newStatus });
+    try {
+      await fetch(
+        `${import.meta.env.VITE_API_URL}/api/v1/donators/${donorId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+      fetchDonators();
+    } catch (err) {
+      setError(`Failed to update status: ${err.message}`);
+    }
   };
 
-  // For row clicks or checkbox selection
   const handleDonatorSelect = (donorId) => {
     navigate(`/dashboard/donators/${donorId}`);
   };
+
+  useEffect(() => {
+    return () => {
+      debouncedChangeHandler.cancel();
+    };
+  }, [debouncedChangeHandler]);
 
   return (
     <Box sx={{ padding: 4 }}>
@@ -105,7 +125,7 @@ const DonatorsPage = () => {
         }}
       >
         <Typography variant="h4" component="h1" gutterBottom>
-          {t("general.donors")}
+          Donors
         </Typography>
 
         <Box sx={{ display: "flex", gap: 2 }}>
@@ -115,7 +135,7 @@ const DonatorsPage = () => {
 
       {/* Search Input */}
       <TextField
-        label={t("general.searchDonors")}
+        label="Search Donors"
         variant="outlined"
         fullWidth
         margin="normal"
@@ -124,37 +144,26 @@ const DonatorsPage = () => {
         placeholder="Search by name, email, etc."
       />
 
-      {/* Loading Indicator */}
-      {isLoading && (
-        <Box sx={{ display: "flex", justifyContent: "center", my: 2 }}>
-          <CircularProgress />
-        </Box>
-      )}
-
       {/* Error Message */}
-      {isError && (
+      {error && (
         <Alert severity="error" sx={{ my: 2 }}>
-          {error.message} — Please try again later.
+          {error} — Please try again later.
         </Alert>
       )}
 
       {/* Table */}
-      {(!isError || isLoading)&& (
-        <SmartTable
-          data={clients} // from React Query
-          loading={isLoading}
-          onStatusToggle={handleStatusToggle}
-          onDonatorSelect={handleDonatorSelect}
-          size="100%" // or "90%", as you like
-
-          // MUI DataGrid (server-side) pagination
-          page={paginationModel.page}
-          rowsPerPage={paginationModel.pageSize}
-          totalCount={totalClients}
-          onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}
-        />
-      )}
+      <SmartTable
+        data={data.donators}
+        loading={loading}
+        onStatusToggle={handleStatusToggle}
+        onDonatorSelect={handleDonatorSelect}
+        size="100%"
+        page={paginationModel.page}
+        rowsPerPage={paginationModel.pageSize}
+        totalCount={data.totalDocuments}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+      />
     </Box>
   );
 };

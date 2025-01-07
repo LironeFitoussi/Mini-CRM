@@ -57,17 +57,15 @@ const router = [
               <ProtectedRoute level="user">
                 <DontaorsPage />
               </ProtectedRoute>
-            ), // Clients route
-            children: [
-              {
-                path: ":id",
-                element: (
-                  <ProtectedRoute level="user">
-                    <ClientDetailsPage />
-                  </ProtectedRoute>
-                ), // Client Details subpage
-              },
-            ],
+            )
+          },
+          {
+            path: "donators/:id",
+            element: (
+              <ProtectedRoute level="user">
+                <ClientDetailsPage />
+              </ProtectedRoute>
+            ),
           },
           {
             path: "leads",

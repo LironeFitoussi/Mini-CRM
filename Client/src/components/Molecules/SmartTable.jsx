@@ -1,41 +1,26 @@
-// src/components/SmartTable.jsx (or wherever)
-
-import React, { useState } from "react";
+// src/components/Molecules/SmartTable.jsx
+import React, { useState, useMemo } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { Skeleton } from "@mui/material";
 import NextContactDateModal from "../Modals/NextContactDateModal";
-
-// 1) If you have a callback-date mutation:
-import { useUpdateDonatorCallbackDate } from "../../queryhooks/useUpdateDonatorCallbackDate";
-
-// 2) Import your StatusSelect
 import StatusSelect from "../Atoms/StatusSelect";
 
 const SmartTable = ({
   data = [],
   loading = false,
-  onStatusToggle, // maybe you have a parent callback
+  onStatusToggle,
+  onDonatorSelect,
   size = "100%",
   page,
   rowsPerPage,
   totalCount,
-  setPage,
-  setRowsPerPage,
+  onPageChange,
+  onPageSizeChange,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
-  // Example search param
-  const search = "";
-
-  // Callback-date mutation (optional)
-  const { mutate: updateCallbackDate } = useUpdateDonatorCallbackDate({
-    page,
-    pageSize: rowsPerPage,
-    search,
-  });
 
   // State + Modal for next contact date
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,52 +38,56 @@ const SmartTable = ({
   // Called when user picks a date in the modal
   const handleDateSelect = (isoDate) => {
     if (!selectedDonatorId) return;
-    updateCallbackDate({ donorId: selectedDonatorId, nextContactDate: isoDate });
+    onStatusToggle(selectedDonatorId, { nextContactDate: isoDate });
     handleCloseModal();
   };
 
   // Define columns
-  const columns = [
+  const columns = useMemo(() => [
     {
       field: "fName",
       headerName: t("clientInfo.fName"),
       flex: 1,
+      renderCell: (params) =>
+        loading ? <Skeleton variant="text" aria-hidden="true" /> : params.value || "N/A",
     },
     {
       field: "lName",
       headerName: t("clientInfo.lName"),
       flex: 1,
+      renderCell: (params) =>
+        loading ? <Skeleton variant="text" aria-hidden="true" /> : params.value || "N/A",
     },
     {
       field: "email",
       headerName: t("clientInfo.email"),
       flex: 2,
+      renderCell: (params) =>
+        loading ? <Skeleton variant="text" aria-hidden="true" /> : params.value || "N/A",
     },
     {
       field: "phoneNumber",
       headerName: t("clientInfo.phone"),
       flex: 1,
+      renderCell: (params) =>
+        loading ? <Skeleton variant="text" aria-hidden="true" /> : params.value || "N/A",
     },
     {
       field: "status",
       headerName: t("customerManagement.status"),
       flex: 1,
       renderCell: (params) => {
+        if (loading) {
+          return <Skeleton variant="rectangular" width="80%" height={24} aria-hidden="true" />;
+        }
+
         if (!params.row) return "N/A";
 
         return (
           <StatusSelect
             currentStatus={params.row.status}
             donatorId={params.row.id}
-            page={page}
-            pageSize={rowsPerPage}
-            search={search}
-            // If you want the table to do the actual status mutation:
-            onStatusToggle={(donatorId, newStatus) => {
-              // e.g. call parent’s prop or do a local mutation here
-              if (onStatusToggle) onStatusToggle(donatorId, newStatus);
-            }}
-            // Let the StatusSelect tell us if the user needs to schedule a next contact date
+            onStatusToggle={onStatusToggle}
             onNeedDate={(donatorId) => handleOpenModal(donatorId)}
           />
         );
@@ -106,12 +95,16 @@ const SmartTable = ({
     },
     {
       field: "nextContactDate",
-      headerName: t("customerManagement.contactBackDate"),
+      headerName: t("donatorNotes.nextContactDate"),
       flex: 1,
       renderCell: (params) => {
+        if (loading) {
+          return <Skeleton variant="text" aria-hidden="true" />;
+        }
+
         if (!params.row?.nextContactDate) return "N/A";
         const dateObj = new Date(params.row.nextContactDate);
-        const formattedDate = dateObj.toLocaleString('en-GB', {
+        const formattedDate = dateObj.toLocaleString("en-GB", {
           year: "numeric",
           month: "2-digit",
           day: "2-digit",
@@ -122,20 +115,22 @@ const SmartTable = ({
         return formattedDate;
       },
     },
-    // Owner column
     {
       field: "owner",
       headerName: t("customerManagement.owner"),
       flex: 1,
       renderCell: (params) => {
+        if (loading) {
+          return <Skeleton variant="text" aria-hidden="true" />;
+        }
+
         return `${params.row.owner?.fName || ""} ${params.row.owner?.lName || "N/A"}`;
       },
     },
-
-  ];
+  ], [loading, onStatusToggle]);
 
   // Convert your data => DataGrid-friendly rows
-  const rows = data.map((donor) => ({
+  const rows = useMemo(() => data.map((donor) => ({
     id: donor._id,
     fName: donor.fName || "",
     lName: donor.lName || "",
@@ -144,7 +139,7 @@ const SmartTable = ({
     status: donor.status || "",
     nextContactDate: donor.nextContactDate || null,
     owner: donor.owner || null,
-  }));
+  })), [data]);
 
   const getRowClassName = (params) => {
     const status = params.row.status;
@@ -155,7 +150,21 @@ const SmartTable = ({
 
   // Handle row click -> navigate to /donators/:id
   const handleRowClick = (params) => {
+    if (loading) return; // Prevent navigation when loading
     navigate(`/dashboard/donators/${params.id}`);
+  };
+
+  // Handle pagination model change
+  const handlePaginationModelChange = (model) => {
+    const { page: newPage, pageSize: newPageSize } = model;
+
+    if (newPage !== page && typeof onPageChange === "function") {
+      onPageChange(newPage);
+    }
+
+    if (newPageSize !== rowsPerPage && typeof onPageSizeChange === "function") {
+      onPageSizeChange(newPageSize);
+    }
   };
 
   return (
@@ -163,22 +172,19 @@ const SmartTable = ({
       <DataGrid
         sx={{
           "& .MuiDataGrid-row:hover": {
-            cursor: "pointer",
+            cursor: loading ? "default" : "pointer",
           },
           height: "72.5vh",
         }}
         rows={rows}
         columns={columns}
-        loading={loading}
+        loading={false} // Disable the default loading overlay
         getRowClassName={getRowClassName}
         pagination
         paginationMode="server"
         rowCount={totalCount}
         paginationModel={{ page, pageSize: rowsPerPage }}
-        onPaginationModelChange={(model) => {
-          setPage(model.page);
-          setRowsPerPage(model.pageSize);
-        }}
+        onPaginationModelChange={handlePaginationModelChange}
         rowsPerPageOptions={[5, 10, 25, 50]}
         disableSelectionOnClick
         onRowClick={handleRowClick}
