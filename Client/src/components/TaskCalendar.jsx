@@ -1,88 +1,84 @@
-import * as React from 'react';
-import dayjs from 'dayjs';
-import Badge from '@mui/material/Badge';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { PickersDay } from '@mui/x-date-pickers/PickersDay';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
+import React, { useState, useEffect } from "react";
+import dayjs from "dayjs";
+import Badge from "@mui/material/Badge";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { PickersDay } from "@mui/x-date-pickers/PickersDay";
+import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
 
-function getRandomNumber(min, max) {
-  return Math.round(Math.random() * (max - min) + min);
-}
-
-function fakeFetch(date, { signal }) {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      const daysInMonth = date.daysInMonth();
-      const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
-
-      resolve({ daysToHighlight });
-    }, 500);
-
-    signal.onabort = () => {
-      clearTimeout(timeout);
-      reject(new DOMException('aborted', 'AbortError'));
-    };
-  });
-}
-
-const initialValue = dayjs('2022-04-17');
+const initialValue = dayjs(new Date());
 
 function ServerDay(props) {
-  const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
+  const { highlightedDays = [], day, outsideCurrentMonth, notes, ...other } = props;
 
-  const isSelected =
-    !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0;
+  const currentDate = dayjs();
+  const isSelected = !outsideCurrentMonth && highlightedDays.includes(day.date());
+
+  // Determine the icon based on the day status
+  let badgeContent = "";
+  const noteForDay = notes.find((note) => dayjs(note.dueDate).isSame(day, 'day'));
+
+  if (noteForDay?.isCompleted) {
+    badgeContent = "🟢"; // Green for completed
+  } else if (day.isBefore(currentDate, "day")) {
+    badgeContent = "🔴"; // Red for past dates
+  } else if (day.isAfter(currentDate, "day")) {
+    badgeContent = "🔵"; // Blue for future dates
+  }
 
   return (
     <Badge
-      key={props.day.toString()}
+      key={day.toString()}
       overlap="circular"
-      badgeContent={isSelected ? '🌚' : undefined}
+      badgeContent={isSelected ? badgeContent : undefined}
     >
       <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
     </Badge>
   );
 }
 
-export default function TaskCalendar() {
-  const requestAbortController = React.useRef(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
+export default function TaskCalendar({ notes }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [highlightedDays, setHighlightedDays] = useState([]);
 
-  const fetchHighlightedDays = (date) => {
-    const controller = new AbortController();
-    fakeFetch(date, {
-      signal: controller.signal,
-    })
-      .then(({ daysToHighlight }) => {
-        setHighlightedDays(daysToHighlight);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        // ignore the error if it's caused by `controller.abort`
-        if (error.name !== 'AbortError') {
-          throw error;
-        }
-      });
+  // Create a calendar structure from notes
+  const generateCalendar = (notes) => {
+    const calendar = {};
 
-    requestAbortController.current = controller;
+    notes.forEach((note) => {
+      const dueDate = dayjs(note.dueDate);
+      const year = dueDate.year();
+      const month = dueDate.month();
+      const day = dueDate.date();
+
+      if (!calendar[year]) calendar[year] = {};
+      if (!calendar[year][month]) calendar[year][month] = [];
+      calendar[year][month].push(day);
+    });
+
+    return calendar;
   };
 
-  React.useEffect(() => {
+  const calendarData = generateCalendar(notes);
+
+  const fetchHighlightedDays = (date) => {
+    const year = date.year();
+    const month = date.month();
+
+    setIsLoading(true);
+
+    // Fetch data for the current month
+    const daysToHighlight = calendarData[year]?.[month] || [];
+    setHighlightedDays(daysToHighlight);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
     fetchHighlightedDays(initialValue);
-    // abort request on unmount
-    return () => requestAbortController.current?.abort();
   }, []);
 
   const handleMonthChange = (date) => {
-    if (requestAbortController.current) {
-      // make sure that you are aborting useless requests
-      // because it is possible to switch between months pretty quickly
-      requestAbortController.current.abort();
-    }
-
     setIsLoading(true);
     setHighlightedDays([]);
     fetchHighlightedDays(date);
@@ -101,6 +97,7 @@ export default function TaskCalendar() {
         slotProps={{
           day: {
             highlightedDays,
+            notes,
           },
         }}
       />
