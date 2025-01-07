@@ -91,6 +91,8 @@
         "totalDonators": "Total Donators",
         "totalDonations": "Total Donations",
         "totalDonationsMonth": "Total Donations of the Month",
+        "totalCallback": "Total Donors to Call Back",
+        "totalLateCallback": "Total Late Donors to Call Back",
         "donationsHistory": "Donations History",
         "profile": "Profile",
         "logout": "Logout",

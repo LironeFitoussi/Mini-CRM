@@ -7,7 +7,7 @@ const MainInfoContainer = () => {
       const res = await axios.get(
         import.meta.env.VITE_API_URL + "/api/v1/dashboard"
       );
-      // console.log(res.data);
+      console.log(res.data);
       
       return res.data;
     } catch (error) {
@@ -41,8 +41,8 @@ const MainInfoContainer = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <MainInfoCard title="general.totalDonators" type="info" content={data.totalDonators} />
         <MainInfoCard title="general.totalDonationsMonth" type="success" content={data.totalDonations} />
-        {/* <MainInfoCard title="general.totalTasks" type="warning" content={data.totalTasks} /> */}
-        {/* <MainInfoCard title="general.totalCriticalTasks" type="error" content={data.totalCriticalTasks} /> */}
+        <MainInfoCard title="general.totalCallback" type="warning" content={data.donatorsWithCallback} />
+        <MainInfoCard title="general.totalLateCallback" type="error" content={data.totalDonatorsWithPassedCallback} />
       </div>
     </>
   );

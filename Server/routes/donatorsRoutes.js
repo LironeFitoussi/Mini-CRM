@@ -33,6 +33,7 @@ const {
   setOwnersForMultipleDonators,
   setDonatorStatus,
   updateDonatorCallback,
+  getTotalDonatorsWithCallback
 } = require("../controllers/donatorsController");
 
 /**
@@ -48,6 +49,14 @@ router.get("/", getAllDonators);
  * @access  Public
  */
 router.get("/total", getTotalDonators);
+
+/**
+ * @route   GET /donators/total-callback
+ * @desc    Retrieve the total number of donators with callback dates
+ * @access  Public
+ * @returns {Number} The total number of donators with callback dates
+ */
+router.get("/total-callback", getTotalDonatorsWithCallback); 
 
 /**
  * @route   PUT /donators/assign

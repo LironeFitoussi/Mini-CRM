@@ -73,6 +73,8 @@
         "donors": "Donateurs",
         "totalDonations": "Total Donations",
         "totalDonationsMonth": "Total Donations du Mois",
+        "totalCallback": "Total Donateurs à Rappeler",
+        "totalLateCallback": "Donateurs en Retard de Rappel",
         "donationsHistory": "Historique des Donations",
         "profile": "Profil",
         "logout": "Déconnexion",

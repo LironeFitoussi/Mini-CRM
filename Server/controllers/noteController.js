@@ -69,22 +69,31 @@ const setDueDate = async (req, res) => {
       { dueDate: req.body.dueDate, isCompleted: false },
       { new: true }
     );
+
     if (!updatedNote) {
       return res.status(404).json({ message: "Note not found" });
     }
 
-    // Set notification
-    const notification = new Notification({
-      title: "Note Due",
-      type: "callback",
-      userId: updatedNote.user,
-      donatorId: updatedNote.donator,
-    });
-
-    await notification.save();
-
-    updatedNote.notification = notification._id;
-    await updatedNote.save();
+    // Find existing notification
+    const notification = await Notification.findOne(updatedNote.notification);
+    
+    if (!notification) {
+        const newNotification = new Notification({
+        title: "Note Due",
+        type: "callback",
+        userId: updatedNote.user,
+        donatorId: updatedNote.donator,
+        notificationDate: updatedNote.dueDate,
+      });
+      await newNotification.save();
+      updatedNote.notification = newNotification._id;
+      await updatedNote.save();
+    } else {
+      console.log('Found notification');
+      
+      notification.notificationDate = updatedNote.dueDate;
+      await notification.save();
+    }
 
     res.status(200).json(updatedNote);
   } catch (error) {
@@ -98,6 +107,17 @@ const deleteNote = async (req, res) => {
     const deletedNote = await Note.findByIdAndDelete(req.params.id);
     if (!deletedNote)
       return res.status(404).json({ message: "Note not found" });
+
+    // Delete notification
+    if (deletedNote.notification) {
+      const notification = await Notification.findByIdAndDelete(
+        deletedNote.notification
+      );
+      if (!notification) {
+        return res.status(404).json({ message: "Notification not found" });
+      }
+    }
+
     res.status(200).json({ message: "Note deleted" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });

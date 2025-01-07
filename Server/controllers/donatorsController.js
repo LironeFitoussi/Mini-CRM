@@ -507,3 +507,23 @@ exports.setDonatorStatus = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 }
+
+/**
+ * Get Total Donators which have nextContactDate
+ *
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - The total donators object
+ */
+exports.getTotalDonatorsWithCallback = async (req, res) => {
+  try {
+    const totalDonators = await Donator.find()
+
+    const donatorsWithCallback = totalDonators.filter(donator => donator.nextContactDate)
+
+    res.status(200).json(donatorsWithCallback.length);
+  } catch (error) {
+    console.error("Error fetching total donators with callback:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+}
