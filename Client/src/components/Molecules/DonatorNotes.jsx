@@ -24,7 +24,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 // API Calls
 const fetchNotes = async ({ queryKey }) => {
   const [_, donatorId] = queryKey;
-  console.log(donatorId);
+  // console.log(donatorId);
   
   const { data } = await axios.get(
     `${import.meta.env.VITE_API_URL}/api/v1/notes/donator/${donatorId}`
@@ -81,7 +81,7 @@ const DonatorNotes = ({ donatorId }) => {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  console.log(notes);
+  // console.log(notes);
   
 
   // Add Note Mutation with Optimistic Update (Updated for v5)
