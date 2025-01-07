@@ -6,6 +6,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { PickersDay } from "@mui/x-date-pickers/PickersDay";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
+import { Card, CardContent, Typography } from "@mui/material";
 
 const initialValue = dayjs(new Date());
 
@@ -25,7 +26,9 @@ function ServerDay(props) {
     badgeContent = "🔴"; // Red for past dates
   } else if (day.isAfter(currentDate, "day")) {
     badgeContent = "🔵"; // Blue for future dates
-  }
+  } else if (day.isSame(currentDate, "day")) {
+    badgeContent = "🟡"; // Yellow for today
+  } 
 
   return (
     <Badge
@@ -41,6 +44,7 @@ function ServerDay(props) {
 export default function TaskCalendar({ notes }) {
   const [isLoading, setIsLoading] = useState(false);
   const [highlightedDays, setHighlightedDays] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(initialValue);
 
   // Create a calendar structure from notes
   const generateCalendar = (notes) => {
@@ -84,23 +88,53 @@ export default function TaskCalendar({ notes }) {
     fetchHighlightedDays(date);
   };
 
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+  };
+
+  const selectedTask = notes.find((note) => dayjs(note.dueDate).isSame(selectedDate, 'day'));
+
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DateCalendar
-        defaultValue={initialValue}
-        loading={isLoading}
-        onMonthChange={handleMonthChange}
-        renderLoading={() => <DayCalendarSkeleton />}
-        slots={{
-          day: ServerDay,
-        }}
-        slotProps={{
-          day: {
-            highlightedDays,
-            notes,
-          },
-        }}
-      />
-    </LocalizationProvider>
+    <div style={{ display: "flex", gap: "16px" }}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DateCalendar
+          defaultValue={initialValue}
+          loading={isLoading}
+          onMonthChange={handleMonthChange}
+          onChange={handleDateSelect}
+          renderLoading={() => <DayCalendarSkeleton />}
+          slots={{
+            day: ServerDay,
+          }}
+          slotProps={{
+            day: {
+              highlightedDays,
+              notes,
+            },
+          }}
+        />
+      </LocalizationProvider>
+
+      <Card style={{ minWidth: "300px" }}>
+        <CardContent>
+          {selectedTask ? (
+            <>
+              <Typography variant="h6">Task Details</Typography>
+              <Typography variant="body1">Note: {selectedTask.note}</Typography>
+              <Typography variant="body2">
+                Due Date: {dayjs(selectedTask.dueDate).format("YYYY-MM-DD HH:mm")}
+              </Typography>
+              <Typography variant="body2">Status: {selectedTask.isCompleted ? "Completed" : "Pending"}</Typography>
+              <Typography variant="body2">Donator: {selectedTask.donator}</Typography>
+              <Typography variant="body2">
+                Assigned To: {selectedTask.userDetails.fName} {selectedTask.userDetails.lName}
+              </Typography>
+            </>
+          ) : (
+            <Typography variant="body2">No tasks for this date.</Typography>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

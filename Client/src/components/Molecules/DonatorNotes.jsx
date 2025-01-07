@@ -20,6 +20,7 @@ import NextContactDateModal from "../Modals/NextContactDateModal";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DoneIcon from "@mui/icons-material/Done";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import RestoreIcon from '@mui/icons-material/Restore';
 
 // API Calls
 const fetchNotes = async ({ queryKey }) => {
@@ -386,8 +387,8 @@ const DonatorNotes = ({ donatorId }) => {
                         disabled={toggleNoteMutation.isLoading}
                         sx={{ mr: 1 }}
                       >
-                        {!note.isCompleted ? (
-                          <AccessTimeIcon sx={{ color: "orange" }} />
+                        {note.isCompleted ? (
+                          <RestoreIcon sx={{ color: "orange" }} />
                         ) : (
                           <DoneIcon sx={{ color: "green" }} />
                         )}
