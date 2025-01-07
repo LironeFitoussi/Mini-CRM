@@ -1,4 +1,10 @@
 {
+    "Assign Selected Donors to Telepro": "Assign Selected Donors to Telepro",
+    "filter": {
+        "startRange": "Start Range",
+        "endRange": "End Range",
+        "byStatus": "By Status"
+    },
     "Set Next Contact Date": "Set Next Contact Date",
     "In 1 Hour": "In 1 Hour",
     "In 2 Hours": "In 2 Hours",
@@ -124,12 +130,15 @@
         "donations": "Donations"
     },
     "actions": {
+        "assignDonors": "Assign Donors",
         "backToDonors": "Back to Donors",
         "close": "Close",
         "cancel": "Cancel",
         "delete": "Delete",
         "submit": "Submit",
-        "save": "Save"
+        "save": "Save",
+        "assign": "Assign",
+        "assigning": "Assigning..."
     },
     "tasks": {
         "task": "Task",
@@ -151,6 +160,7 @@
         "userManagement": "User Management"
     },
     "customerManagement": {
+        "owner": "Owner",
         "title": "Customers",
         "add": "Add Donor",
         "edit": "Edit Donor",
@@ -255,6 +265,7 @@
         "export": "Export Reports"
     },
     "userManagement": {
+        "editDeveloper": "You cannot edit a developer user",
         "add": "Add User",
         "edit": "Edit User",
         "delete": "Delete User",

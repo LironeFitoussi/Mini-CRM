@@ -449,9 +449,9 @@ exports.getDonatorTasks = async (req, res) => {
  */
 exports.setOwnersForMultipleDonators = async (req, res) => {
   try {
-    const { donatorIds, owner } = req.body;
+    const { donors, owner } = req.body;
 
-    if (!Array.isArray(donatorIds) || donatorIds.length === 0 || !owner) {
+    if (!Array.isArray(donors) || donors.length === 0 || !owner) {
       return res
         .status(400)
         .json({ message: "Invalid input data: missing donatorIds or owner" });
@@ -459,13 +459,13 @@ exports.setOwnersForMultipleDonators = async (req, res) => {
 
     // Update all specified donators with the provided owner
     await Donator.updateMany(
-      { _id: { $in: donatorIds } },
+      { _id: { $in: donors } },
       { $set: { owner } }
     );
 
     res.status(200).json({
       message: "Owner assigned to multiple donators successfully",
-      donatorIds,
+      donors,
       owner,
     });
   } catch (error) {

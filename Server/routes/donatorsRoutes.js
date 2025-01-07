@@ -50,6 +50,13 @@ router.get("/", getAllDonators);
 router.get("/total", getTotalDonators);
 
 /**
+ * @route   PUT /donators/assign
+ * @desc    Assign an owner to multiple donators at once
+ * @access  Public
+ */
+router.put("/assign", setOwnersForMultipleDonators);
+
+/**
  * @route   GET /donators/:id/tasks
  * @desc    Retrieve all tasks associated with a specific donator
  * @access  Public
@@ -112,11 +119,6 @@ router.delete("/:id", deleteDonator);
  */
 router.post("/bulk-create", upload.single("file"), bulkCreateDonators);
 
-/**
- * @route   PUT /donators/bulk-owner
- * @desc    Assign an owner to multiple donators at once
- * @access  Public
- */
-router.put("/bulk-owner", setOwnersForMultipleDonators);
+
 
 module.exports = router;

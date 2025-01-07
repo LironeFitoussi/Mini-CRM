@@ -30,7 +30,7 @@ const Users = () => {
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
-  
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -43,7 +43,11 @@ const Users = () => {
   });
 
   const [selectedRows, setSelectedRows] = useState([]);
-  const [alert, setAlert] = useState({ open: false, message: "", severity: "info" });
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
 
   const handleOpenAddModal = () => {
     setIsAddModalOpen(true);
@@ -55,6 +59,7 @@ const Users = () => {
   };
 
   const handleOpenEditModal = () => {
+    // Check if only one row is selected
     if (selectedRows.length !== 1) {
       setAlert({
         open: true,
@@ -64,6 +69,17 @@ const Users = () => {
       return;
     }
     const userToEdit = data?.find((user) => user._id === selectedRows[0]);
+
+    // Prevent editing developers
+    if (userToEdit?.role === "developer") {
+      setAlert({
+        open: true,
+        message: t("userManagement.editDeveloper"),
+        severity: "warning",
+      });
+      return;
+    }
+    
     if (userToEdit) {
       setFormValues({
         fName: userToEdit.fName,
@@ -82,10 +98,7 @@ const Users = () => {
 
   const handleAddUser = async (newUser) => {
     try {
-      await axios.post(
-        import.meta.env.VITE_API_URL + "/api/v1/users",
-        newUser
-      );
+      await axios.post(import.meta.env.VITE_API_URL + "/api/v1/users", newUser);
       queryClient.invalidateQueries(["users"]);
       handleCloseAddModal();
       setAlert({
@@ -156,6 +169,24 @@ const Users = () => {
     }
   };
 
+  const handleActionClick = (action, userId) => {
+    if (action === "edit") {
+      const userToEdit = data?.find((user) => user._id === userId);
+      if (userToEdit) {
+        setFormValues({
+          fName: userToEdit.fName,
+          lName: userToEdit.lName,
+          email: userToEdit.email,
+          role: userToEdit.role,
+        });
+        setIsEditModalOpen(true);
+      }
+    } else if (action === "delete") {
+      setSelectedRows([userId]);
+      setIsDeleteModalOpen(true);
+    }
+  };
+  
   const handleOpenDeleteModal = () => {
     if (selectedRows.length === 0) {
       setAlert({
@@ -177,7 +208,7 @@ const Users = () => {
     setAlert({ ...alert, open: false });
   };
 
-  if (isLoading) return <div className="text-center mt-10">Loading...</div>;
+  if (isLoading || !data) return <div className="text-center mt-10">Loading...</div>;
   if (error)
     return <div className="text-center mt-10">Error fetching users</div>;
 
@@ -185,13 +216,16 @@ const Users = () => {
 
   return (
     <div className="h-screen p-4">
-      <h1 className="text-2xl font-bold mb-4">{t("navigation.userManagement")}</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        {t("navigation.userManagement")}
+      </h1>
 
       <div className="bg-white p-4 rounded-lg shadow-md">
         <UsersTable
           rows={validData}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
+          onActionClick={handleActionClick}
         />
       </div>
 

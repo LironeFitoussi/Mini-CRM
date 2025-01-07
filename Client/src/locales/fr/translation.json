@@ -1,4 +1,10 @@
 {
+    "Assign Selected Donors to Telepro": "Attribuer les donateurs sélectionnés à Telepro",
+    "filter": {
+        "startRange": "A partir de",
+        "endRange": "Jusqu'à",
+        "byStatus": "Par statut"
+    },
     "Set Next Contact Date": "Définir la prochaine date de contact",
     "In 1 Hour": "Dans 1 heure",
     "In 2 Hours": "Dans 2 heures",
@@ -108,12 +114,15 @@
         "totalDonators": "Total Donateurs"
     },
     "actions": {
+        "assignDonors": "Attribuer des Donateurs",
         "backToDonors": "Retour aux Donateurs",
         "close": "Fermer",
         "cancel": "Annuler",
         "delete": "Supprimer",
         "submit": "Soumettre",
-        "save": "Enregistrer"
+        "save": "Enregistrer",
+        "assign": "Attribuer",
+        "assigning": "Attribution..."
     },
     "tasks": {
         "task": "Tâche",
@@ -135,6 +144,7 @@
         "userManagement": "Gestion des utilisateurs"
     },
     "customerManagement": {
+        "owner": "Telepro",
         "title": "Clients",
         "add": "Ajouter un donateur",
         "edit": "Modifier le donateur",
@@ -240,6 +250,7 @@
         "export": "Exporter les rapports"
     },
     "userManagement": {
+        "editDeveloper": "Vous ne pouvez pas modifier un utilisateur développeur",
         "add": "Ajouter un utilisateur",
         "edit": "Modifier l'utilisateur",
         "delete": "Supprimer l'utilisateur",
