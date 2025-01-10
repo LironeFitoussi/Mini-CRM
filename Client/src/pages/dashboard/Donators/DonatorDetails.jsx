@@ -99,8 +99,6 @@ const ClientDetailsPage = () => {
       </Box>
     );
   }
-
-  console.log(client);
   
   if (!client) {
     return (
@@ -277,7 +275,7 @@ const ClientDetailsPage = () => {
 
       {/* ========== Task Calendar ========== */}
       <Box sx={{ mb: 4 }}>
-        <TaskCalendar notes={notes} />
+        <TaskCalendar notes={notes} donatorId={id} />
       </Box>
 
       {/* ========== Footer: Back & Delete ========== */}

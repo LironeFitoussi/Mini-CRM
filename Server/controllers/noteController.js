@@ -1,6 +1,5 @@
 // controllers/noteController.js
 const Note = require("../models/Note.js");
-const Donator = require("../models/Donator.js");
 const Notification = require("../models/Notification.js");
 // Get all notes
 const getAllNotes = async (req, res) => {
@@ -70,27 +69,33 @@ const setDueDate = async (req, res) => {
       { new: true }
     );
 
+    // Log note ID
+    console.log("Note ID:", req.params.id);
+
     if (!updatedNote) {
       return res.status(404).json({ message: "Note not found" });
     }
 
-    // Find existing notification
-    const notification = await Notification.findOne(updatedNote.notification);
-    
+    // Find existing notification using the Note's ID
+    const notification = await Notification.findOne({
+      noteId: updatedNote._id, // Correct reference
+    });
+
     if (!notification) {
-        const newNotification = new Notification({
+      const newNotification = new Notification({
         title: "Note Due",
         type: "callback",
         userId: updatedNote.user,
         donatorId: updatedNote.donator,
         notificationDate: updatedNote.dueDate,
+        noteId: updatedNote._id, // Assign Note's ID
       });
       await newNotification.save();
       updatedNote.notification = newNotification._id;
       await updatedNote.save();
     } else {
-      console.log('Found notification');
-      
+      console.log("Found notification");
+
       notification.notificationDate = updatedNote.dueDate;
       await notification.save();
     }
@@ -117,6 +122,9 @@ const deleteNote = async (req, res) => {
         return res.status(404).json({ message: "Notification not found" });
       }
     }
+
+    // Delete related notifications
+    const relatedNotifications = await Notification.find(deleteNote.donator);
 
     res.status(200).json({ message: "Note deleted" });
   } catch (error) {
@@ -151,7 +159,7 @@ const toggleIsCompleted = async (req, res) => {
 
       if (!notification) {
         return res.status(404).json({ message: "Notification not found" });
-      } 
+      }
     }
 
     res.status(200).json(note);

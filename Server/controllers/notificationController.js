@@ -39,6 +39,19 @@ exports.getNotificationById = async (req, res) => {
   }
 };
 
+// Get Donors Notifications
+exports.getDonorsNotifications = async (req, res) => {
+  try {
+    const { donorId } = req.params;
+    const notifications = await Notification.find({ donatorId: donorId }).sort({
+      createdAt: -1,
+    }).populate('user').populate('donator');
+    res.status(200).json(notifications);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch notifications" });
+  }
+};
+
 // Get Users Notifications
 exports.getUsersNotifications = async (req, res) => {
   try {
@@ -70,13 +83,14 @@ exports.getUsersDayNotifications = async (req, res) => {
 // Create a new notification
 exports.createNotification = async (req, res) => {
   try {
-    const { title, message, type, userId, notificationDate } = req.body;
+    const { title, message, type, userId, notificationDate, donatorId } = req.body;
     const newNotification = new Notification({
       title,
       message,
       type,
       userId,
       notificationDate,
+      donatorId
     });
     await newNotification.save();
     res.status(201).json(newNotification);

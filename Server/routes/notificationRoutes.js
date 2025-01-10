@@ -9,6 +9,9 @@ router.get('/', notificationController.getAllNotifications);
 // Get all notifications for a specific user
 router.get('/user/:userId', notificationController.getUsersNotifications);
 
+// Get all notifications for a specific donor
+router.get('/donor/:donorId', notificationController.getDonorsNotifications);
+
 // Get all notifications for a specific user that are older than today
 router.get('/user/:userId/day', notificationController.getUsersDayNotifications);
 

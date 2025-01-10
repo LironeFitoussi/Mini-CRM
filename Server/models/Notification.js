@@ -19,6 +19,10 @@ const notificationSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    noteId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Note',
+    },
     isRead: {
         type: Boolean,
         default: false,

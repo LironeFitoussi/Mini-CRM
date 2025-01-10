@@ -24,18 +24,25 @@ exports.getDashboardData = async (req, res) => {
     // Get All Notifications
     const allNotifications = await Notification.find();
 
-
     // reduce the number of Donators in the notifications
     const donatorsWithCallback = allNotifications.filter(
       (notification) => notification.archived === false && notification.donatorId
     );
 
-    console.log(donatorsWithCallback);
+    // console.log(donatorsWithCallback);
     
     // From donatorsWithCallback Get the ones where notificationDate is after now
-    totalDonatorsWithPassedCallback = donatorsWithCallback.filter(
-      (notification) => notification.notificationDate > new Date() && notification.archived === false
-    ).length;
+    const now = new Date();
+    // console.log(`Current date and time: ${now}`);
+    
+    const donatorsWithPassedCallback = donatorsWithCallback.filter((notification) => {
+      const isAfterNow = notification.notificationDate < now;
+      // console.log(`Notification ID: ${notification._id}, Notification Date: ${notification.notificationDate}, Is after now: ${isAfterNow}`);
+      return isAfterNow && notification.archived === false;
+    });
+
+    const totalDonatorsWithPassedCallback = donatorsWithPassedCallback.length;
+    // console.log(`Total donators with passed callback: ${totalDonatorsWithPassedCallback}`);
 
     // Send the data as a response
     res.status(200).json({
