@@ -114,13 +114,16 @@ donatorSchema.virtual("ownerDetails", {
 
 // Virtual to set the next contact date based on the latest note
 donatorSchema.virtual("nextContactDate", {
-  ref: "Note", // Reference the Note model
+  ref: "Notification", // Reference the Note model
   localField: "_id", // Link with the Donator's _id
-  foreignField: "donator", // Field in Note that points to Donator
+  foreignField: "donatorId", // Field in Note that points to Donator
   justOne: true, // Only retrieve one note
   options: {
-    sort: { createdAt: -1 }, // Sort by createdAt in descending order
-    match: { isCompleted: false, dueDate: { $exists: true } }, // Filter notes that are not completed and have a dueDate
+    sort: { notificationDate: -1 }, // Sort notes by date in descending order
+    match: {
+      archived: false,
+      notificationDate: { $exists: true }, // Filter notes that have a notificationDate
+    },
   },
 });
 
@@ -128,7 +131,6 @@ donatorSchema.virtual("nextContactDate", {
 donatorSchema.pre(/^find/, function (next) {
   this.populate({
     path: "nextContactDate",
-    select: "dueDate createdAt", // Fetch dueDate and createdAt
   });
   next();
 });
@@ -137,8 +139,8 @@ donatorSchema.pre(/^find/, function (next) {
 donatorSchema.set("toObject", {
   virtuals: true,
   transform: (doc, ret) => {
-    if (ret.nextContactDate && ret.nextContactDate.dueDate) {
-      ret.nextContactDate = ret.nextContactDate.dueDate; // Replace the object with just the dueDate
+    if (ret.nextContactDate && ret.nextContactDate.notificationDate) {
+      ret.nextContactDate = ret.nextContactDate.notificationDate; // Replace the object with just the notificationDate
     } else {
       ret.nextContactDate = null; // Ensure consistency when no note is found
     }
@@ -149,15 +151,14 @@ donatorSchema.set("toObject", {
 donatorSchema.set("toJSON", {
   virtuals: true,
   transform: (doc, ret) => {
-    if (ret.nextContactDate && ret.nextContactDate.dueDate) {
-      ret.nextContactDate = ret.nextContactDate.dueDate; // Replace the object with just the dueDate
+    if (ret.nextContactDate && ret.nextContactDate.notificationDate) {
+      ret.nextContactDate = ret.nextContactDate.notificationDate; // Replace the object with just the notificationDate
     } else {
       ret.nextContactDate = null; // Ensure consistency when no note is found
     }
     return ret;
   },
 });
-
 
 const Donator = mongoose.model("Donator", donatorSchema);
 

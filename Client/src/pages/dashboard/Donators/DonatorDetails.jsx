@@ -100,6 +100,8 @@ const ClientDetailsPage = () => {
     );
   }
 
+  console.log(client);
+  
   if (!client) {
     return (
       <Box sx={{ padding: 4, textAlign: "center" }}>

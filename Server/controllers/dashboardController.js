@@ -1,6 +1,6 @@
 const Donations = require("../models/Donation.js");
 const Donators = require("../models/Donator");
-
+const Notification = require("../models/Notification");
 exports.getDashboardData = async (req, res) => {
   try {
     // Get the total amount of donators
@@ -21,18 +21,21 @@ exports.getDashboardData = async (req, res) => {
       },
     ]);
 
-    // Get the total amount of donators with callback dates
-    const totalDonatorsArray = await Donators.find();
-    const donatorsWithCallback = totalDonatorsArray.filter(
-      (donator) => donator.nextContactDate
+    // Get All Notifications
+    const allNotifications = await Notification.find();
+
+
+    // reduce the number of Donators in the notifications
+    const donatorsWithCallback = allNotifications.filter(
+      (notification) => notification.archived === false && notification.donatorId
     );
 
-    // Get the total amount of Donators with passed callback dates
-    const totalDonatorsWithPassedCallback = donatorsWithCallback.filter(
-      (donator) => new Date(donator.nextContactDate.dueDate) < new Date()
+    console.log(donatorsWithCallback);
+    
+    // From donatorsWithCallback Get the ones where notificationDate is after now
+    totalDonatorsWithPassedCallback = donatorsWithCallback.filter(
+      (notification) => notification.notificationDate > new Date() && notification.archived === false
     ).length;
-
-    // Get the total amount of Donators with upcoming callback dates
 
     // Send the data as a response
     res.status(200).json({
