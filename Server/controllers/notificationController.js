@@ -72,7 +72,7 @@ exports.getUsersDayNotifications = async (req, res) => {
     const { userId } = req.params;
     const notifications = await Notification.find({
       userId,
-      notificationDate: { $lt: new Date() },
+      // notificationDate: { $lt: new Date() },
     }).sort({ createdAt: -1 }).populate('user').populate('donator');
     res.status(200).json(notifications);
   } catch (error) {

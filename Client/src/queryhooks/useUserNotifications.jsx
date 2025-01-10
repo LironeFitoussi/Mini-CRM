@@ -13,7 +13,7 @@ const useUserNotifications = () => {
     });
     
     const notifications = data || [];
-    
+        
     return {
         notifications,
         isLoading,
