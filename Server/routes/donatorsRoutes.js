@@ -66,13 +66,6 @@ router.get("/total-callback", getTotalDonatorsWithCallback);
 router.put("/assign", setOwnersForMultipleDonators);
 
 /**
- * @route   GET /donators/:id/tasks
- * @desc    Retrieve all tasks associated with a specific donator
- * @access  Public
- */
-router.get("/:id/tasks", getDonatorTasks);
-
-/**
  * @route   PUT /donators/:id/owner
  * @desc    Set or update the owner of a specific donator
  * @access  Public
