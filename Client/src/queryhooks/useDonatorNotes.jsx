@@ -3,10 +3,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
-// ------------------ //
-//    API FUNCTIONS   //
-// ------------------ //
-
+// -----------------------------------------
+// API FUNCTIONS
+// -----------------------------------------
 const fetchNotes = async (donatorId) => {
   const { data } = await axios.get(
     `${import.meta.env.VITE_API_URL}/api/v1/notes/donator/${donatorId}`
@@ -41,15 +40,14 @@ const setDueDate = async ({ noteId, date }) => {
   return data;
 };
 
-// --------------------- //
-//   CUSTOM HOOK LOGIC   //
-// --------------------- //
-
+// -----------------------------------------
+// CUSTOM HOOK: useDonatorNotes
+// -----------------------------------------
 export function useDonatorNotes(donatorId) {
   const queryClient = useQueryClient();
   const currentUser = useSelector((state) => state.user.user);
 
-  // 1) Fetching Notes
+  // 1) FETCH NOTES
   const {
     data: notes = [],
     isLoading,
@@ -58,10 +56,16 @@ export function useDonatorNotes(donatorId) {
   } = useQuery({
     queryKey: ["notes", donatorId],
     queryFn: () => fetchNotes(donatorId),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5, // e.g. 5 minutes
   });
 
-  // 2) Add Note Mutation
+  // Common function to revalidate both queries
+  const revalidateAll = () => {
+    queryClient.invalidateQueries({ queryKey: ["notes", donatorId] });
+    queryClient.invalidateQueries({ queryKey: ["donator", donatorId] });
+  };
+
+  // 2) ADD NOTE (Optimistic)
   const addNoteMutation = useMutation({
     mutationFn: ({ note }) =>
       addNote({ donatorId, note, userId: currentUser?._id }),
@@ -69,7 +73,8 @@ export function useDonatorNotes(donatorId) {
       await queryClient.cancelQueries({ queryKey: ["notes", donatorId] });
       const previousNotes = queryClient.getQueryData(["notes", donatorId]);
 
-      const tempId = `temp-${new Date().getTime()}`;
+      // Create a temporary note
+      const tempId = `temp-${Date.now()}`;
       const newNoteEntry = {
         _id: tempId,
         note,
@@ -79,58 +84,68 @@ export function useDonatorNotes(donatorId) {
         user: currentUser,
       };
 
-      queryClient.setQueryData(["notes", donatorId], (old) => [
-        ...(old || []),
+      // Optimistic update
+      queryClient.setQueryData(["notes", donatorId], (old = []) => [
+        ...old,
         newNoteEntry,
       ]);
 
       return { previousNotes, tempId };
     },
     onError: (err, variables, context) => {
+      // Roll back
       if (context?.previousNotes) {
         queryClient.setQueryData(["notes", donatorId], context.previousNotes);
       }
     },
     onSuccess: (data, variables, context) => {
+      // Replace the temp note with the real one
       queryClient.setQueryData(["notes", donatorId], (old) =>
         old.map((note) => (note._id === context.tempId ? data : note))
       );
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes", donatorId] });
+      // Revalidate everything
+      revalidateAll();
     },
   });
 
-  // 3) Delete Note Mutation
+  // 3) DELETE NOTE (Optimistic)
   const deleteNoteMutation = useMutation({
     mutationFn: (noteId) => deleteNote(noteId),
     onMutate: async (noteId) => {
       await queryClient.cancelQueries({ queryKey: ["notes", donatorId] });
       const previousNotes = queryClient.getQueryData(["notes", donatorId]);
 
+      // Optimistically remove
       queryClient.setQueryData(["notes", donatorId], (old) =>
-        old.filter((note) => note._id !== noteId && note.id !== noteId)
+        old.filter(
+          (note) => note._id !== noteId && note.id !== noteId
+        )
       );
 
       return { previousNotes };
     },
-    onError: (err, noteId, context) => {
+    onError: (err, variables, context) => {
+      // Roll back
       if (context?.previousNotes) {
         queryClient.setQueryData(["notes", donatorId], context.previousNotes);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes", donatorId] });
+      // Revalidate everything
+      revalidateAll();
     },
   });
 
-  // 4) Toggle Note Status Mutation
+  // 4) TOGGLE COMPLETION (Optimistic)
   const toggleNoteMutation = useMutation({
     mutationFn: (noteId) => toggleNoteStatus(noteId),
     onMutate: async (noteId) => {
       await queryClient.cancelQueries({ queryKey: ["notes", donatorId] });
       const previousNotes = queryClient.getQueryData(["notes", donatorId]);
 
+      // Flip isCompleted
       queryClient.setQueryData(["notes", donatorId], (old) =>
         old.map((note) =>
           note._id === noteId || note.id === noteId
@@ -141,23 +156,26 @@ export function useDonatorNotes(donatorId) {
 
       return { previousNotes };
     },
-    onError: (err, noteId, context) => {
+    onError: (err, variables, context) => {
+      // Roll back
       if (context?.previousNotes) {
         queryClient.setQueryData(["notes", donatorId], context.previousNotes);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes", donatorId] });
+      // Revalidate everything
+      revalidateAll();
     },
   });
 
-  // 5) Set Due Date Mutation
+  // 5) SET DUE DATE (Optimistic)
   const setDueDateMutation = useMutation({
     mutationFn: ({ noteId, date }) => setDueDate({ noteId, date }),
     onMutate: async ({ noteId, date }) => {
       await queryClient.cancelQueries({ queryKey: ["notes", donatorId] });
       const previousNotes = queryClient.getQueryData(["notes", donatorId]);
 
+      // Optimistically set the due date
       queryClient.setQueryData(["notes", donatorId], (old) =>
         old.map((note) =>
           note._id === noteId || note.id === noteId
@@ -169,21 +187,23 @@ export function useDonatorNotes(donatorId) {
       return { previousNotes };
     },
     onError: (err, variables, context) => {
+      // Roll back
       if (context?.previousNotes) {
         queryClient.setQueryData(["notes", donatorId], context.previousNotes);
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes", donatorId] });
+      // Revalidate everything
+      revalidateAll();
     },
   });
 
-  // Return everything needed by the component
   return {
     notes,
     isLoading,
     isError,
     error,
+    // Mutations
     addNoteMutation,
     deleteNoteMutation,
     toggleNoteMutation,
