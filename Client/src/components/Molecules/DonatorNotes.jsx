@@ -69,7 +69,16 @@ const DonatorNotes = ({ donatorId }) => {
   };
   const handleConfirmDelete = () => {
     if (noteToDelete) {
-      deleteNoteMutation.mutate(noteToDelete);
+      deleteNoteMutation.mutate(noteToDelete, {
+        onSuccess: () => {
+          // Close the modal after successful deletion
+          handleCloseDeleteModal();
+        },
+        onError: (deleteError) => {
+          // Optionally handle the error (e.g., show a notification)
+          console.error("Error deleting note:", deleteError);
+        },
+      });
     }
   };
 
@@ -138,8 +147,8 @@ const DonatorNotes = ({ donatorId }) => {
                       flex: 1,
                       marginRight: 2,
                       textDecoration: note.isCompleted ? "line-through" : "none",
-                      whiteSpace: "pre-wrap",  
-                      wordWrap: "break-word",  
+                      whiteSpace: "pre-wrap",
+                      wordWrap: "break-word",
                     }}
                   >
                     {note.note}
@@ -177,7 +186,7 @@ const DonatorNotes = ({ donatorId }) => {
                       )}
                       {t("donatorNotes.nextContactDate")}:{" "}
                       {new Date(note.dueDate).toLocaleString("en-GB")}
-                      
+
                       {/* Toggle Status Button */}
                       <IconButton
                         edge="end"
