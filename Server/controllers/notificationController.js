@@ -1,4 +1,5 @@
 const Notification = require("../models/Notification");
+const Note = require("../models/Note");
 
 // Get all notifications
 exports.getAllNotifications = async (req, res) => {
@@ -135,6 +136,30 @@ exports.setNotificationAsRead = async (req, res) => {
     res.status(500).json({ error: "Failed to update the notification" });
   }
 };
+
+exports.toggleNotificationArchived = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const notification = await Notification
+      .findByIdAndUpdate(id, { archived: req.body.archived }, { new: true });
+    if (!notification) {
+      return res.status(404).json({ error: "Notification not found" });
+    }
+
+    // If notification has related note, update note archived status "noteId" - "isCompleted"
+    if (notification.noteId) {
+      const note = await Note.findByIdAndUpdate(notification.noteId, { isCompleted: req.body.archived }, { new: true });
+      if (!note) {
+        return res.status(404).json({ error: "Note not found" });
+      }
+    }
+
+    res.status(200).json(notification);
+  }
+  catch (error) {
+    res.status(500).json({ error: "Failed to update the notification" });
+  }
+}
 
 // Delete a notification by ID
 exports.deleteNotification = async (req, res) => {

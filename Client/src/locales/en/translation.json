@@ -1,4 +1,22 @@
 {
+    "NextContactTimeModal": {
+        "title": "Set Next Contact Time",
+        "fixedTime": "Choose a fixed time:",
+        "customTime": "Or select a custom time:",
+        "selectTime": "Select Time",
+        "setCustomTime": "Set Custom Time",
+        "aria": {
+            "setNextContactTime": "Set the next contact time",
+            "modalDescription": "Modal to set the next contact time"
+        },
+        "times": {
+            "9am": "9 AM",
+            "12pm": "12 PM",
+            "3pm": "3 PM",
+            "6pm": "6 PM",
+            "9pm": "9 PM"
+        }
+    },
     "Assign Selected Donors to Telepro": "Assign Selected Donors to Telepro",
     "filter": {
         "startRange": "Start Range",

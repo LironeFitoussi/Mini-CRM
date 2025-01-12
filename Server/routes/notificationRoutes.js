@@ -21,6 +21,9 @@ router.get('/:id', notificationController.getNotificationById);
 // Create a new notification
 router.post('/', notificationController.createNotification);
 
+// Toggle a notification's archived status
+router.patch('/toggle-archived/:id', notificationController.toggleNotificationArchived);
+
 // Set a notification as read
 router.patch('/:id', notificationController.setNotificationAsRead);
 

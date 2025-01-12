@@ -1,4 +1,22 @@
 {
+    "NextContactTimeModal": {
+        "title": "Définir l'heure du prochain contact",
+        "fixedTime": "Choisissez une heure fixe :",
+        "customTime": "Ou sélectionnez une heure personnalisée :",
+        "selectTime": "Sélectionnez l'heure",
+        "setCustomTime": "Définir l'heure personnalisée",
+        "aria": {
+            "setNextContactTime": "Définir l'heure du prochain contact",
+            "modalDescription": "Modal pour définir l'heure du prochain contact"
+        },
+        "times": {
+            "9am": "9h",
+            "12pm": "12h",
+            "3pm": "15h",
+            "6pm": "18h",
+            "9pm": "21h"
+        }
+    },
     "Assign Selected Donors to Telepro": "Attribuer les donateurs sélectionnés à Telepro",
     "filter": {
         "startRange": "A partir de",
