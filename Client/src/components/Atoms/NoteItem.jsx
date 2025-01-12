@@ -1,18 +1,12 @@
 // NoteItem.jsx
 import React from "react";
-import {
-  ListItem,
-  Box,
-  Typography,
-  Button,
-  IconButton,
-} from "@mui/material";
+import { ListItem, Box, Typography, Button, IconButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DoneIcon from "@mui/icons-material/Done";
 import RestoreIcon from "@mui/icons-material/Restore";
-
+import useDonatorNotifications from "../../queryhooks/useDonatorNotifications";
 const NoteItem = ({
   note,
   isLatest,
@@ -21,14 +15,14 @@ const NoteItem = ({
   onEditDate,
   setDueDateLoading,
 }) => {
+  const { invalidateNotifications } = useDonatorNotifications(note.donator);
   const { t } = useTranslation();
-
+  const handleNoteToggle = (noteId) => {
+    onToggle(noteId);
+    invalidateNotifications();
+  };
   return (
-    <ListItem
-      divider
-      alignItems="center"
-      sx={{ padding: "8px 16px" }}
-    >
+    <ListItem divider alignItems="center" sx={{ padding: "8px 16px" }}>
       <Box
         display="flex"
         justifyContent="space-between"
@@ -81,12 +75,11 @@ const NoteItem = ({
             )}
             {t("donatorNotes.nextContactDate")}:{" "}
             {new Date(note.dueDate).toLocaleString("en-GB")}
-
             {/* Toggle Status Button */}
             <IconButton
               edge="end"
               aria-label="toggle-status"
-              onClick={() => onToggle(note._id)}
+              onClick={() => handleNoteToggle(note._id)}
               disabled={false /* Pass appropriate loading state if needed */}
               sx={{ mr: 1 }}
             >

@@ -1,51 +1,47 @@
-import React, { useState, useEffect } from "react";
+// src/components/TaskCalendar.jsx
+import React, { useState } from "react";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { DayCalendarSkeleton } from "@mui/x-date-pickers/DayCalendarSkeleton";
-import { Card, CardContent, Typography, CircularProgress, IconButton, Divider } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  CircularProgress,
+  IconButton,
+  Divider,
+} from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import NextContactTimeModal from "./Modals/NextContactTimeModal";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import ServerDay from "./ServerDay"; // Ensure this path is correct
-
+import useDonatorNotifications from "../queryhooks/useDonatorNotifications"; // Adjust the path as needed
+import {useDonator} from "../queryhooks/useDonator"; // Adjust the path as needed
 const initialValue = dayjs();
 
 export default function TaskCalendar({ donatorId }) {
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(initialValue);
-  const [notifications, setNotifications] = useState([]);
-  const [error, setError] = useState(null);
-  const { user } = useSelector((state) => state.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user } = useSelector((state) => state.user);
+  const { invalidate } = useDonator(donatorId);
+  // **Use the updated custom hook**
+  const {
+    notifications,
+    isLoading,
+    isError,
+    error,
+    createNotification,
+    toggleArchived,
+    invalidateNotifications,
+  } = useDonatorNotifications(donatorId);
 
-  const fetchNotifications = async (id) => {
-    if (!id) return;
-
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/notifications/donor/${id}`
-      );
-      setNotifications(response.data);
-    } catch (err) {
-      console.error("Error fetching notifications:", err);
-      setError("Failed to fetch notifications.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchNotifications(donatorId);
-  }, [donatorId]);
-
+  // **Handle Month Change**
   const handleMonthChange = (date) => setSelectedDate(date);
 
+  // **Handle Date Selection**
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     const hasNotification = notifications.some((notif) =>
@@ -54,25 +50,27 @@ export default function TaskCalendar({ donatorId }) {
     if (!hasNotification) setIsModalOpen(true);
   };
 
+  // **Handle Modal Close**
   const handleCloseModal = () => setIsModalOpen(false);
 
+  // **Handle Toggle Archived Status**
   const handleToggleArchived = async (id, currentArchived) => {
     try {
-      await axios.patch(`${import.meta.env.VITE_API_URL}/api/v1/notifications/toggle-archived/${id}`, {
-        archived: !currentArchived,
-      });
-      fetchNotifications(donatorId);
+      await toggleArchived({ id, archived: currentArchived });
+      invalidate()
     } catch (err) {
       console.error("Error toggling archived status:", err);
-      setError("Failed to update notification.");
+      // Optionally, implement additional error handling here
     }
   };
 
+  // **Filter Notifications for Selected Date**
   const selectedNotifications = notifications.filter((notif) =>
     dayjs(notif.notificationDate).isSame(selectedDate, "day")
   );
 
-  const handleTimeSelect = (selectedTimeISO) => {
+  // **Handle Time Selection from Modal**
+  const handleTimeSelect = async (selectedTimeISO) => {
     const combinedDateTime = new Date(selectedTimeISO).toISOString();
     const newNotification = {
       title: "Main Callback",
@@ -81,18 +79,12 @@ export default function TaskCalendar({ donatorId }) {
       notificationDate: combinedDateTime,
       donatorId,
     };
-    handleCreateNotification(newNotification);
-  };
-
-  const handleCreateNotification = async (newNotificationData) => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/notifications`, newNotificationData);
-      fetchNotifications(donatorId);
+      await createNotification(newNotification);
+      invalidate();
     } catch (err) {
       console.error("Error creating notification:", err);
-      setError("Failed to create notification.");
-    } finally {
-      setIsModalOpen(false);
+      // Optionally, implement additional error handling here
     }
   };
 
@@ -119,8 +111,10 @@ export default function TaskCalendar({ donatorId }) {
         <CardContent>
           {isLoading ? (
             <CircularProgress />
-          ) : error ? (
-            <Typography color="error">{error}</Typography>
+          ) : isError ? (
+            <Typography color="error">
+              {error?.response?.data?.message || error.message || "An error occurred."}
+            </Typography>
           ) : selectedNotifications.length > 0 ? (
             <>
               <Typography variant="h6">Notifications</Typography>

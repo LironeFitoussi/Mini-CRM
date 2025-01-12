@@ -8,10 +8,11 @@ import NextContactDateModal from "../Modals/NextContactDateModal";
 import NewNoteInput from "./NewNoteInput";
 import NotesList from "./NotesList"; // New child component
 import { useDonatorNotes } from "../../queryhooks/useDonatorNotes";
+import useDonatorNotifications from "../../queryhooks/useDonatorNotifications";
 
 const DonatorNotes = ({ donatorId }) => {
   const { t } = useTranslation();
-
+  const { invalidateNotifications } = useDonatorNotifications(donatorId);
   const {
     notes,
     isLoading,
@@ -38,7 +39,15 @@ const DonatorNotes = ({ donatorId }) => {
   };
 
   const handleAddNote = (text) => {
-    addNoteMutation.mutate({ note: text });
+    addNoteMutation.mutate({ note: text }, {
+      onSuccess: () => {
+        invalidateNotifications();
+      },
+      onError: (addError) => {
+        console.error("Error adding note:", addError);
+      },
+    });
+    
   };
 
   // Delete modal handlers
@@ -55,6 +64,7 @@ const DonatorNotes = ({ donatorId }) => {
       deleteNoteMutation.mutate(noteToDelete, {
         onSuccess: () => {
           handleCloseDeleteModal();
+          invalidateNotifications();
         },
         onError: (deleteError) => {
           console.error("Error deleting note:", deleteError);
@@ -68,9 +78,18 @@ const DonatorNotes = ({ donatorId }) => {
     setNoteForDateUpdate(note);
     setIsDateModalOpen(true);
   };
+
   const handleDateSelect = (date) => {
     if (noteForDateUpdate) {
-      setDueDateMutation.mutate({ noteId: noteForDateUpdate._id, date });
+      setDueDateMutation.mutate({ noteId: noteForDateUpdate._id, date }, {
+        onSuccess: () => {
+          setIsDateModalOpen(false);
+          invalidateNotifications();
+        },
+        onError: (dateError) => {
+          console.error("Error updating due date:", dateError);
+        },
+      });
     }
   };
 
