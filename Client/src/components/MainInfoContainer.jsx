@@ -7,13 +7,25 @@ const MainInfoContainer = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [totalDonors, setTotalDonors] = useState([]);
+
+  const getDonatorsFromApi = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/v1/allodon/unlimited`
+      );
+
+      setTotalDonors(res.data);
+    } catch (error) {
+      throw error;
+    }
+  }
 
   const fetchDashboardData = async () => {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/v1/dashboard`
       );
-      console.log(res.data);
       setData(res.data);
       setIsLoading(false);
     } catch (error) {
@@ -28,6 +40,7 @@ const MainInfoContainer = () => {
 
   useEffect(() => {
     fetchDashboardData();
+    getDonatorsFromApi();
   }, []); // Empty dependency array ensures this runs once on mount
 
   if (isLoading) return <div>Loading...</div>;
@@ -51,7 +64,7 @@ const MainInfoContainer = () => {
         <MainInfoCard
           title="general.totalDonators"
           type="info"
-          content={data.totalDonators}
+          content={totalDonors}
         />
         <MainInfoCard
           title="general.totalDonationsMonth"
