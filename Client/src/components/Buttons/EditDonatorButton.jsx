@@ -14,7 +14,7 @@ const EditDonatorButton = ({ donatorData }) => {
     try {
       console.log("Updated Donator:", updatedDonator);
       const res = await axios.put(
-        import.meta.env.VITE_API_URL + `/api/v1/donators/${donatorData._id}`,
+        import.meta.env.VITE_API_URL + `/api/v1/donors/${donatorData._id}`,
         updatedDonator
       );
       console.log("Response:", res.data);

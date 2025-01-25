@@ -292,7 +292,7 @@ const ClientDetailsPage = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate("/dashboard/donators")}
+          onClick={() => navigate("/dashboard/donors")}
           sx={{ display: "flex", gap: 1 }}
         >
           <ArrowCircleLeftIcon /> {t("actions.backToDonors")}

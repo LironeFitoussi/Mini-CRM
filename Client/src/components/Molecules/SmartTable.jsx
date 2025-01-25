@@ -22,6 +22,8 @@ const SmartTable = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  console.log(data);
+  
   // State + Modal for next contact date
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDonatorId, setSelectedDonatorId] = useState(null);
@@ -148,10 +150,10 @@ const SmartTable = ({
     return "";
   };
 
-  // Handle row click -> navigate to /donators/:id
+  // Handle row click -> navigate to /donors/:id
   const handleRowClick = (params) => {
     if (loading) return; // Prevent navigation when loading
-    navigate(`/dashboard/donators/${params.id}`);
+    navigate(`/dashboard/donors/${params.id}`);
   };
 
   // Handle pagination model change

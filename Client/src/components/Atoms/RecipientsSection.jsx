@@ -13,7 +13,7 @@ import {
 /**
  * Component that handles the "To Recipients" section, allowing
  * either manual entry of recipients or automatic population
- * from a donators list.
+ * from a donors list.
  */
 const RecipientsSection = ({
   toMode,
@@ -47,7 +47,7 @@ const RecipientsSection = ({
           onChange={(e) => setToMode(e.target.value)}
         >
           <MenuItem value="manual">Manual Entry</MenuItem>
-          <MenuItem value="donators">Donators List</MenuItem>
+          <MenuItem value="donors">Donators List</MenuItem>
         </Select>
       </FormControl>
 
@@ -81,7 +81,7 @@ const RecipientsSection = ({
         </>
       )}
 
-      {toMode === "donators" && (
+      {toMode === "donors" && (
         <Box sx={{ mt: 2 }}>
           <Typography variant="body1">Donators selected:</Typography>
           <Box

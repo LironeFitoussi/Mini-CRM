@@ -10,7 +10,7 @@ export function useUpdateDonatorCallbackDate({ page, pageSize, search }) {
     // The actual API call:
     mutationFn: async ({ donorId, nextContactDate }) => {
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/v1/donators/${donorId}/callback`,
+        `${import.meta.env.VITE_API_URL}/api/v1/donors/${donorId}/callback`,
         { nextContactDate }
       );
     },
@@ -19,12 +19,12 @@ export function useUpdateDonatorCallbackDate({ page, pageSize, search }) {
     onMutate: async ({ donorId, nextContactDate }) => {
       // 1) Cancel any outgoing refetches so we don’t overwrite our optimistic update
       await queryClient.cancelQueries({
-        queryKey: ["donators", page, pageSize, search],
+        queryKey: ["donors", page, pageSize, search],
       });
 
       // 2) Snapshot the current data
       const prevData = queryClient.getQueryData([
-        "donators",
+        "donors",
         page,
         pageSize,
         search,
@@ -32,12 +32,12 @@ export function useUpdateDonatorCallbackDate({ page, pageSize, search }) {
 
       // 3) Optimistically update the cache
       queryClient.setQueryData(
-        ["donators", page, pageSize, search],
+        ["donors", page, pageSize, search],
         (oldData) => {
           if (!oldData) return oldData; // safety check
           return {
             ...oldData,
-            donators: oldData.donators.map((donor) =>
+            donors: oldData.donors.map((donor) =>
               donor._id === donorId
                 ? { ...donor, nextContactDate }
                 : donor
@@ -54,7 +54,7 @@ export function useUpdateDonatorCallbackDate({ page, pageSize, search }) {
     onError: (_error, _vars, context) => {
       if (context?.prevData) {
         queryClient.setQueryData(
-          ["donators", page, pageSize, search],
+          ["donors", page, pageSize, search],
           context.prevData
         );
       }
@@ -62,7 +62,7 @@ export function useUpdateDonatorCallbackDate({ page, pageSize, search }) {
 
     // Finally, refetch to ensure fresh data from the server
     onSettled: () => {
-      queryClient.invalidateQueries(["donators"]);
+      queryClient.invalidateQueries(["donors"]);
     },
   });
 }

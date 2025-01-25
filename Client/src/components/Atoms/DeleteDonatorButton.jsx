@@ -18,12 +18,12 @@ const DeleteDonatorButton = ({donatorData}) => {
 
     const handleDeleteDonator = async () => {
         try {
-            const response = await axios.delete(import.meta.env.VITE_API_URL + '/api/v1/donators/' + donatorData._id);
+            const response = await axios.delete(import.meta.env.VITE_API_URL + '/api/v1/donors/' + donatorData._id);
             // console.log(response.data);
 
-            // Invalidate QueryClient cache for donators
-            queryClient.invalidateQueries({ queryKey: ['donators'] });
-            navigate('/dashboard/donators');
+            // Invalidate QueryClient cache for donors
+            queryClient.invalidateQueries({ queryKey: ['donors'] });
+            navigate('/dashboard/donors');
         } catch (error) {
             console.error(error);
         }        

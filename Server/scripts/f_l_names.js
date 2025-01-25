@@ -6,7 +6,7 @@ const uri = process.env.MONGO_URI;
 
 // Replace with your database and collection names
 const dbName = "crm-data"; // Replace with your database name
-const collectionName = "donators"; // Replace with your collection name
+const collectionName = "donors"; // Replace with your collection name
 
 (async function fixNames() {
   if (!uri) {

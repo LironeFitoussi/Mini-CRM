@@ -11,7 +11,7 @@ const LeadsPage = React.lazy(() => import("./pages/dashboard/Leads.jsx"));
 
 // Dashboard subpages
 const Overview = React.lazy(() => import("./pages/dashboard/Overview.jsx"));
-const DontaorsPage = React.lazy(() => import("./pages/dashboard/Donators.jsx")); // Added import
+const DontaorsPage = React.lazy(() => import("./pages/dashboard/Donors.jsx")); // Added import
 const ClientDetailsPage = React.lazy(() =>
   import("./pages/dashboard/Donators/DonatorDetails.jsx")
 ); // Added import
@@ -50,7 +50,7 @@ const router = [
             ), // Overview route
           },
           {
-            path: "donators",
+            path: "donors",
             element: (
               <ProtectedRoute level="user">
                 <DontaorsPage />
@@ -58,7 +58,7 @@ const router = [
             )
           },
           {
-            path: "donators/:id",
+            path: "donors/:id",
             element: (
               <ProtectedRoute level="user">
                 <ClientDetailsPage />

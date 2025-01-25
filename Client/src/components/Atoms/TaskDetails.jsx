@@ -3,7 +3,7 @@ import React from "react";
 import { Box, Grid, Typography, Chip, IconButton, Tooltip } from "@mui/material";
 import { capitalizeFirstLetter } from "../../utils";
 import { useQuery } from "@tanstack/react-query";
-import { fetchDonatorById } from "../../api/donators";
+import { fetchDonatorById } from "../../api/donors";
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { Modal } from "@mui/material";
@@ -29,7 +29,7 @@ const getStatusColor = (muiColor) => {
 
 const TaskDetails = ({ task }) => {
   const { data: donator, isLoading, isError } = useQuery({
-    queryKey: ["donators", task.donator.id],
+    queryKey: ["donors", task.donator.id],
     queryFn: () => fetchDonatorById(task.donator.id),
   });
 
@@ -109,7 +109,7 @@ const TaskDetails = ({ task }) => {
               <Tooltip title="Open in new tab">
                 <IconButton
                 component="a"
-                href={`/dashboard/donators/${donator.id}`}
+                href={`/dashboard/donors/${donator.id}`}
                 rel="noopener noreferrer"
                 size="small"
                 >

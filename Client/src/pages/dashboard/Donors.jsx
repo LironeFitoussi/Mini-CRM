@@ -22,7 +22,7 @@ const DonatorsPage = () => {
     pageSize: 25,
   });
   const [data, setData] = useState({
-    donators: [],
+    donors: [],
     totalDocuments: 0,
   });
   const [loading, setLoading] = useState(false);
@@ -55,15 +55,17 @@ const DonatorsPage = () => {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/v1/donators?${params.toString()}`
+        `${import.meta.env.VITE_API_URL}/api/v1/donors?${params.toString()}`
       );
       if (!response.ok) {
-        throw new Error(`Error fetching donators: ${response.statusText}`);
+        throw new Error(`Error fetching donors: ${response.statusText}`);
       }
 
       const result = await response.json();
+      console.log(result);
+      
       setData({
-        donators: result.donators,
+        donors: result.donors,
         totalDocuments: result.totalDocuments,
       });
     } catch (err) {
@@ -89,7 +91,7 @@ const DonatorsPage = () => {
   const handleStatusToggle = async (donorId, newStatus) => {
     try {
       await fetch(
-        `${import.meta.env.VITE_API_URL}/api/v1/donators/${donorId}/status`,
+        `${import.meta.env.VITE_API_URL}/api/v1/donors/${donorId}/status`,
         {
           method: "PUT",
           headers: {
@@ -105,7 +107,7 @@ const DonatorsPage = () => {
   };
 
   const handleDonatorSelect = (donorId) => {
-    navigate(`/dashboard/donators/${donorId}`);
+    navigate(`/dashboard/donors/${donorId}`);
   };
 
   useEffect(() => {
@@ -153,7 +155,7 @@ const DonatorsPage = () => {
 
       {/* Table */}
       <SmartTable
-        data={data.donators}
+        data={data.donors}
         loading={loading}
         onStatusToggle={handleStatusToggle}
         onDonatorSelect={handleDonatorSelect}

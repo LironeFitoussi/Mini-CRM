@@ -22,7 +22,7 @@
               ],
               "body": {
                 "mode": "raw",
-                "raw": "{\n    \"title\": \"Lead Title\",\n    \"description\": \"Lead Description\",\n    \"owner\": \"{{ownerId}}\",\n    \"donators\": [\n        {\n            \"donatorId\": \"{{donatorId}}\",\n            \"status\": \"To Contact\"\n        }\n    ],\n    \"metadata\": {\n        \"key1\": \"value1\",\n        \"key2\": \"value2\"\n    }\n}"
+                "raw": "{\n    \"title\": \"Lead Title\",\n    \"description\": \"Lead Description\",\n    \"owner\": \"{{ownerId}}\",\n    \"donors\": [\n        {\n            \"donatorId\": \"{{donatorId}}\",\n            \"status\": \"To Contact\"\n        }\n    ],\n    \"metadata\": {\n        \"key1\": \"value1\",\n        \"key2\": \"value2\"\n    }\n}"
               },
               "url": {
                 "raw": "{{Base_URL}}/leads",
@@ -129,7 +129,7 @@
               ],
               "body": {
                 "mode": "raw",
-                "raw": "{\n    \"title\": \"Updated Lead Title\",\n    \"description\": \"Updated Description\",\n    \"donators\": [\n        {\n            \"donatorId\": \"{{donatorId}}\",\n            \"status\": \"Meeting Scheduled\"\n        }\n    ],\n    \"metadata\": {\n        \"key1\": \"newValue1\"\n    }\n}"
+                "raw": "{\n    \"title\": \"Updated Lead Title\",\n    \"description\": \"Updated Description\",\n    \"donors\": [\n        {\n            \"donatorId\": \"{{donatorId}}\",\n            \"status\": \"Meeting Scheduled\"\n        }\n    ],\n    \"metadata\": {\n        \"key1\": \"newValue1\"\n    }\n}"
               },
               "url": {
                 "raw": "{{Base_URL}}/leads/{{leadId}}",
@@ -206,9 +206,9 @@
                 "raw": "{\n    \"donatorId\": \"{{donatorId}}\",\n    \"status\": \"To Call Back\"\n}"
               },
               "url": {
-                "raw": "{{Base_URL}}/leads/{{leadId}}/donators",
+                "raw": "{{Base_URL}}/leads/{{leadId}}/donors",
                 "host": ["{{Base_URL}}"],
-                "path": ["leads", "{{leadId}}", "donators"]
+                "path": ["leads", "{{leadId}}", "donors"]
               }
             },
             "response": [],
@@ -225,7 +225,7 @@
                     "",
                     "pm.test(\"Donator added\", function () {",
                     "    var jsonData = pm.response.json();",
-                    "    pm.expect(jsonData.donators).to.be.an('array').that.is.not.empty;",
+                    "    pm.expect(jsonData.donors).to.be.an('array').that.is.not.empty;",
                     "});"
                   ]
                 }
@@ -248,9 +248,9 @@
                 "raw": "{\n    \"status\": \"No Response\"\n}"
               },
               "url": {
-                "raw": "{{Base_URL}}/leads/{{leadId}}/donators/{{donatorId}}",
+                "raw": "{{Base_URL}}/leads/{{leadId}}/donors/{{donatorId}}",
                 "host": ["{{Base_URL}}"],
-                "path": ["leads", "{{leadId}}", "donators", "{{donatorId}}"]
+                "path": ["leads", "{{leadId}}", "donors", "{{donatorId}}"]
               }
             },
             "response": [],
@@ -267,7 +267,7 @@
                     "",
                     "pm.test(\"Donator status updated\", function () {",
                     "    var jsonData = pm.response.json();",
-                    "    var donator = jsonData.donators.find(d => d.donatorId === pm.environment.get('donatorId'));",
+                    "    var donator = jsonData.donors.find(d => d.donatorId === pm.environment.get('donatorId'));",
                     "    pm.expect(donator).to.have.property('status', 'No Response');",
                     "});"
                   ]
@@ -281,9 +281,9 @@
               "method": "DELETE",
               "header": [],
               "url": {
-                "raw": "{{Base_URL}}/leads/{{leadId}}/donators/{{donatorId}}",
+                "raw": "{{Base_URL}}/leads/{{leadId}}/donors/{{donatorId}}",
                 "host": ["{{Base_URL}}"],
-                "path": ["leads", "{{leadId}}", "donators", "{{donatorId}}"]
+                "path": ["leads", "{{leadId}}", "donors", "{{donatorId}}"]
               }
             },
             "response": [],

@@ -26,7 +26,7 @@ const HorizontalNavbar = () => {
              alt="" />
           </Link>
           <Link
-            to="donators"
+            to="donors"
             className="px-3 py-2 hover:bg-gray-100 rounded-md transition flex items-center"
           >
             {t("general.donors")}

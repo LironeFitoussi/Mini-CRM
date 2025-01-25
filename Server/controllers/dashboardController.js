@@ -1,10 +1,10 @@
 const Donations = require("../models/Donation.js");
-const Donators = require("../models/Donator");
+const Donors = require("../models/Donor");
 const Notification = require("../models/Notification");
 exports.getDashboardData = async (req, res) => {
   try {
-    // Get the total amount of donators
-    const totalDonators = await Donators.countDocuments();
+    // Get the total amount of donors
+    const totalDonators = await Donors.countDocuments();
     // Get the total amount of donations for current month
     const currentMonth = new Date().getMonth();
     const totalDonations = await Donations.aggregate([
@@ -24,7 +24,7 @@ exports.getDashboardData = async (req, res) => {
     // Get All Notifications
     const allNotifications = await Notification.find();
 
-    // reduce the number of Donators in the notifications
+    // reduce the number of Donors in the notifications
     const donatorsWithCallback = allNotifications.filter(
       (notification) => notification.archived === false && notification.donatorId
     );
@@ -42,7 +42,7 @@ exports.getDashboardData = async (req, res) => {
     });
 
     const totalDonatorsWithPassedCallback = donatorsWithPassedCallback.length;
-    // console.log(`Total donators with passed callback: ${totalDonatorsWithPassedCallback}`);
+    // console.log(`Total donors with passed callback: ${totalDonatorsWithPassedCallback}`);
 
     // Send the data as a response
     res.status(200).json({

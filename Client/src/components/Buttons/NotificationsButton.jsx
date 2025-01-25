@@ -46,7 +46,7 @@ const NotificationsButton = () => {
         await setNotificationAsRead(notification._id);
         await refetch();
         if (notification.type === 'callback') {
-            navigate(`/dashboard/donators/${notification.donator._id}`);
+            navigate(`/dashboard/donors/${notification.donator._id}`);
         }
         handleClose();
     };

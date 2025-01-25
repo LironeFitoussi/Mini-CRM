@@ -31,7 +31,7 @@ const CreateLeadModal = ({ open, onClose, handleCreateLead }) => {
   });
 
   // Using useDonators hook with searchTerm
-  const { donators, isLoading, refetch } = useDonators({ search: searchTerm });
+  const { donors, isLoading, refetch } = useDonators({ search: searchTerm });
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -56,7 +56,7 @@ const CreateLeadModal = ({ open, onClose, handleCreateLead }) => {
       title,
       description,
       owner,
-      donators: selectedDonators.map((donator) => ({
+      donors: selectedDonators.map((donator) => ({
         donatorId: donator._id,
       })),
     };
@@ -137,7 +137,7 @@ const CreateLeadModal = ({ open, onClose, handleCreateLead }) => {
         />
         <Autocomplete
           multiple
-          options={donators}
+          options={donors}
           getOptionLabel={(option) =>
             `${option?.fName || ""} ${option?.lName || ""}`
           }

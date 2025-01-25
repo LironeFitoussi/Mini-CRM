@@ -7,7 +7,7 @@ import useUsers from "../../queryhooks/useUsers"; // Hook to fetch users
 
 const assignDonorOwner = async ({ donorId, ownerId }) => {
   await axios.put(
-    `${import.meta.env.VITE_API_URL}/api/v1/donators/${donorId}/owner`,
+    `${import.meta.env.VITE_API_URL}/api/v1/donors/${donorId}/owner`,
     { owner: ownerId }
   );
 };

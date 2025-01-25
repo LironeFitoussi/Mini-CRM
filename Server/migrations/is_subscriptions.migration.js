@@ -12,10 +12,10 @@ async function migrateData() {
     try {
       console.log("Starting migration...");
   
-      const donators = await Donator.find();
+      const donors = await Donator.find();
   
-      // Map through the donators and create an array of promises
-      const updatePromises = donators.map(async (donator) => {
+      // Map through the donors and create an array of promises
+      const updatePromises = donors.map(async (donator) => {
         // Update phone numbers with default values
         const phoneFields = ["phone_number_1", "phone_number_2", "phone_number_3"];
         phoneFields.forEach((field) => {

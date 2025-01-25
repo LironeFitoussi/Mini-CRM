@@ -7,7 +7,7 @@ const assignDonorsToUser = async ({ userId, donorId }) => {
         throw new Error('Invalid data: userId and donorIds are required');
     }
 
-    const response = await axios.post(import.meta.env.VITE_API_URL + `/api/v1/donators/${donorId}/owner`, {
+    const response = await axios.post(import.meta.env.VITE_API_URL + `/api/v1/donors/${donorId}/owner`, {
         owner: userId,
     });
 

@@ -8,7 +8,7 @@ const Notification = require("../models/Notification");
 // @access  Private
 const createLead = async (req, res, next) => {
   try {
-    const { title, description, owner, donators, metadata } = req.body;
+    const { title, description, owner, donors, metadata } = req.body;
 
     const lead = new LeadList({
       title,
@@ -20,7 +20,7 @@ const createLead = async (req, res, next) => {
     const savedLead = await lead.save();
 
     // Create lead cards for each donator
-    const leadCards = donators.map((donator) => ({
+    const leadCards = donors.map((donator) => ({
       leadList: savedLead._id,
       donatorEntryId: donator.donatorId,
     }));
@@ -201,7 +201,7 @@ const deleteLead = async (req, res, next) => {
 };
 
 // @desc    Add a donator to a lead
-// @route   POST /api/leads/:id/donators
+// @route   POST /api/leads/:id/donors
 // @access  Private
 const addDonator = async (req, res, next) => {
   try {
@@ -228,7 +228,7 @@ const addDonator = async (req, res, next) => {
 };
 
 // @desc    Update donator status in a lead
-// @route   PUT /api/leads/:id/donators/:donatorId
+// @route   PUT /api/leads/:id/donors/:donatorId
 // @access  Private
 const updateDonatorStatus = async (req, res, next) => {
   try {
@@ -241,7 +241,7 @@ const updateDonatorStatus = async (req, res, next) => {
       return res.status(404).json({ message: "Lead not found" });
     }
 
-    const donator = lead.donators.find(
+    const donator = lead.donors.find(
       (d) => d.donatorId.toString() === donatorId
     );
 
@@ -261,7 +261,7 @@ const updateDonatorStatus = async (req, res, next) => {
 };
 
 // @desc    Remove a donator from a lead
-// @route   DELETE /api/leads/:id/donators/:donatorId
+// @route   DELETE /api/leads/:id/donors/:donatorId
 // @access  Private
 const removeDonator = async (req, res, next) => {
   try {
@@ -273,7 +273,7 @@ const removeDonator = async (req, res, next) => {
       return res.status(404).json({ message: "Lead not found" });
     }
 
-    const donatorIndex = lead.donators.findIndex(
+    const donatorIndex = lead.donors.findIndex(
       (d) => d.donatorId.toString() === donatorId
     );
 
@@ -283,7 +283,7 @@ const removeDonator = async (req, res, next) => {
         .json({ message: "Donator not found in this lead" });
     }
 
-    lead.donators.splice(donatorIndex, 1);
+    lead.donors.splice(donatorIndex, 1);
     await lead.save();
 
     res.status(200).json({ message: "Donator removed successfully" });

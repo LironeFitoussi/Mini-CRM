@@ -12,19 +12,19 @@ const fetchDonators = async ({ page, pageSize, search }) => {
   }
 
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/v1/donators?${params.toString()}`
+    `${import.meta.env.VITE_API_URL}/api/v1/donors?${params.toString()}`
   );
   if (!response.ok) {
-    throw new Error(`Error fetching donators: ${response.statusText}`);
+    throw new Error(`Error fetching donors: ${response.statusText}`);
   }
 
   const data = await response.json();
-  return data; // { donators: [...], totalDocuments: number }
+  return data; // { donors: [...], totalDocuments: number }
 };
 
 const useDonators = ({ page, pageSize, search }) => {
   return useQuery({
-    queryKey: ["donators", { page, pageSize, search }],
+    queryKey: ["donors", { page, pageSize, search }],
     queryFn: () => fetchDonators({ page, pageSize, search }),
     keepPreviousData: true,
     staleTime: 5000,

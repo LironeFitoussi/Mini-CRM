@@ -34,7 +34,7 @@ const AddDonatorButton = () => {
         // console.log(newDonator);
         
         try {
-            const response = await axios.post(import.meta.env.VITE_API_URL + '/api/v1/donators', newDonator);
+            const response = await axios.post(import.meta.env.VITE_API_URL + '/api/v1/donors', newDonator);
             // console.log(response.data);
             navigate(`${response.data._id}`);
 

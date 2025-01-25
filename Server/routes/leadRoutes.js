@@ -29,10 +29,10 @@ router.route("/:id").get(getLeadById).put(updateLead).delete(deleteLead);
 
 router.route("/:id/status").put(changeLeadStatus);
 
-router.route("/:id/donators").post(addDonator);
+router.route("/:id/donors").post(addDonator);
 
 router
-  .route("/:id/donators/:donatorId")
+  .route("/:id/donors/:donatorId")
   .put(updateDonatorStatus)
   .delete(removeDonator);
 

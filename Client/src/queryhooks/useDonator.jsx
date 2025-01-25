@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const fetchDonator = async (id) => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/donators/${id}`);
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/donors/${id}`);
   if (!response.ok) {
     throw new Error("Failed to fetch client data");
   }

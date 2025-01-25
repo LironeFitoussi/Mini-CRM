@@ -1,12 +1,12 @@
-const Donator = require("../models/Donator");
+const Donor = require("../models/Donor");
 const path = require("path");
 
 const unsubscribeEmail = async (req, res) => {
   try {
     const { email } = req.params;
 
-    // Find donators where any of the nested email fields match
-    const donators = await Donator.find({
+    // Find donors where any of the nested email fields match
+    const donors = await Donor.find({
       $or: [
         { "email_1.email": email },
         { "email_2.email": email },
@@ -14,13 +14,13 @@ const unsubscribeEmail = async (req, res) => {
       ],
     });
 
-    // If no matching donators are found
-    if (donators.length === 0) {
+    // If no matching donors are found
+    if (donors.length === 0) {
       return res.status(404).json({ message: "Email not found in records" });
     }
 
     // Update each donator
-    const updates = donators.map((donator) => {
+    const updates = donors.map((donator) => {
       const update = {};
 
       if (donator.email_1?.email === email) {
@@ -34,7 +34,7 @@ const unsubscribeEmail = async (req, res) => {
       }
 
       // Update the donator in the database
-      return Donator.findByIdAndUpdate(
+      return Donor.findByIdAndUpdate(
         donator._id,
         { $set: update },
         { new: true }

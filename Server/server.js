@@ -5,12 +5,16 @@ const bodyParser = require("body-parser");
 const uploadRoutes = require("./routes/upload");
 const morgan = require("morgan");
 const initializeMailCronJob = require("./cronJobs/mailCron");
+const initializeDonorsCronJob = require("./cronJobs/donorsCron");
 const Authorized = require("./models/Authorized");
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 const path = require("path");
 const app = express();
+
+// Actions to take when the server is started
 const connectDB = require('./config/db');
+const syncDonors = require('./scripts/syncDonors');
 
 app.use(morgan("dev"));
 app.use(cors());
@@ -20,10 +24,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 
 connectDB();
+syncDonors();
+
 
 app.use("/api/v1/users", require("./routes/usersRoutes.js"));
 app.use("/api/v1/whatsapp", require("./routes/whatsappRoutes.js"));
-app.use("/api/v1/donators", require("./routes/donatorsRoutes.js"));
+app.use("/api/v1/donors", require("./routes/donorsRoutes.js"));
 app.use("/api/v1/contacts", require("./routes/contactsRoutes.js"));
 app.use("/api/v1/donations", require("./routes/donationsRoutes.js"));
 app.use("/api/v1/email", require("./routes/emailsRoutes.js"));
@@ -49,6 +55,7 @@ app.get("/api/v1/get-auth-user", (req, res) => {
 
 // Initialize Cron Jobs
 initializeMailCronJob();
+initializeDonorsCronJob();
 
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)

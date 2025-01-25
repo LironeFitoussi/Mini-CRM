@@ -17,16 +17,16 @@ import axios from "axios";
 // WORK!
 const fetchDonors = async () => {
   const { data } = await axios.get(
-    `${import.meta.env.VITE_API_URL}/api/v1/donators?limit=2000`
+    `${import.meta.env.VITE_API_URL}/api/v1/donors?limit=2000`
   );
-  //   console.log(data.donators);
-  return data.donators;
+  //   console.log(data.donors);
+  return data.donors;
 };
 
 const assignDonorsToOwner = async ({ donorIds, ownerId }) => {
   console.log(donorIds);
 
-  await axios.put(`${import.meta.env.VITE_API_URL}/api/v1/donators/assign`, {
+  await axios.put(`${import.meta.env.VITE_API_URL}/api/v1/donors/assign`, {
     donors: donorIds,
     owner: ownerId,
   });

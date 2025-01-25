@@ -18,7 +18,7 @@ export default function GlobalDonator() {
   const [inputValue, setInputValue] = useState("");
   // The trimmed string we send to the server.
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [donators, setDonators] = useState([]);
+  const [donors, setDonators] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { t } = useTranslation();
@@ -56,7 +56,7 @@ export default function GlobalDonator() {
       }
 
       // Navigate to the selected donator's page
-      navigate(`/dashboard/donators/${selectedDonator._id}`);
+      navigate(`/dashboard/donors/${selectedDonator._id}`);
     }
   };
 
@@ -76,20 +76,20 @@ export default function GlobalDonator() {
         params.append("search", debouncedSearch);
 
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/v1/donators?${params.toString()}`
+          `${import.meta.env.VITE_API_URL}/api/v1/donors?${params.toString()}`
         );
         if (!response.ok) {
           throw new Error(`Server responded with ${response.status}`);
         }
 
         const data = await response.json();
-        if (!data || !Array.isArray(data.donators)) {
+        if (!data || !Array.isArray(data.donors)) {
           throw new Error("Invalid data format received from server.");
         }
 
-        setDonators(data.donators);
+        setDonators(data.donors);
       } catch (err) {
-        console.error("Error fetching donators:", err);
+        console.error("Error fetching donors:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -122,7 +122,7 @@ export default function GlobalDonator() {
         filterOptions={(options) => options}
         disableClearable
         loading={loading}
-        options={donators}
+        options={donors}
         // Controlled component props
         value={value}
         onChange={(event, newValue) => {

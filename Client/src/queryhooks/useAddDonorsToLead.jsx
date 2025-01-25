@@ -6,7 +6,7 @@ const addDonorsToLead = async ({ leadId, donorIds }) => {
     console.log(donorIds);
     
     const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/v1/leads/${leadId}/donators`,
+        `${import.meta.env.VITE_API_URL}/api/v1/leads/${leadId}/donors`,
         { donorIds }
     );
     return response.data;

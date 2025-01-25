@@ -7,7 +7,7 @@ import EmailForm from "../../components/Molecules/EmailForm";
 import EmailPreviewModal from "../../components/Modals/EmailPreviewModal";
 
 /**
- * Main container component that orchestrates fetching donators,
+ * Main container component that orchestrates fetching donors,
  * handling state for 'from', 'to', 'subject', 'body', image uploads, etc.
  */
 const EmailPage = () => {
@@ -21,7 +21,7 @@ const EmailPage = () => {
   // State variables
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [toMode, setToMode] = useState("manual"); // "manual" or "donators"
+  const [toMode, setToMode] = useState("manual"); // "manual" or "donors"
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [imagePosition, setImagePosition] = useState("top");
@@ -31,7 +31,7 @@ const EmailPage = () => {
   const [toRecipients, setToRecipients] = useState([]);
 
   // Donators fetched from the API
-  const [donators, setDonators] = useState([]);
+  const [donors, setDonators] = useState([]);
 
   // Preview modal
   const [openPreview, setOpenPreview] = useState(false);
@@ -50,31 +50,31 @@ const EmailPage = () => {
 </table>
 `;
 
-  // Fetch donators on component mount
+  // Fetch donors on component mount
   useEffect(() => {
     const fetchDonators = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/v1/donators?page=1&limit=1200`
+          `${import.meta.env.VITE_API_URL}/api/v1/donors?page=1&limit=1200`
         );
         const result = await response.json();
-        const fetchedDonators = result.donators || [];
+        const fetchedDonators = result.donors || [];
         setDonators(fetchedDonators);
       } catch (error) {
-        console.error("Error fetching donators:", error);
+        console.error("Error fetching donors:", error);
       }
     };
     fetchDonators();
   }, []);
 
   /**
-   * Whenever toMode = 'donators', we automatically populate toRecipients
-   * with all unique emails from the donators list.
+   * Whenever toMode = 'donors', we automatically populate toRecipients
+   * with all unique emails from the donors list.
    */
   useEffect(() => {
-    if (toMode === "donators") {
-      // Extract all emails from donators
-      const donorEmails = donators.reduce((acc, donor) => {
+    if (toMode === "donors") {
+      // Extract all emails from donors
+      const donorEmails = donors.reduce((acc, donor) => {
         const donorEmailsArray = Object.keys(donor)
           .filter((key) => key.startsWith("email_"))
           .map((emailKey) => donor[emailKey])
@@ -89,7 +89,7 @@ const EmailPage = () => {
       // If switching back to manual, clear the toRecipients
       setToRecipients([]);
     }
-  }, [toMode, donators]);
+  }, [toMode, donors]);
 
   // Combine body, optional image, and footer
   const fullEmailBody = `
@@ -131,7 +131,7 @@ const EmailPage = () => {
       </Typography>
       <Divider sx={{ mb: 4 }} />
 
-      {/* Recipients section (manual vs. donators) */}
+      {/* Recipients section (manual vs. donors) */}
       <RecipientsSection
         toMode={toMode}
         setToMode={setToMode}

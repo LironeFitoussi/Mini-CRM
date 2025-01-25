@@ -115,7 +115,7 @@ const DonationsTable = ({
                 <TableRow key={donation._id}>
                   <TableCell>
                     <Link
-                      to={`/dashboard/donators/${donation.donator_id}`}
+                      to={`/dashboard/donors/${donation.donator_id}`}
                       style={{ textDecoration: "none", color: "#1976d2" }}
                     >
                       {donation.donator_id}

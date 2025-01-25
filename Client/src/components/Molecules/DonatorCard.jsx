@@ -46,7 +46,7 @@ const DonatorCard = ({ donatorId, onClose }) => {
     const fetchDonatorData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/v1/donators/${donatorId}`
+          `${import.meta.env.VITE_API_URL}/api/v1/donors/${donatorId}`
         );
         setDonatorData(response.data);
       } catch (error) {
@@ -81,7 +81,7 @@ const DonatorCard = ({ donatorId, onClose }) => {
           >
             {t("customerManagement.details")}
             {/* Open Donator Profile Button */}
-            <Link sx={{ ml: 1, p: 1 }} to={`/dashboard/donators/${donatorId}`}>
+            <Link sx={{ ml: 1, p: 1 }} to={`/dashboard/donors/${donatorId}`}>
               <LaunchIcon />
             </Link>
           </Typography>

@@ -8,21 +8,21 @@ export const useUpdateDonatorStatus = ({ page, pageSize, search }) => {
   return useMutation({
     mutationFn: async ({ donorId, newStatus }) => {
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/v1/donators/${donorId}/status`,
+        `${import.meta.env.VITE_API_URL}/api/v1/donors/${donorId}/status`,
         { status: newStatus }
       );
     },
     onMutate: async ({ donorId, newStatus }) => {
       // (Same as before) Optimistic update for the list query
-      await queryClient.cancelQueries(["donators", page, pageSize, search]);
-      const previousData = queryClient.getQueryData(["donators", page, pageSize, search]);
+      await queryClient.cancelQueries(["donors", page, pageSize, search]);
+      const previousData = queryClient.getQueryData(["donors", page, pageSize, search]);
 
       // Update the list
-      queryClient.setQueryData(["donators", page, pageSize, search], (oldData) => {
+      queryClient.setQueryData(["donors", page, pageSize, search], (oldData) => {
         if (!oldData) return oldData;
         return {
           ...oldData,
-          donators: oldData.donators.map((donor) =>
+          donors: oldData.donors.map((donor) =>
             donor._id === donorId ? { ...donor, status: newStatus } : donor
           ),
         };
@@ -44,7 +44,7 @@ export const useUpdateDonatorStatus = ({ page, pageSize, search }) => {
     onError: (_error, { donorId }, context) => {
       // Roll back the list if needed
       if (context?.previousData) {
-        queryClient.setQueryData(["donators", page, pageSize, search], context.previousData);
+        queryClient.setQueryData(["donors", page, pageSize, search], context.previousData);
       }
       // Roll back the single if needed
       if (context?.previousSingle) {
@@ -53,7 +53,7 @@ export const useUpdateDonatorStatus = ({ page, pageSize, search }) => {
     },
     onSettled: (_, __, { donorId }) => {
       // Invalidate both queries so they refetch fresh data
-      queryClient.invalidateQueries(["donators"]);
+      queryClient.invalidateQueries(["donors"]);
       queryClient.invalidateQueries(["donator", donorId]);
     },
   });
