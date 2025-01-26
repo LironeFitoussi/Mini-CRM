@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false }));
 
 connectDB();
-syncDonors();
+// syncDonors();
 
 
 app.use("/api/v1/users", require("./routes/usersRoutes.js"));

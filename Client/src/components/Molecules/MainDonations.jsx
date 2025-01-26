@@ -17,7 +17,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']; // Define your colo
 
 const DonationsComponent = ({
   t,
-  groupedDonations,
+  allodonData,
   currencyIcons,
   donations,
   donationTypes,
@@ -31,16 +31,17 @@ const DonationsComponent = ({
             {t("general.totalDonations")}
           </Typography>
           <Box className="flex space-x-2">
-            {Object.entries(groupedDonations).map(([currency, total]) => (
+            {allodonData.map((donation) => (
               <Typography
-                key={currency}
+                key={donation._id}
                 variant="h5"
                 sx={{
                   color: "primary.main",
                   textAlign: "center",
                 }}
               >
-                {currency} {currencyIcons[currency]}: {total}
+                {donation.currency} {currencyIcons[donation.currency]}:{" "}
+                {donation.total}
               </Typography>
             ))}
           </Box>

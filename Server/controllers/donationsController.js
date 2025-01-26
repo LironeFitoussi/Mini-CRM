@@ -1,14 +1,14 @@
 const Donation = require("../models/Donation.js");
-
+const axios = require("axios");
 // Get all donations
 const getAllDonations = async (req, res) => {
   // Extract query parameters with default values
   const {
     page = 1,
     limit = 10,
-    sortField = 'date', // Default sort field
-    sortOrder = 'asc',  // Default sort order
-    search = '',
+    sortField = "date", // Default sort field
+    sortOrder = "asc", // Default sort order
+    search = "",
     year = new Date().getFullYear(), // Default year to current if not specified
   } = req.query;
 
@@ -18,24 +18,24 @@ const getAllDonations = async (req, res) => {
 
   // Define allowed fields for sorting to prevent injection
   const allowedSortFields = [
-    'donator_id',
-    'amount',
-    'date',
-    'type',
-    'method',
-    'notes',
-    'currency',
-    'createdAt',
-    'updatedAt',
+    "donator_id",
+    "amount",
+    "date",
+    "type",
+    "method",
+    "notes",
+    "currency",
+    "createdAt",
+    "updatedAt",
   ];
 
   // Validate sortField
   const sortFieldValidated = allowedSortFields.includes(sortField)
     ? sortField
-    : 'date'; // Fallback to default if invalid
+    : "date"; // Fallback to default if invalid
 
   // Validate sortOrder
-  const sortOrderValidated = sortOrder.toLowerCase() === 'desc' ? -1 : 1;
+  const sortOrderValidated = sortOrder.toLowerCase() === "desc" ? -1 : 1;
 
   // Build the sort object for Mongoose
   const sortOptions = {
@@ -47,8 +47,8 @@ const getAllDonations = async (req, res) => {
 
   if (search) {
     // Define fields to search through for strings
-    const searchFields = ['type', 'method'];
-    const regex = new RegExp(search, 'i');
+    const searchFields = ["type", "method"];
+    const regex = new RegExp(search, "i");
 
     // Check if the search input is a valid date
     const parsedDate = new Date(search);
@@ -68,7 +68,7 @@ const getAllDonations = async (req, res) => {
           ? [
               {
                 date: {
-                  $gte: new Date(parsedDate.setHours(0, 0, 0, 0)),   // Start of the day
+                  $gte: new Date(parsedDate.setHours(0, 0, 0, 0)), // Start of the day
                   $lt: new Date(parsedDate.setHours(23, 59, 59, 999)), // End of the day
                 },
               },
@@ -93,11 +93,11 @@ const getAllDonations = async (req, res) => {
    * Otherwise, we filter donations that fall within that entire calendar year.
    * The default is the current year if not otherwise specified.
    */
-  if (year.toString().toLowerCase() !== 'all') {
+  if (year.toString().toLowerCase() !== "all") {
     const numericYear = parseInt(year, 10);
     // Only apply if it's a valid number
     if (!isNaN(numericYear)) {
-      const startOfYear = new Date(numericYear, 0, 1, 0, 0, 0, 0);      // Jan 1, 00:00
+      const startOfYear = new Date(numericYear, 0, 1, 0, 0, 0, 0); // Jan 1, 00:00
       const endOfYear = new Date(numericYear, 11, 31, 23, 59, 59, 999); // Dec 31, 23:59:59.999
 
       // If the filter currently has an $or (from search), we wrap that in an $and
@@ -144,7 +144,7 @@ const getAllDonations = async (req, res) => {
       totalDonations: count, // Useful for frontend pagination
     });
   } catch (error) {
-    console.error('Error fetching donations:', error.message);
+    console.error("Error fetching donations:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -204,7 +204,6 @@ const deleteDonation = async (req, res) => {
 };
 
 // Get all donation types
-// Get all donation types
 const getAllDonationTypes = async (req, res) => {
   const { year = new Date().getFullYear() } = req.query;
 
@@ -256,7 +255,24 @@ const getAllDonationTypes = async (req, res) => {
 
     res.status(200).json(donationSummary);
   } catch (error) {
-    console.error('Error fetching donation types:', error.message);
+    console.error("Error fetching donation types:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get Donations by Allodon ID
+const getDonationsByAllodonId = async (req, res) => {
+  try {
+    const { id } = req.params;    
+    const {
+      data: { donations },
+    } = await axios.get(`${process.env.ALLODON_URL}/donors/${id}`, {
+      headers: { Authorization: `Bearer ${process.env.ALLODON_API_KEY}` },
+    });
+
+    res.status(200).json(donations);
+  } catch (error) {
+    console.error("Error fetching donations by donor ID:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -268,4 +284,5 @@ module.exports = {
   updateDonation,
   deleteDonation,
   getAllDonationTypes,
+  getDonationsByAllodonId
 };

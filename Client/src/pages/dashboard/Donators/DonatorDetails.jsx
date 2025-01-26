@@ -1,13 +1,26 @@
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import axios from "axios";
+
 import { useDonator } from "../../../queryhooks/useDonator";
+
 import SmsIcon from "@mui/icons-material/Sms";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import EditDonatorButton from "../../../components/Buttons/EditDonatorButton";
-import { useTranslation } from "react-i18next";
+import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
+import StatusSelect from "../../../components/Atoms/StatusSelect";
+import AssignDonorOwner from "../../../components/Atoms/AssignDonorOwner";
+import TaskCalendar from "../../../components/TaskCalendar";
+import EmailModal from "../../../components/Modals/EmailModal";
+import SendEmailButton from "../../../components/Atoms/SendEmailButton";
+import DonatorNotes from "../../../components/Molecules/DonatorNotes";
+import SendWhatsappButton from "../../../components/Buttons/SendWhatsappButton";
+import DonationsComponent from "../../../components/Molecules/MainDonations";
 
-// MUI Components
+import { getDonationTypes } from "../../../utils";
+
 import {
   Box,
   Typography,
@@ -17,45 +30,45 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-// Components
-import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
-import TaskCalendar from "../../../components/TaskCalendar";
-import EmailModal from "../../../components/Modals/EmailModal";
-import SendEmailButton from "../../../components/Atoms/SendEmailButton";
-import DonatorNotes from "../../../components/Molecules/DonatorNotes";
-import { getDonationTypes } from "../../../utils";
-import SendWhatsappButton from "../../../components/Buttons/SendWhatsappButton";
-import DonationsComponent from "../../../components/Molecules/MainDonations";
-
-// Import your reusable StatusSelect
-import StatusSelect from "../../../components/Atoms/StatusSelect";
-import AssignDonorOwner from "../../../components/Atoms/AssignDonorOwner";
-
-// Redux
-import { useSelector } from "react-redux";
-
 const ClientDetailsPage = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Get User Data
+  // ========== Global User from Redux ==========
   const { user } = useSelector((state) => state.user);
 
-  // Fetch this specific client data
-  const { data: client, isLoading, error } = useDonator(id);
-
-  // console.log(client);
-  // ======= Email Modal State =======
+  // ========== Local State ==========
+  const [allodonData, setAllodonData] = useState([]);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({
     from: "contact.lesenfantsderachi@gmail.com",
-    to: client?.email_1?.email || "",
+    to: "",
     subject: "",
     body: "",
     imagePosition: "top",
     imageUrl: null,
   });
+
+  // ========== Fetch Specific Client ==========
+  const { data: client, isLoading, error } = useDonator(id);
+
+  // ========== Side Effects ==========
+  useEffect(() => {
+    if (client?.allo_dons_id) {
+      fetchAllodon(client.allo_dons_id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client?.allo_dons_id]);
+
+  // ========== Functions ==========
+  const fetchAllodon = async (alloDonsId) => {
+    const { data } = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/v1/donations/allodon/${alloDonsId}`
+    );
+    console.log(data);
+    setAllodonData(data);
+  };
 
   const handleEmailChange = (fieldName, newValue) => {
     setFormValues((prev) => ({ ...prev, [fieldName]: newValue }));
@@ -71,7 +84,7 @@ const ClientDetailsPage = () => {
     }
   };
 
-  // ======= Loading & Error States =======
+  // ========== Loading & Error States ==========
   if (isLoading) {
     return (
       <Box sx={{ padding: 4, textAlign: "center" }}>
@@ -99,7 +112,7 @@ const ClientDetailsPage = () => {
       </Box>
     );
   }
-  
+
   if (!client) {
     return (
       <Box sx={{ padding: 4, textAlign: "center" }}>
@@ -117,7 +130,7 @@ const ClientDetailsPage = () => {
     );
   }
 
-  // Destructure needed fields
+  // ========== Destructure Needed Fields ==========
   const {
     fName,
     lName,
@@ -127,9 +140,10 @@ const ClientDetailsPage = () => {
     donations = [],
     notes,
     status,
+    allo_dons_id,
   } = client;
 
-  // Summarize donations by currency
+  // ========== Summarize Donations by Currency ==========
   const groupedDonations = donations.reduce((acc, donation) => {
     const { currency, amount } = donation;
     if (!acc[currency]) acc[currency] = 0;
@@ -137,7 +151,7 @@ const ClientDetailsPage = () => {
     return acc;
   }, {});
 
-  // For the DonationsComponent
+  // ========== Setup for DonationsComponent ==========
   const donationTypes = getDonationTypes(donations);
   const currencyIcons = {
     USD: "$",
@@ -146,6 +160,7 @@ const ClientDetailsPage = () => {
     NIS: "₪",
   };
 
+  // ========== Return JSX ==========
   return (
     <Box sx={{ padding: 4 }}>
       {/* ========== Main Info & Donations Chart ========== */}
@@ -159,11 +174,9 @@ const ClientDetailsPage = () => {
               className="flex justify-between"
             >
               {fName} {lName} {!fName && !lName && "This client has no name."}
-              {/* ========== Use Your StatusSelect Component ========== */}
               <StatusSelect
                 currentStatus={status}
                 donatorId={client._id}
-                // If you want pagination info for your mutation keys, pass them here:
                 page={0}
                 pageSize={10}
                 search=""
@@ -248,6 +261,7 @@ const ClientDetailsPage = () => {
                 SMS
               </Button>
             </Box>
+
             {/* Donator nextContact */}
             {client.nextContactDate && (
               <Typography variant="body1" sx={{ mt: 2 }}>
@@ -258,10 +272,10 @@ const ClientDetailsPage = () => {
           </Box>
         </Paper>
 
-        {/* ---------- Right Paper: Donation Chart ---------- */}
+        {/* ---------- Right Paper: Donations Chart ---------- */}
         <DonationsComponent
           t={t}
-          groupedDonations={groupedDonations}
+          allodonData={allodonData}
           currencyIcons={currencyIcons}
           donations={donations}
           donationTypes={donationTypes}

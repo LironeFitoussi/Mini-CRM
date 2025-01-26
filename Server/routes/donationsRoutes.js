@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-const { getAllDonations, getDonationById, createDonation, updateDonation, deleteDonation, getAllDonationTypes } = require("../controllers/donationsController");
+const { getAllDonations, getDonationById, createDonation, getDonationsByAllodonId, updateDonation, deleteDonation, getAllDonationTypes } = require("../controllers/donationsController");
 
 router.get("/all-types", getAllDonationTypes);
 
 router.get("/", getAllDonations);
+
+router.get("/allodon/:id", getDonationsByAllodonId);
 
 router.get("/:id", getDonationById);
 
