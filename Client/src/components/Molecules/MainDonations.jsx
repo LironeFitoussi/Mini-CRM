@@ -10,6 +10,7 @@ import {
   TableCell,
   TableBody,
   Grid,
+  Button
 } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -20,52 +21,72 @@ const DonationsComponent = ({
   allodonData,
   donations,
   donationTypes,
+  donorId,       // <- Pass the local donor _id here
 }) => {
   console.log('DonationsComponent:', allodonData);
-  
+
+  // Calculate total donations (just an example usage)
   const totalDonations = allodonData.reduce((acc, curr) => acc + curr.amount, 0);
 
+  // Create a record of donation amounts by currency
   const currencies = {};
-  // split arrays of currencies
   allodonData.forEach((donation) => {
-    if (donation.currency === "$") {
-      // Check if the currency is already in the object
-      if (currencies[donation.currency]) {
-        currencies[donation.currency] += donation.amount;
-      } else {
-        currencies[donation.currency] = donation.amount;
-      }
-    } else if (donation.currency === "€") {
-      if (currencies[donation.currency]) {
-        currencies[donation.currency] += donation.amount;
-      } else {
-        currencies[donation.currency] = donation.amount;
-      }
-    } else if (donation.currency === "£") {
-      if (currencies[donation.currency]) {
-        currencies[donation.currency] += donation.amount;
-      } else {
-        currencies[donation.currency] = donation.amount;
-      }
+    if (!currencies[donation.currency]) {
+      currencies[donation.currency] = 0;
     }
+    currencies[donation.currency] += donation.amount;
   });
-  
+
+  // 1) Manual Sync handler
+  const handleManualSync = async () => {
+    if (!donorId) {
+      alert("No donorId provided for manual sync.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/sync/allodons/${donorId}`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Sync failed:', errorData);
+        alert(`Sync failed: ${errorData.error || "Unknown error"}`);
+        return;
+      }
+
+      const data = await response.json();
+      console.log('Sync success:', data);
+      alert(`Donations sync completed! New donations added: ${data.newDonations || 0}`);
+
+      // Refresh the page after successful sync
+      window.location.reload();
+    } catch (error) {
+      console.error('Network or server error:', error);
+      alert('Error during sync: ' + error.message);
+    }
+  };
 
   return (
     <Paper sx={{ flex: 1, boxShadow: 3 }}>
       <Box sx={{ p: 3 }}>
         {/* Header Section */}
-        <Box className="flex justify-between mb-4">
+        <Box className="flex justify-between mb-4" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h6" gutterBottom>
             {t("general.totalDonations")}
           </Typography>
-          <Box className="flex space-x-2">
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             {/* For Each Currency Key Display the Total Amount */}
             {Object.keys(currencies).map((currency) => (
               <Typography key={currency}>
                 {currencies[currency]} {currency}
               </Typography>
             ))}
+            {/* 2) Manual Sync Button */}
+            <Button variant="contained" color="primary" onClick={handleManualSync}>
+              {t("general.manualSync")}
+            </Button>
           </Box>
         </Box>
 
@@ -73,9 +94,6 @@ const DonationsComponent = ({
         <Grid container spacing={4}>
           {/* Donations Table */}
           <Grid item xs={12} md={7}>
-            {/* <Typography variant="h6" gutterBottom>
-              {t("general.donationsHistory")}
-            </Typography> */}
             <Box
               sx={{
                 maxHeight: 400, // Adjust as needed
@@ -94,7 +112,9 @@ const DonationsComponent = ({
                   <TableBody>
                     {donations.map((donation) => (
                       <TableRow key={donation._id} hover>
-                        <TableCell>{donation.amount} {donation.currency}</TableCell>
+                        <TableCell>
+                          {donation.amount} {donation.currency}
+                        </TableCell>
                         <TableCell>{donation.date.split("T")[0]}</TableCell>
                         <TableCell>
                           <a
@@ -116,9 +136,6 @@ const DonationsComponent = ({
 
           {/* Pie Chart */}
           <Grid item xs={12} md={5}>
-            {/* <Typography variant="h6" gutterBottom>
-              {t("general.donationTypes")}
-            </Typography> */}
             <Box sx={{ width: '100%', height: 300 }}>
               <ResponsiveContainer>
                 <PieChart>

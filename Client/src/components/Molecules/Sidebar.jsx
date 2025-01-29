@@ -31,12 +31,12 @@ const HorizontalNavbar = () => {
           >
             {t("general.donors")}
           </Link>
-          <Link
+          {/* <Link
             to="leads"
             className="px-3 py-2 hover:bg-gray-100 rounded-md transition flex items-center"
           >
             {t("leads")}
-          </Link>
+          </Link> */}
           {user?.role === "admin" || user?.role === "developer" ? (
             <Link
               to="users"

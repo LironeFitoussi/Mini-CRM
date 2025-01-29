@@ -279,6 +279,7 @@ const ClientDetailsPage = () => {
           currencyIcons={currencyIcons}
           donations={donations}
           donationTypes={donationTypes}
+          donorId={id}
         />
       </Box>
 
