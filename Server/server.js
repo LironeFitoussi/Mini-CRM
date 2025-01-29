@@ -42,6 +42,7 @@ app.use("/unsubscribe", require("./routes/unsubscribeRoutes.js"));
 app.use('/api/v1/sms', require('./routes/sms.js'));
 app.use('/api/v1/twilio', require('./routes/twilioInbound.js'));
 app.use('/api/v1/allodon', require('./routes/allodonRoutes.js'));
+app.use('/api/v1/sync', require('./routes/syncRoutes.js'));
 
 app.get("/api/v1/get-auth-user", (req, res) => {
   try {
