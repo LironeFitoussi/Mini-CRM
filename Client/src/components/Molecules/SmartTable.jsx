@@ -22,7 +22,7 @@ const SmartTable = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  console.log(data);
+  // console.log(data);
   
   // State + Modal for next contact date
   const [isModalOpen, setIsModalOpen] = useState(false);

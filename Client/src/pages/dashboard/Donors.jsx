@@ -62,7 +62,7 @@ const DonatorsPage = () => {
       }
 
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
       
       setData({
         donors: result.donors,

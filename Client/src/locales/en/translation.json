@@ -1,4 +1,22 @@
 {
+    "donations": {
+        "currency": "Currency",
+        "cerfa": "CERFA",
+        "title": "Donations",
+        "add": "Add Donation",
+        "edit": "Edit Donation",
+        "delete": "Delete Donation",
+        "details": "Donation Details",
+        "amount": "Amount",
+        "type": "Type",
+        "date": "Date",
+        "status": "Status",
+        "notes": "Notes",
+        "tags": "Tags",
+        "assignedTo": "Assigned To",
+        "contactBackDate": "Contact Back Date",
+        "deleteConfirmation": "Are you sure you want to delete this donation?"
+    },
     "NextContactTimeModal": {
         "title": "Set Next Contact Time",
         "fixedTime": "Choose a fixed time:",
@@ -93,10 +111,6 @@
         "uploadImage": "Upload Image",
         "uploading": "Uploading..."
     },
-    "donations": {
-        "amount": "Amount",
-        "type": "Type"
-    },
     "general": {
         "addToTelepro": "Add to Telepro",
         "addToLead": "Add to Lead",
@@ -106,7 +120,7 @@
         "home": "Home",
         "dashboard": "Dashboard",
         "donors": "Donors",
-        "totalDonators": "Total Donators",
+        "totalDonators": "Total Donors",
         "totalDonations": "Total Donations",
         "totalDonationsMonth": "Total Donations of the Month",
         "totalCallback": "Total Donors to Call Back",
@@ -144,7 +158,7 @@
         "termsOfService": "Terms of Service",
         "privacyPolicy": "Privacy Policy",
         "overview": "Overview",
-        "donors": "Donators",
+        "donors": "Donors",
         "donations": "Donations"
     },
     "actions": {

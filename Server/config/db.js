@@ -1,10 +1,10 @@
 // config/db.js
 const mongoose = require('mongoose');
-
+const syncAllodonDonations = require('../scripts/syncAllodonDonations');
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI);
-
+    syncAllodonDonations()
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error: ${error.message}`);

@@ -18,10 +18,39 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']; // Define your colo
 const DonationsComponent = ({
   t,
   allodonData,
-  currencyIcons,
   donations,
   donationTypes,
 }) => {
+  console.log('DonationsComponent:', allodonData);
+  
+  const totalDonations = allodonData.reduce((acc, curr) => acc + curr.amount, 0);
+
+  const currencies = {};
+  // split arrays of currencies
+  allodonData.forEach((donation) => {
+    if (donation.currency === "$") {
+      // Check if the currency is already in the object
+      if (currencies[donation.currency]) {
+        currencies[donation.currency] += donation.amount;
+      } else {
+        currencies[donation.currency] = donation.amount;
+      }
+    } else if (donation.currency === "€") {
+      if (currencies[donation.currency]) {
+        currencies[donation.currency] += donation.amount;
+      } else {
+        currencies[donation.currency] = donation.amount;
+      }
+    } else if (donation.currency === "£") {
+      if (currencies[donation.currency]) {
+        currencies[donation.currency] += donation.amount;
+      } else {
+        currencies[donation.currency] = donation.amount;
+      }
+    }
+  });
+  
+
   return (
     <Paper sx={{ flex: 1, boxShadow: 3 }}>
       <Box sx={{ p: 3 }}>
@@ -31,17 +60,10 @@ const DonationsComponent = ({
             {t("general.totalDonations")}
           </Typography>
           <Box className="flex space-x-2">
-            {allodonData.map((donation) => (
-              <Typography
-                key={donation._id}
-                variant="h5"
-                sx={{
-                  color: "primary.main",
-                  textAlign: "center",
-                }}
-              >
-                {donation.currency} {currencyIcons[donation.currency]}:{" "}
-                {donation.total}
+            {/* For Each Currency Key Display the Total Amount */}
+            {Object.keys(currencies).map((currency) => (
+              <Typography key={currency}>
+                {currencies[currency]} {currency}
               </Typography>
             ))}
           </Box>
@@ -66,13 +88,24 @@ const DonationsComponent = ({
                     <TableRow>
                       <TableCell>{t("donations.amount")}</TableCell>
                       <TableCell>{t("donations.date")}</TableCell>
+                      <TableCell>{t("donations.cerfa")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {donations.map((donation) => (
                       <TableRow key={donation._id} hover>
-                        <TableCell>${donation.amount}</TableCell>
+                        <TableCell>{donation.amount} {donation.currency}</TableCell>
                         <TableCell>{donation.date.split("T")[0]}</TableCell>
+                        <TableCell>
+                          <a
+                            href={donation.cerfa}
+                            download
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {t("general.view")}
+                          </a>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

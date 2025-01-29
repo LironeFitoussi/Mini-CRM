@@ -1,4 +1,22 @@
 {
+    "donations": {
+        "currency": "Pièce",
+        "cerfa": "CERF",
+        "title": "Dons",
+        "add": "Ajouter un don",
+        "edit": "Modifier le don",
+        "delete": "Supprimer le don",
+        "details": "Détails du don",
+        "amount": "Montant",
+        "type": "Type",
+        "date": "Date",
+        "status": "Statut",
+        "notes": "Notes",
+        "tags": "Étiquettes",
+        "assignedTo": "Attribué à",
+        "contactBackDate": "Date de rappel",
+        "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer ce don?"
+    },
     "NextContactTimeModal": {
         "title": "Définir l'heure du prochain contact",
         "fixedTime": "Choisissez une heure fixe :",
@@ -76,10 +94,6 @@
     "confirmations": {
         "saveTemplate": "Enregistrer le modèle",
         "confirmSaveTemplate": "Êtes-vous sûr de vouloir enregistrer cet email en tant que modèle?"
-    },
-    "donations": {
-        "amount": "Montant",
-        "type": "Type"
     },
     "general": {
         "addToTelepro": "Ajouter à Telepro",
