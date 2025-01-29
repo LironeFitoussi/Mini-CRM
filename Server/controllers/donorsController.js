@@ -506,3 +506,104 @@ exports.getTotalDonatorsWithCallback = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
+
+
+/**
+ * Check if a donor has a duplicate
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - The duplicate donor, if found
+ */
+exports.checkPotentialDuplicates = async (req, res) => {
+  try {
+    // Extract parameters (from query or body, your choice)
+    // const {
+    //   fName = '',
+    //   lName = '',
+    //   phone = '',
+    //   email = '',
+    // } = req.query; // or req.body if it's a POST
+
+    const { id } = req.params;
+    console.log('ID:', id);
+    
+
+    // Find the donor by ID
+    const donor = await Donor.findById(id);
+
+    if (!donor) { 
+      return res.status(404).json({ message: 'Donor not found' });
+    }
+
+    console.log('Donor:', donor);
+    
+    const { fName, lName, phone_number_1: {number: phone}, email_1: {email} } = donor;
+
+    // Normalize the input for searching:
+    const combinedInput = (fName + lName).toLowerCase().replace(/\s+/g, '');
+    const reversedInput = (lName + fName).toLowerCase().replace(/\s+/g, '');
+    const last6 = phone.slice(-6); 
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Build the aggregation pipeline
+    const pipeline = [
+      // 1. Add combinedName, reversedName for each document
+      {
+        $addFields: {
+          combinedName: {
+            $replaceAll: {
+              input: {
+                $toLower: { $concat: ['$fName', '$lName'] }
+              },
+              find: ' ',
+              replacement: ''
+            }
+          },
+          reversedName: {
+            $replaceAll: {
+              input: {
+                $toLower: { $concat: ['$lName', '$fName'] }
+              },
+              find: ' ',
+              replacement: ''
+            }
+          }
+        }
+      },
+      // 2. Match possible duplicates
+      {
+        $match: {
+          $or: [
+            // a) combinedName == (fName + lName)
+            { combinedName: { $regex: '^' + combinedInput + '$', $options: 'i' } },
+            // b) reversedName == (fName + lName)
+            { reversedName: { $regex: '^' + reversedInput + '$', $options: 'i' } },
+            // c) phone ends with last 6 digits
+            { phone: { $regex: last6 + '$', $options: 'i' } },
+            // d) email exact match (case-insensitive)
+            { email: { $regex: '^' + normalizedEmail + '$', $options: 'i' } }
+          ]
+        }
+      },
+      // 3. Hide the helper fields from the final result
+      {
+        $project: {
+          combinedName: 0,
+          reversedName: 0,
+        }
+      }
+    ];
+
+    const potentialDuplicates = await Donor.aggregate(pipeline);
+
+    res.status(200).json({
+      status: 'success',
+      count: potentialDuplicates.length,
+      data: potentialDuplicates,
+    });
+  } catch (error) {
+    console.error('Error checking potential duplicates:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

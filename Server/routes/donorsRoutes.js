@@ -33,7 +33,8 @@ const {
   setOwnersForMultipleDonators,
   setDonatorStatus,
   updateDonatorCallback,
-  getTotalDonatorsWithCallback
+  getTotalDonatorsWithCallback,
+  checkPotentialDuplicates
 } = require("../controllers/donorsController");
 
 /**
@@ -57,6 +58,14 @@ router.get("/total", getTotalDonators);
  * @returns {Number} The total number of donors with callback dates
  */
 router.get("/total-callback", getTotalDonatorsWithCallback); 
+
+/**
+ * @route   GET /check-duplicate/:id
+ * @desc    Check if a donor has a duplicate
+ * @access  Public
+ * @returns {Object} The duplicate donor, if found
+ */
+router.get("/check-duplicate/:id", checkPotentialDuplicates);
 
 /**
  * @route   PUT /donors/assign
