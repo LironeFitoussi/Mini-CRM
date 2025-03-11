@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import debounce from 'lodash.debounce';
 
 /**
  * Custom hook for fetching and managing Allodon clients data
+ * Uses client-side pagination for better performance
  * 
  * @param {Object} initialPagination - Initial pagination settings
  * @param {number} initialPagination.page - Initial page number (0-based)
@@ -13,12 +14,37 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [paginationModel, setPaginationModel] = useState(initialPagination);
-  const [data, setData] = useState({
-    clients: [],
-    totalDocuments: 0,
-  });
+  const [allClients, setAllClients] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Memoized function to filter and paginate data client-side
+  const paginatedData = useMemo(() => {
+    let filteredData = allClients;
+    
+    // Apply search filter if exists
+    if (debouncedSearch) {
+      const searchLower = debouncedSearch.toLowerCase();
+      filteredData = allClients.filter(client => {
+        // Adjust these fields based on your actual client object structure
+        return (
+          (client.name && client.name.toLowerCase().includes(searchLower)) ||
+          (client.email && client.email.toLowerCase().includes(searchLower)) ||
+          (client.phone && client.phone.includes(debouncedSearch)) ||
+          (client.clientId && client.clientId.includes(debouncedSearch))
+        );
+      });
+    }
+    
+    // Apply pagination
+    const startIndex = paginationModel.page * paginationModel.pageSize;
+    const endIndex = startIndex + paginationModel.pageSize;
+    
+    return {
+      clients: filteredData.slice(startIndex, endIndex),
+      totalDocuments: filteredData.length
+    };
+  }, [allClients, debouncedSearch, paginationModel.page, paginationModel.pageSize]);
 
   // Set up debounced search handler
   const debouncedChangeHandler = useCallback(
@@ -36,19 +62,19 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
     debouncedChangeHandler(e.target.value);
   };
 
-  // Fetch Allodon clients data
-  const fetchClients = useCallback(async () => {
+  // Fetch all Allodon clients data
+  const fetchAllClients = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams({
-        page: paginationModel.page + 1, // Convert to 1-based for API
-        limit: paginationModel.pageSize,
-      });
+      const params = new URLSearchParams();
       
       if (debouncedSearch) {
         params.append('search', debouncedSearch);
       }
+
+      // Use a large limit to fetch all clients at once
+      params.append('limit', '10000');
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/v1/allodon/clients?${params.toString()}`
@@ -59,16 +85,13 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
       }
 
       const result = await response.json();
-      setData({
-        clients: result.clients,
-        totalDocuments: result.totalDocuments,
-      });
+      setAllClients(result.clients);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [paginationModel.page, paginationModel.pageSize, debouncedSearch]);
+  }, [debouncedSearch]);
 
   // Handle pagination changes
   const handlePageChange = useCallback((newPage) => {
@@ -97,17 +120,23 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
         throw new Error(`Error updating status: ${response.statusText}`);
       }
       
-      // Refetch clients after status update
-      fetchClients();
+      // Update the client's status locally in the cached data
+      setAllClients(prevClients => 
+        prevClients.map(client => 
+          client._id === clientId 
+            ? { ...client, status: newStatus } 
+            : client
+        )
+      );
     } catch (err) {
       setError(`Failed to update status: ${err.message}`);
     }
-  }, [fetchClients]);
+  }, []);
 
   // Fetch clients when dependencies change
   useEffect(() => {
-    fetchClients();
-  }, [fetchClients]);
+    fetchAllClients();
+  }, [fetchAllClients]);
 
   // Cleanup debounce handler on unmount
   useEffect(() => {
@@ -118,7 +147,7 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
 
   return {
     searchQuery,
-    data,
+    data: paginatedData,
     loading,
     error,
     paginationModel,
@@ -126,7 +155,7 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
     handlePageChange,
     handlePageSizeChange,
     handleStatusToggle,
-    refetch: fetchClients,
+    refetch: fetchAllClients,
   };
 };
 

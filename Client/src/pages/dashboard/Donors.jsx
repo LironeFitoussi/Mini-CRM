@@ -1,5 +1,5 @@
 // src/pages/DonatorsPage.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Box,
   TextField,
@@ -21,12 +21,37 @@ const DonatorsPage = () => {
     page: 0, // zero-based
     pageSize: 25,
   });
-  const [data, setData] = useState({
-    donors: [],
-    totalDocuments: 0,
-  });
+  const [allDonors, setAllDonors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Memoized function to filter and paginate data client-side
+  const paginatedData = useMemo(() => {
+    let filteredData = allDonors;
+    
+    // Apply search filter if exists
+    if (debouncedSearch) {
+      const searchLower = debouncedSearch.toLowerCase();
+      filteredData = allDonors.filter(donor => {
+        // Adjust these fields based on your actual donor object structure
+        return (
+          (donor.name && donor.name.toLowerCase().includes(searchLower)) ||
+          (donor.email && donor.email.toLowerCase().includes(searchLower)) ||
+          (donor.phone && donor.phone.includes(debouncedSearch)) ||
+          (donor.donorId && donor.donorId.includes(debouncedSearch))
+        );
+      });
+    }
+    
+    // Apply pagination
+    const startIndex = paginationModel.page * paginationModel.pageSize;
+    const endIndex = startIndex + paginationModel.pageSize;
+    
+    return {
+      donors: filteredData.slice(startIndex, endIndex),
+      totalDocuments: filteredData.length
+    };
+  }, [allDonors, debouncedSearch, paginationModel.page, paginationModel.pageSize]);
 
   const debouncedChangeHandler = useCallback(
     debounce((value) => {
@@ -42,17 +67,18 @@ const DonatorsPage = () => {
     debouncedChangeHandler(e.target.value);
   };
 
-  const fetchDonators = async () => {
+  const fetchAllDonors = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams({
-        page: paginationModel.page + 1, // 1-based
-        limit: paginationModel.pageSize,
-      });
+      const params = new URLSearchParams();
+      
       if (debouncedSearch) {
         params.append("search", debouncedSearch);
       }
+
+      // Use a large limit to fetch all donors at once
+      params.append("limit", "10000");
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/v1/donors?${params.toString()}`
@@ -62,23 +88,17 @@ const DonatorsPage = () => {
       }
 
       const result = await response.json();
-      // console.log(result);
-      
-      setData({
-        donors: result.donors,
-        totalDocuments: result.totalDocuments,
-      });
+      setAllDonors(result.donors);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [debouncedSearch]);
 
   useEffect(() => {
-    fetchDonators();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paginationModel.page, paginationModel.pageSize, debouncedSearch]);
+    fetchAllDonors();
+  }, [fetchAllDonors]);
 
   const handlePageChange = useCallback((newPage) => {
     setPaginationModel((prev) => ({ ...prev, page: newPage }));
@@ -90,7 +110,7 @@ const DonatorsPage = () => {
 
   const handleStatusToggle = async (donorId, newStatus) => {
     try {
-      await fetch(
+      const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/v1/donors/${donorId}/status`,
         {
           method: "PUT",
@@ -100,7 +120,19 @@ const DonatorsPage = () => {
           body: JSON.stringify({ status: newStatus }),
         }
       );
-      fetchDonators();
+      
+      if (!response.ok) {
+        throw new Error(`Error updating status: ${response.statusText}`);
+      }
+      
+      // Update the donor's status locally in the cached data
+      setAllDonors(prevDonors => 
+        prevDonors.map(donor => 
+          donor._id === donorId 
+            ? { ...donor, status: newStatus } 
+            : donor
+        )
+      );
     } catch (err) {
       setError(`Failed to update status: ${err.message}`);
     }
@@ -155,14 +187,14 @@ const DonatorsPage = () => {
 
       {/* Table */}
       <SmartTable
-        data={data.donors}
+        data={paginatedData.donors}
         loading={loading}
         onStatusToggle={handleStatusToggle}
         onDonatorSelect={handleDonatorSelect}
         size="100%"
         page={paginationModel.page}
         rowsPerPage={paginationModel.pageSize}
-        totalCount={data.totalDocuments}
+        totalCount={paginatedData.totalDocuments}
         onPageChange={handlePageChange}
         onPageSizeChange={handlePageSizeChange}
       />

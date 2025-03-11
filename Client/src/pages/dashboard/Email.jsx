@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Box, Typography, Divider, Button } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Box, Typography, Divider } from "@mui/material";
 import axios from "axios";
 
 import RecipientsSection from "../../components/Atoms/RecipientsSection";

@@ -1,7 +1,8 @@
 // SendWhatsappButton.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { Button, Modal, Box, TextField, Typography } from "@mui/material";
+import PropTypes from 'prop-types';
 
 const SendWhatsappButton = ({ recipientPhone }) => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -9,14 +10,18 @@ const SendWhatsappButton = ({ recipientPhone }) => {
     message: "",
   });
 
+SendWhatsappButton.propTypes = {
+  recipientPhone: PropTypes.string
+};
+
   const handleClick = () => {
     setModalOpen(true);
   };
 
   const handleSend = () => {
-    const whatsappUrl = `https://wa.me/${
-      recipientPhone
-    }?text=${encodeURIComponent(formValues.message)}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${
+      recipientPhone.replace(/^\+/, '')
+    }&text=${encodeURIComponent(formValues.message)}`;
     window.open(whatsappUrl, "_blank");
     setModalOpen(false);
   };
