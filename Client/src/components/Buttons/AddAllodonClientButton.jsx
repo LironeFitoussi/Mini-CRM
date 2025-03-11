@@ -37,7 +37,7 @@ const AddAllodonClientButton = () => {
         
         try {
             const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/api/v1/allodon/clients`, 
+                `${import.meta.env.VITE_API_URL}/api/v1/allodon/donors`, 
                 newClient
             );
             navigate(`/dashboard/allodon-clients/${response.data._id}`);

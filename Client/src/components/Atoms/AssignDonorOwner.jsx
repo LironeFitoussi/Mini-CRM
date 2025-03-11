@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, Select, MenuItem, CircularProgress, Alert } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import useUsers from "../../queryhooks/useUsers"; // Hook to fetch users
-
+import PropTypes from 'prop-types';
 const assignDonorOwner = async ({ donorId, ownerId }) => {
   await axios.put(
     `${import.meta.env.VITE_API_URL}/api/v1/donors/${donorId}/owner`,
@@ -13,12 +13,15 @@ const assignDonorOwner = async ({ donorId, ownerId }) => {
 };
 
 const AssignDonorOwner = ({ currentOwner, selectedDonorId }) => {
+  AssignDonorOwner.propTypes = {
+    currentOwner: PropTypes.object.isRequired,
+    selectedDonorId: PropTypes.string.isRequired,
+  };
+
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [error, setError] = useState("");
   const [selectedOwner, setSelectedOwner] = useState("");
-
-  // console.log(currentOwner);
   
   const {
     users,

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
 
 // Components
-import AddDonatorButton from "../../components/Buttons/AddDonatorButton";
+// import AddDonatorButton from "../../components/Buttons/AddDonatorButton";
 import SmartTable from "../../components/Molecules/SmartTable";
 import PageHeader from "../../components/Molecules/PageHeader";
 import SearchBar from "../../components/Atoms/SearchBar";
@@ -161,7 +161,7 @@ const NedarimClients = () => {
       {/* Page Header */}
       <PageHeader 
         title="Nedarim Donors" 
-        actions={<AddDonatorButton />} 
+        // actions={<AddDonatorButton />} 
       />
 
       {/* Search Input */}

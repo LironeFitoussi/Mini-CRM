@@ -1,29 +1,37 @@
 // src/components/Molecules/SmartTable.jsx
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@mui/material";
 import NextContactDateModal from "../Modals/NextContactDateModal";
 import StatusSelect from "../Atoms/StatusSelect";
-
+import PropTypes from 'prop-types';
 const SmartTable = ({
   data = [],
   loading = false,
   onStatusToggle,
-  onDonatorSelect,
+  onRowClick,
   size = "100%",
   page,
-  rowsPerPage,
-  totalCount,
+  pageSize,
+  totalDocuments,
   onPageChange,
   onPageSizeChange,
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  SmartTable.propTypes = {
+    data: PropTypes.array.isRequired,
+    loading: PropTypes.bool.isRequired,
+    onStatusToggle: PropTypes.func.isRequired,
+    onRowClick: PropTypes.func,
+    size: PropTypes.string,
+    page: PropTypes.number.isRequired,
+    pageSize: PropTypes.number.isRequired,
+    totalDocuments: PropTypes.number.isRequired,
+    onPageChange: PropTypes.func,
+    onPageSizeChange: PropTypes.func,
+  };
 
-  // console.log(data);
-  
   // State + Modal for next contact date
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDonatorId, setSelectedDonatorId] = useState(null);
@@ -48,35 +56,35 @@ const SmartTable = ({
   const columns = useMemo(() => [
     {
       field: "fName",
-      headerName: t("clientInfo.fName"),
+      headerName: t("clientInfo.fName") || "First Name",
       flex: 1,
       renderCell: (params) =>
         loading ? <Skeleton variant="text" aria-hidden="true" /> : params.value || "N/A",
     },
     {
       field: "lName",
-      headerName: t("clientInfo.lName"),
+      headerName: t("clientInfo.lName") || "Last Name",
       flex: 1,
       renderCell: (params) =>
         loading ? <Skeleton variant="text" aria-hidden="true" /> : params.value || "N/A",
     },
     {
       field: "email",
-      headerName: t("clientInfo.email"),
+      headerName: t("clientInfo.email") || "Email",
       flex: 2,
       renderCell: (params) =>
         loading ? <Skeleton variant="text" aria-hidden="true" /> : params.value || "N/A",
     },
     {
       field: "phoneNumber",
-      headerName: t("clientInfo.phone"),
+      headerName: t("clientInfo.phone") || "Phone",
       flex: 1,
       renderCell: (params) =>
         loading ? <Skeleton variant="text" aria-hidden="true" /> : params.value || "N/A",
     },
     {
       field: "status",
-      headerName: t("customerManagement.status"),
+      headerName: t("customerManagement.status") || "Status",
       flex: 1,
       renderCell: (params) => {
         if (loading) {
@@ -88,7 +96,7 @@ const SmartTable = ({
         return (
           <StatusSelect
             currentStatus={params.row.status}
-            donatorId={params.row.id}
+            donatorId={params.row._id}
             onStatusToggle={onStatusToggle}
             onNeedDate={(donatorId) => handleOpenModal(donatorId)}
           />
@@ -97,7 +105,7 @@ const SmartTable = ({
     },
     {
       field: "nextContactDate",
-      headerName: t("donatorNotes.nextContactDate"),
+      headerName: t("donatorNotes.nextContactDate") || "Next Contact",
       flex: 1,
       renderCell: (params) => {
         if (loading) {
@@ -119,7 +127,7 @@ const SmartTable = ({
     },
     {
       field: "owner",
-      headerName: t("customerManagement.owner"),
+      headerName: t("customerManagement.owner") || "Owner",
       flex: 1,
       renderCell: (params) => {
         if (loading) {
@@ -129,19 +137,7 @@ const SmartTable = ({
         return `${params.row.owner?.fName || ""} ${params.row.owner?.lName || "N/A"}`;
       },
     },
-  ], [loading, onStatusToggle]);
-
-  // Convert your data => DataGrid-friendly rows
-  const rows = useMemo(() => data.map((donor) => ({
-    id: donor._id,
-    fName: donor.fName || "",
-    lName: donor.lName || "",
-    email: donor.email_1?.email || "N/A",
-    phoneNumber: donor.phone_number_1?.number || "N/A",
-    status: donor.status || "",
-    nextContactDate: donor.nextContactDate || null,
-    owner: donor.owner || null,
-  })), [data]);
+  ], [loading, onStatusToggle, t]);
 
   const getRowClassName = (params) => {
     const status = params.row.status;
@@ -150,55 +146,49 @@ const SmartTable = ({
     return "";
   };
 
-  // Handle row click -> navigate to /donors/:id
   const handleRowClick = (params) => {
-    if (loading) return; // Prevent navigation when loading
-    navigate(`/dashboard/donors/${params.id}`);
+    if (onRowClick) {
+      onRowClick(params.row._id);
+    }
   };
 
-  // Handle pagination model change
   const handlePaginationModelChange = (model) => {
-    const { page: newPage, pageSize: newPageSize } = model;
-
-    if (newPage !== page && typeof onPageChange === "function") {
-      onPageChange(newPage);
+    if (onPageChange && model.page !== page) {
+      onPageChange(model.page);
     }
-
-    if (newPageSize !== rowsPerPage && typeof onPageSizeChange === "function") {
-      onPageSizeChange(newPageSize);
+    if (onPageSizeChange && model.pageSize !== pageSize) {
+      onPageSizeChange(model.pageSize);
     }
   };
 
   return (
-    <div style={{ width: size }}>
-      <DataGrid
-        sx={{
-          "& .MuiDataGrid-row:hover": {
-            cursor: loading ? "default" : "pointer",
-          },
-          height: "72.5vh",
-        }}
-        rows={rows}
-        columns={columns}
-        loading={false} // Disable the default loading overlay
-        getRowClassName={getRowClassName}
-        pagination
-        paginationMode="server"
-        rowCount={totalCount}
-        paginationModel={{ page, pageSize: rowsPerPage }}
-        onPaginationModelChange={handlePaginationModelChange}
-        rowsPerPageOptions={[5, 10, 25, 50]}
-        disableSelectionOnClick
-        onRowClick={handleRowClick}
-      />
-
-      {/* Modal for scheduling next contact date */}
+    <>
+      <div style={{ height: 600, width: size }}>
+        {loading ? (
+          <Skeleton variant="rectangular" height={600} />
+        ) : (
+          <DataGrid
+            rows={data}
+            columns={columns}
+            getRowId={(row) => row._id}
+            rowCount={totalDocuments}
+            pageSizeOptions={[10, 25, 50, 100]}
+            paginationModel={{ page, pageSize }}
+            onPaginationModelChange={handlePaginationModelChange}
+            paginationMode="server"
+            onRowClick={handleRowClick}
+            getRowClassName={getRowClassName}
+            disableRowSelectionOnClick
+            autoHeight
+          />
+        )}
+      </div>
       <NextContactDateModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onDateSelect={handleDateSelect}
       />
-    </div>
+    </>
   );
 };
 

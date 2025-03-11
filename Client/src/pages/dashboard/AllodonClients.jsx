@@ -7,12 +7,12 @@ import useAllodonClients from "../../hooks/useAllodonClients";
 import PageHeader from "../../components/Molecules/PageHeader";
 import SearchBar from "../../components/Atoms/SearchBar";
 import AllodonTable from "../../components/Molecules/AllodonTable";
-import AddAllodonClientButton from "../../components/Buttons/AddAllodonClientButton";
+// import AddAllodonClientButton from "../../components/Buttons/AddAllodonClientButton";
 
 /**
  * AllodonClients page component
  * Displays and manages Allodon clients
- * 
+ *
  * @returns {JSX.Element} AllodonClients page
  */
 const AllodonClients = () => {
@@ -29,12 +29,14 @@ const AllodonClients = () => {
     handleStatusToggle,
   } = useAllodonClients();
 
+  // console.log(data);
+
   return (
     <Box sx={{ padding: 4 }}>
       {/* Page Header with Add Client Button */}
-      <PageHeader 
-        title="Allodon Clients" 
-        actions={<AddAllodonClientButton />} 
+      <PageHeader
+        title="Allodon Clients"
+        // actions={<AddAllodonClientButton />}
       />
 
       {/* Search Input */}
@@ -53,18 +55,20 @@ const AllodonClients = () => {
       )}
 
       {/* Clients Table */}
-      <AllodonTable
-        data={data.clients}
-        loading={loading}
-        onStatusToggle={handleStatusToggle}
-        page={paginationModel.page}
-        rowsPerPage={paginationModel.pageSize}
-        totalCount={data.totalDocuments}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
-      />
+      {data.donors && data.donors.length > 0 ? (
+        <AllodonTable
+          data={data.donors}
+          loading={loading}
+          onStatusToggle={handleStatusToggle}
+          page={paginationModel.page}
+          rowsPerPage={paginationModel.pageSize}
+          totalCount={data.totalDocuments}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
+      ) : null}
     </Box>
   );
 };
 
-export default AllodonClients; 
+export default AllodonClients;

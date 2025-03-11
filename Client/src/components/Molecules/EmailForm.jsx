@@ -8,6 +8,9 @@ import {
   FormControl,
   InputLabel,
   CircularProgress,
+  Typography,
+  Chip,
+  Paper,
 } from "@mui/material";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -24,10 +27,17 @@ const EmailForm = ({
   handleSubmit,
 }) => {
   const { t } = useTranslation();
-  console.log(to);
   
   const [emailPreviewOpen, setEmailPreviewOpen] = useState(false);
   const [isSending, setIsSending] = useState(false); // New state for loading spinner
+
+  // Check if "to" contains multiple emails (comma-separated)
+  const hasMultipleRecipients = to && to.includes(",");
+  
+  // Count the number of recipients
+  const recipientCount = hasMultipleRecipients 
+    ? to.split(",").filter(email => email.trim() !== "").length 
+    : (to ? 1 : 0);
 
   const fromEmails = [
     "contact.lesenfantsderachi@gmail.com",
@@ -89,15 +99,43 @@ const EmailForm = ({
         ))}
       </TextField>
 
+      {/* Display recipients differently based on count */}
+      {hasMultipleRecipients ? (
+        <Box sx={{ mt: 2, mb: 1 }}>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+            {t("email.recipients") || "Recipients"}: <strong>{recipientCount}</strong>
+          </Typography>
+          <Paper
+            variant="outlined"
+            sx={{
+              p: 1,
+              maxHeight: "100px",
+              overflowY: "auto",
+              backgroundColor: "#f5f5f5",
+            }}
+          >
+            <Typography variant="body2" color="textSecondary">
+              {t("email.broadcastNotice") || "This email will be sent to all active donors with valid email addresses."}
+            </Typography>
+          </Paper>
+          <TextField
+            type="hidden"
+            name="to"
+            value={to}
+          />
+        </Box>
+      ) : (
         <TextField
-        label={t("email.to") || "To"}
-        value={to}
-        name="to"
-        onChange={handleFormChange}
-        fullWidth
-        margin="normal"
-        helperText={t("email.toHelper") || "Enter the recipient email"}
+          label={t("email.to") || "To"}
+          value={to}
+          name="to"
+          onChange={handleFormChange}
+          fullWidth
+          margin="normal"
+          helperText={t("email.toHelper") || "Enter the recipient email"}
         />
+      )}
+
       <TextField
         label={t("email.subject") || "Subject"}
         value={subject}

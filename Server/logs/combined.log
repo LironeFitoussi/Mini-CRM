@@ -292,3 +292,118 @@
 2025-03-11 13:36:17 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2025-03-11 13:36:39 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2025-03-11 13:36:54 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:02:36 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-11 14:02:48 [INFO]: ✅ Message sent: %s
+2025-03-11 14:02:48 [INFO]: 🗂️ Mail job marked as sent: 67d0265c1e83da7d6ba17ebc
+2025-03-11 14:17:05 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:29:50 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:29:52 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:37:38 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:39:12 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:40:39 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:41:11 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:42:11 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:45:51 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:45:51 [INFO]: 🚀 Performing initial sync on server startup...
+2025-03-11 14:45:51 [INFO]: 🔄 Starting full sync: 2025-03-11T12:45:51.552Z
+2025-03-11 14:45:51 [INFO]: Step 1: Syncing Allodon clients...
+2025-03-11 14:45:51 [INFO]: ✅ Sync cron job initialized (runs daily at midnight)
+2025-03-11 14:46:12 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:46:12 [INFO]: 🚀 Performing initial sync on server startup...
+2025-03-11 14:46:12 [INFO]: 🔄 Starting full sync: 2025-03-11T12:46:12.729Z
+2025-03-11 14:46:12 [INFO]: Step 1: Syncing Allodon clients...
+2025-03-11 14:46:12 [INFO]: ✅ Sync cron job initialized (runs daily at midnight)
+2025-03-11 14:58:36 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:58:56 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 14:59:49 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:00:22 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:13:00 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:18:15 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:18:32 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:19:17 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:21:04 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:21:30 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:22:22 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:22:32 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:24:21 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:24:27 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:25:21 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:25:32 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:25:43 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:25:45 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:27:02 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:28:39 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:29:02 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:29:16 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:29:20 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:29:21 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:29:38 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:35:10 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:36:16 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:37:15 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:44:29 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 15:45:08 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:00:29 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:13:16 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:21:33 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:22:07 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:22:13 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:22:44 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:22:44 [INFO]: 🔧 Email sending mode: SIMULATION (no emails will be sent)
+2025-03-11 16:22:48 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:22:48 [INFO]: 🔧 Email sending mode: SIMULATION (no emails will be sent)
+2025-03-11 16:23:26 [INFO]: ✅ SIMULATED EMAIL - Not actually sent
+2025-03-11 16:23:26 [INFO]: 📧 From: Rav Benyamin Chemouny <contact.lesenfantsderachi@gmail.com>
+2025-03-11 16:23:26 [INFO]: 📧 To: lironefit@gmail.com
+2025-03-11 16:23:26 [INFO]: 📧 Subject: ghdfghdfgh
+2025-03-11 16:23:26 [INFO]: 📧 Body length: 419 characters
+2025-03-11 16:23:26 [INFO]: ✅ Simulated message ID: simulated-1741703006747-e0r5tp4qtz9
+2025-03-11 16:23:27 [INFO]: 🗂️ Mail job marked as sent: 67d0475e3f482b81303be046
+2025-03-11 16:24:31 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:24:31 [INFO]: 🔧 Email sending mode: SIMULATION (no emails will be sent)
+2025-03-11 16:24:45 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:24:45 [INFO]: 🔧 Email sending mode: SIMULATION (no emails will be sent)
+2025-03-11 16:24:58 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:24:58 [INFO]: 🔧 Email sending mode: SIMULATION (no emails will be sent)
+2025-03-11 16:25:17 [INFO]: ✅ SIMULATED EMAIL - Not actually sent
+2025-03-11 16:25:17 [INFO]: 📧 From: Rav Benyamin Chemouny <contact.lesenfantsderachi@gmail.com>
+2025-03-11 16:25:17 [INFO]: 📧 To: lironefit@gmail.com
+2025-03-11 16:25:17 [INFO]: 📧 Subject: hfdgh f
+2025-03-11 16:25:17 [INFO]: 📧 Body length: 416 characters
+2025-03-11 16:25:17 [INFO]: ✅ Simulated message ID: simulated-1741703117789-dhkqoddpetq
+2025-03-11 16:25:18 [INFO]: 🗂️ Mail job marked as sent: 67d047cdb0db86adaa1fec06
+2025-03-11 16:25:36 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:25:36 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-11 16:25:50 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-11 16:25:52 [INFO]: ✅ Message sent: %s
+2025-03-11 16:25:52 [INFO]: 🗂️ Mail job marked as sent: 67d047ed9abd15934b96a28a
+2025-03-11 16:27:38 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-11 16:27:38 [INFO]: 🔧 Email sending mode: SIMULATION (no emails will be sent)
+2025-03-11 16:37:19 [INFO]: ✅ SIMULATED EMAIL - Not actually sent
+2025-03-11 16:37:19 [INFO]: 📧 From: Rav Benyamin Chemouny <contact.lesenfantsderachi@gmail.com>
+2025-03-11 16:37:19 [INFO]: 📧 To: 
+2025-03-11 16:37:19 [INFO]: 📧 Subject: email.broadcastSubject
+2025-03-11 16:37:19 [INFO]: 📧 Body length: 397 characters
+2025-03-11 16:37:19 [INFO]: ✅ Simulated message ID: simulated-1741703839576-846qgx1toks
+2025-03-11 16:37:20 [INFO]: 🗂️ Mail job marked as sent: 67d04a9f582014bb36c309c6
+2025-03-11 16:46:42 [INFO]: ✅ SIMULATED EMAIL - Not actually sent
+2025-03-11 16:46:42 [INFO]: 📧 From: Rav Benyamin Chemouny <contact.lesenfantsderachi@gmail.com>
+2025-03-11 16:46:42 [INFO]: 📧 To: 
+2025-03-11 16:46:42 [INFO]: 📧 Subject: email.broadcastSubject
+2025-03-11 16:46:42 [INFO]: 📧 Body length: 397 characters
+2025-03-11 16:46:42 [INFO]: ✅ Simulated message ID: simulated-1741704402453-c7xr9s88qee
+2025-03-11 16:46:43 [INFO]: 🗂️ Mail job marked as sent: 67d04cd2582014bb36c3447c
+2025-03-11 16:46:56 [INFO]: ✅ SIMULATED EMAIL - Not actually sent
+2025-03-11 16:46:56 [INFO]: 📧 From: Rav Benyamin Chemouny <contact.lesenfantsderachi@gmail.com>
+2025-03-11 16:46:56 [INFO]: 📧 To: 
+2025-03-11 16:46:56 [INFO]: 📧 Subject: email.broadcastSubject
+2025-03-11 16:46:56 [INFO]: 📧 Body length: 397 characters
+2025-03-11 16:46:56 [INFO]: ✅ Simulated message ID: simulated-1741704416279-5xuin3elej4
+2025-03-11 16:46:56 [INFO]: 🗂️ Mail job marked as sent: 67d04ce0582014bb36c361d9
+2025-03-11 16:55:21 [INFO]: ✅ SIMULATED EMAIL - Not actually sent
+2025-03-11 16:55:21 [INFO]: 📧 From: Rav Benyamin Chemouny <contact.lesenfantsderachi@gmail.com>
+2025-03-11 16:55:21 [INFO]: 📧 To: philippe.azria@gmail.com, pfitoussi9@gmail.com, jul.azoulay@gmail.com, dahannoa930@gmail.com, david.soussan@gmail.com, michel@storemeraude.com, michel.dahan4@gmail.com, lolo_abitbol@hotmail.fr, contact@foncierehabitat.com, v.farjon@gmail.com, erickactifs@me.com, smuel55555@gmail.com, bramidavid07@gmail.com, rsitbon.vip@gmail.com, michaelberdah@hotmail.com, paul.chemouny@gmail.com, lellouche42@gmail.com, caro.alloul@gmail.com, samuelalloun@icloud.com, drderai.brigitte@gmail.com, demphisdibi@yahoo.fr, alexandrapean01@gmail.com, soussana.william@gmail.com, odeliabloch@hotmail.fr, dany.hayoun0419@gmail.com, simon.marciano@yahoo.fr, transitionecologie@gmail.com, leitpalel@hotmail.com, selan.nathalie@gmail.com, shirelattlan@yahoo.fr, jordanmadar19@gmail.com, lbenzaqui@groupeaf.com, guez4@hotmail.com, mikaatlan@hotmail.fr, david.dilouya@gmail.com, murieluzanc@icloud.com, francoiseguyader5@gmail.com, s_hagege@hotmail.com, laurie.marciano@gmail.com, jeremy.benguira@gmail.com, evadray@gmail.com, sberro12@gmail.com, benihaddad@hotmail.fr, julienoppen@yahoo.fr, gerard.marteau@live.fr, carinesabbah@yahoo.fr, bettybrami@hotmail.com, ed.boubli@gmail.com, sibonylaurence@yahoo.fr, mick1012@hotmail.fr, ben.msn@hotmail.fr, jess770_6@hotmail.com, shana_fitoussi@hotmail.fr, contact@eco-diagnostic.fr, jeremyhaddad04@gmail.com, rebecca.azeraf@gmail.com, jonassoudry@gmail.com, rahel.d95@gmail.com, chalomazria@gmail.com, sarahuzan27@gmail.com, mar.simah770@gmail.com, shirelleamar@hotmail.com, elstroca@gmail.com, benjamin@getjust.eu, stephan@oliel.org, levanazemour@gmail.com, ryansroussi0106@gmail.com, arthur.freo@gmail.com, bteec93@gmail.com, ndahan91@yahoo.com, julie130884@gmail.com, islabd26@gmail.com, aaron12@hotmail.fr, benjamin@pacteisolations.fr, racheldallemule@gmail.com, leabenhamou18@gmail.com, warrenhamou@gmail.com, illancohen@msn.com, marouani.audrey@gmail.com, nicole_madar@hotmail.fr, tedhadad@gmail.com, lise.benkemoun@gmail.com, davidbouchoucha@yahoo.fr, coriattsamuel@gmail.com, edenberdah@hotmail.fr, yossihdd@yahoo.com, lucienattali@hotmail.fr, ww_dany@hotmail.com, chaiperez662@gmail.com, danbell572@gmail.com, anniezeitoun6@gmail.com, tsiporah.wildbaum@gmail.com, contact@elsofficeltd.com, nakacheben5@gmail.com, tsiporasabbah@gmail.com, hamosbel@gmail.com, chikli.fabien@gmail.com, 23sebag@gmail.com, ajclaude6948@gmail.com, pierrecasteilescalona@gmail.com, leadray1@gmail.com, chneor770@hotmail.com, mikaelamram@gmail.com, porhel.eric@neuf.fr, mcandcash@gmail.com, chrismy.berfroi@gmail.com, annieraoul@hotmail.fr, cattanrub@gmail.com, mikaelroy1@hotmail.com, yohanbenchimol@gmail.com, steveassouline@hotmail.fr, haya770@msn.com, murielk770@gmail.com, celine.amar@gmail.com, marc2mazouz@gmail.com, cohenarazi@hotmail.fr, niksold95@yahoo.fr, joycecohen3@gmail.com, davidj.danan@gmail.com, sarah-tuil@hotmail.fr, laura.berrebi@hotmail.fr, elie.anahory@gmail.com, sebban.shirel@gmail.com, liorafrech21@gmail.com, leohafner06@gmail.com, shany.ohayon04@gmail.com, renee.serda@gmail.com, davidcohentannoudji@gmail.com, cl.slt@orange.fr, annael7595@gmail.com, maxime.gibert@gmail.com, sof-michel@hotmail.com, garcini.jeremy@gmail.com, guilamoyal@gmail.com, mickouh@gmail.com, alix.dossisard2004@gmail.com, alainlasry6955@gmail.com, menidan26@gmail.com, anael.trv@gmail.com, prissousam@gmail.com, talikalfa100204@gmail.com, s.roux@n26technologies.com, mseroussi@rockstone-im.com, eliemel62@gmail.com, davidtaieb1966@gmail.com, hexagone3dpremium@gmail.com, taniailannfive@gmail.com, pelbaz83@gmail.com, leadcallrdv@gmail.com, isaacabergel34@gmail.com, 94david@free.fr, davidrouche5@gmail.com, mikhael.kremlinsky@gmail.com, ericbelhassen7@gmail.com, reb.sperling@gmail.com, levana270690@hotmail.com, nathanaelwielgowolski@gmail.com, aurelie.liezer@gmail.com, eric_benmoussa@yahoo.fr, yvesmalai@gmail.com, moyalaaron@gmail.com, raphaelkalf@gmail.com, berrebigregory@yahoo.fr, isabelle.nathanebrard@gmail.com, s_assous@hotmail.com, masques_gravure.0q@icloud.com, danielle.messalem@gmail.com, dansamama@hotmail.com, noamborros@yahoo.fr, pharmapbc@gmail.com, danelemaleh@gmail.com, benjaminhaouzi@hotmail.fr, jjkrief@gmail.com, yohan2404zohar@gmail.com, juif8@gmail.com, merires_kevin@hotmail.fr, terral_alain@orange.fr, r.montolio@rafygold.com, yoyolamc@gmail.com, floriane.jacob2@gmail.com, alexiamarciano25@gmail.com, contact@ilanaconseil.com, jonathandage@sassimmo.com, jennifer.amsellem@hotmail.fr, jonathansellem211@hotmail.fr, dorianeelbaz01@gmail.com, ourieltapiero26@icloud.com, abraham55bg@gmail.com, johannayaffa@gmail.com, panora971@gmail.com, stephanecohen.el@gmail.com, draydavid26@gmail.com, mika.chneor@gmail.com, laurent@mifamag.fr, ari_373@hotmail.com, tjojo1@hotmail.fr, ygiarmon@protonmail.com, halimigilles@gmail.com, johannsaada@gmail.com, miknabmail@gmail.com, j.aboukrat@orange.fr, reou.elka@gmail.com, gpelbaz@hotmail.com, francisbakouche@gmail.com, denisillouz@gmail.com, fbellity@hotmail.com, corinnemaimoun@hotmail.com, nadine-elbaz@hotmail.fr, meyerzouari@hotmail.fr, contactsayapharm@gmail.com, barbara.khalifa@hotmail.fr, audelh@hotmail.fr, pharmacienma@hotmail.com, kalotordjman@gmail.com, marlenebenittah@hotmail.com, shaMyr@putloo.fr, ak9dan@gmail.com, isaac@jycauto.com, jccroizier@gmail.com, rebecca199719@gmail.com, netcomputer.aric@gmail.com, jrmsnchz69@gmail.com, michaelsiksik@yahoo.fr, fannyba1952@gmail.com, ludovic.zouari@gmail.com, contact.dcalm@gmail.com, peres.karalou@gmail.com, raphaelbentolila@hotmail.com, yeoudith26@gmail.com, illan.donnard@gmail.com, manu_rofe@hotmail.fr, patrice.lellouche@gmail.com, david.hammel@ayor.fr, rivkakayem@gmail.com, holcmanb@gmail.com, fellous.marc@gmail.com, ouzeve@gmail.com, natanlanou@gmail.com, sarah_sellam@hotmail.com, kevinsiksik@yahoo.fr, abhm10019@gmail.com, chanaelayache@gmail.com, odeliaguez.og@gmail.com, davitangy5@gmail.com, fabiennne.djebeli@gmail.com, raphael.oziel@gmail.com, celea13@gmail.com, ledfrivka@gmail.com, naomieass@gmail.com, edenbou@hotmail.com, bergel18@gmail.com, rudisrael@hotmail.com, albertetshirley@yahoo.fr, david2ittah@gmail.com, jordancerfa@outlook.fr, cohenpatricia@hotmail.fr, fredbitan@yahoo.fr, greenbergyoel@gmail.com, cyrillebensimhon@gmail.com, annaellelub@gmail.com, rbismuth1707@gmail.com, lironeknafo2@gmail.com, nathanpartouche2@gmail.com, ericjhassid@gmail.com, stifben@yahoo.fr, zahavafreoua60@hotmail.com, rackreg@gmail.com, ruds.hk@gmail.com, jmarcbembaron@gmail.com, sarahamar23@gmail.com, claude.a06@orange.fr, dkrief@live.fr, ashleyarbib@gmail.com, msellati@hotmail.fe, carolekrief@gmail.com, yakalelo26@hotmail.com, aura.brami@hotmail.fr, noa.benitah@gmail.com, sabrinacohen06@gmail.com, carlaslama.19@gmail.com, chneor.z770@gmail.com, portugais1705@gmail.com, lalou_30@hotmail.fr, charlottemaradji@hotmail.fr, yoave55@gmail.com, cloroze@gmail.com, ilana.jdl@gmail.com, yankel_555@hotmail.com, carolinefglt@gmail.com, avraham_93@hotmail.fr, coben63@hotmail.fr, gabriel@generalboost.com, haivictor72@gmail.com, fabrice.zemour541@gmail.com, jossderai@icloud.com, martine7200@yahoo.com, hoze.vero@wanadoo.fr, jpada75@hotmail.com, parceline@msn.com, hannilea91@gmail.com, atlanaaron@gmail.com, chanelsebbagh5@hotmail.com, david.obadia21@gmail.com, rebmazouz@hotmail.fr, cohenjohanna32@gmail.com, marlonaboucaya@gmail.com, eazran@icloud.com, elieaou07@gmail.com, katoutchie@gmail.com, corynnecharbit@gmail.com, edoinfl@yahoo.com, ariellelouch@gmail.com, eva.benchimoun@gmail.com, nathalieweil353@gmail.com, ejjb@proton.me, victor.baror@hotmail.com, eliane.abitbol@hotmail.fr, bellaiche.roland@free.fr, elbeze@gmail.com, davidguez95@gmail.com, walter.chemla@optical-center.com, sylvain.benamu@wanadoo.fr, davidpicaro@hotmail.com, sarsela28@gmail.com, nathyves@live.fr, dahnine73@gmail.com, margaret55@free.fr, styvekrief@gmail.com, dloubnyc1@gmail.com, patrisrael@hotmail.fr, johnsellam@gmail.com, denise1934@gmail.com, georgio972@hotmail.fr, auroreattali@gmail.com, ariesaada@live.fr, shanonchemla21@gmail.com, attali.david13@yahoo.fr, francky.4@wanadoo.fr, sm@dailyconcepts.com, mtandetnik@gmail.com, serge.benamou69@gmail.com, mnhmzmr@gmail.com, dahangarry5@gmail.com, mathildeboukobza@hotmail.de, michael.smia@rslocation.fr, perezelodie@gmail.com, joshuachoukroun@gmail.com, mathildeboukobza@hotmail.fr, chimonehaddad@hotmail.fr, mrehana@iit.edu, eliezeitoun@yahoo.fr, soniamorali@yahoo.com, esty79@hotmail.fr, gabriel.temstet.ort@gmail.com, deborahsarfat@gmail.com, syl.lumb@gmail.com, mike.fitoussi@gmail.com, dks.3@wanadoo.fr, prothesedeluxe@gmail.com, edencori@outlook.com, direction@formonsnous.fr, g.fuks@fipartners.fr, jenniferchemouny6@gmail.com, ascdi@wanadoo.fr, zaffran26@hotmail.fr, amoureditions@gmail.com, rastasanka@hotmail.com, anthony.boukara@gmail.com, gerardkamus17@hotmail.com, debochoux505@gmail.com, samuelhayoun9@gmail.com, orlanelea.attali@gmail.com, samhovav@live.fr, aemquies@gmail.com, ohayon-benais@hotmail.fr, ambreart@gmail.com, nesslior@gmail.com, sarahcarelsif@gmail.com, lionel332@hotmail.com, miko.immo@gmail.com, sigalz1507@gmail.com, alexandra_cheli@hotmail.fr, tsiporazouiza@gmail.com, direction@asgchaufdage.fr, iskhar830@gmail.com, deb770@hotmail.fr, axellekrief@outlook.fr, jordan@france-emball.com, akolbesseder@hotmail.com, mettoudi@live.fr, aypcohen@gmail.com, fabrice.molkhou@gmail.com, yocoh17@gmail.com, madlencohen@hotmail.com, grillus33@gmail.com, teddyedinak@yahoo.fr, jacques0555@gmail.com, dshimon75@gmail.com, askl@wanadoo.fr, odelia94@hotmail.com
+2025-03-11 16:55:21 [INFO]: 📧 Subject: email.broadcastSubject
+2025-03-11 16:55:21 [INFO]: 📧 Body length: 397 characters
+2025-03-11 16:55:21 [INFO]: ✅ Simulated message ID: simulated-1741704921934-zam3lhz5q6r
+2025-03-11 16:55:22 [INFO]: 🗂️ Mail job marked as sent: 67d04ed9582014bb36c43918

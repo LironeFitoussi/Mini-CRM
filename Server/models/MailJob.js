@@ -25,6 +25,17 @@ const MailJobSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  successful_recipients: {
+    type: [String],
+    default: []
+  },
+  failed_recipients: {
+    type: [{
+      email: String,
+      error: String
+    }],
+    default: []
+  },
   created_at: {
     type: Date,
     default: Date.now

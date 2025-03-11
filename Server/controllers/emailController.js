@@ -11,6 +11,9 @@ require("dotenv").config();
 // Maximum number of recipients per email as per Gmail's limitations
 const MAX_RECIPIENTS_PER_EMAIL = 400;
 
+// Flag to enable/disable actual email sending (set to false for testing)
+const ENABLE_ACTUAL_SENDING = process.env.DEV_MODE === "true" ? false : true;
+
 function manipulateAnchors(htmlString) {
   // Match all anchor tags using a regular expression
   return htmlString.replace(/<a\s+([^>]*?)>(.*?)<\/a>/gi, (match, attributes, innerText) => {
@@ -70,19 +73,6 @@ const sendEmail = async (req, res) => {
     if (createdMailJobs.length > 0) {
       const firstMailJob = createdMailJobs[0];
 
-      // Create a transporter using SMTP
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: sender.email, // Gmail address
-          pass: sender.password, // Gmail app password or app-specific password
-        },
-      });
-
-      // Verify the connection configuration
-      await transporter.verify();
-      logger.info("✅ SMTP server is ready to take our messages");
-
       // Define email options for the first MailJob with dynamic from field
       const mailOptions = {
         from: `Rav Benyamin Chemouny <${sender.email}>`, // Dynamically set sender name and email
@@ -92,10 +82,46 @@ const sendEmail = async (req, res) => {
       };
 
       try {
-        // Send email
-        let info = await transporter.sendMail(mailOptions);
-        // console.log("Email sent to:", JSON.stringify(mailOptions));
-        logger.info("✅ Message sent: %s", info.messageId);
+        let info;
+        
+        if (ENABLE_ACTUAL_SENDING) {
+          // Create a transporter using SMTP
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: sender.email, // Gmail address
+              pass: sender.password, // Gmail app password or app-specific password
+            },
+          });
+
+          // Verify the connection configuration
+          await transporter.verify();
+          logger.info("✅ SMTP server is ready to take our messages");
+          
+          // Actually send the email
+          info = await transporter.sendMail(mailOptions);
+          logger.info("✅ Message sent: %s", info.messageId);
+        } else {
+          // Simulate email sending
+          info = {
+            messageId: `simulated-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`,
+            envelope: {
+              from: sender.email,
+              to: firstMailJob.recipients
+            }
+          };
+          
+          // Log the simulated email details
+          logger.info("✅ SIMULATED EMAIL - Not actually sent");
+          logger.info(`📧 From: ${mailOptions.from}`);
+          logger.info(`📧 To: ${mailOptions.to}`);
+          logger.info(`📧 Subject: ${mailOptions.subject}`);
+          logger.info(`📧 Body length: ${mailOptions.html.length} characters`);
+          logger.info(`✅ Simulated message ID: ${info.messageId}`);
+          
+          // Add a small delay to simulate actual sending time
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
 
         // Update the first MailJob as sent
         firstMailJob.is_sent = true;
@@ -103,9 +129,10 @@ const sendEmail = async (req, res) => {
         logger.info(`🗂️ Mail job marked as sent: ${firstMailJob._id}`);
 
         res.status(200).json({
-          message: "Email sent successfully!",
+          message: ENABLE_ACTUAL_SENDING ? "Email sent successfully!" : "Email simulated successfully (not actually sent)!",
           messageId: info.messageId,
           mailJobsCreated: createdMailJobs.length,
+          simulatedMode: !ENABLE_ACTUAL_SENDING
         });
       } catch (error) {
         logger.error("❌ Error sending email:", error);
@@ -126,8 +153,6 @@ const sendEmail = async (req, res) => {
   }
 };
 
-
-module.exports = sendEmail;
 
 const addMailSender = async (req, res) => {
   const { email, name, password } = req.body;

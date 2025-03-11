@@ -357,7 +357,8 @@
         "upload": "Téléverser",
         "next": "Suivant",
         "previous": "Précédent",
-        "finish": "Terminer"
+        "finish": "Terminer",
+        "broadcast": "Campagne Email"
     },
     "placeholders": {
         "search": "Rechercher...",

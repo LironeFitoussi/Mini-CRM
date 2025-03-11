@@ -1,5 +1,5 @@
 // NextContactDateModal.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Modal,
   Box,
@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import PropTypes from 'prop-types';
 
 const NextContactDateModal = ({
   isOpen,
@@ -143,6 +144,12 @@ const NextContactDateModal = ({
       </Box>
     </Modal>
   );
+};
+
+NextContactDateModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onDateSelect: PropTypes.func.isRequired,
 };
 
 export default NextContactDateModal;

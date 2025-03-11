@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Paper,
@@ -13,20 +12,27 @@ import {
   Button
 } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-
+import PropTypes from 'prop-types';
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']; // Define your color palette
 
 const DonationsComponent = ({
   t,
   allodonData,
   donations,
-  donationTypes,
+  donationTypes, 
   donorId,       // <- Pass the local donor _id here
 }) => {
-  console.log('DonationsComponent:', allodonData);
+  // console.log('DonationsComponent:', allodonData);
+
+DonationsComponent.propTypes = {
+  t: PropTypes.func.isRequired,
+  allodonData: PropTypes.array.isRequired,
+  donations: PropTypes.array.isRequired,
+  donationTypes: PropTypes.array.isRequired,
+  donorId: PropTypes.string.isRequired,
+};
 
   // Calculate total donations (just an example usage)
-  const totalDonations = allodonData.reduce((acc, curr) => acc + curr.amount, 0);
 
   // Create a record of donation amounts by currency
   const currencies = {};
@@ -57,7 +63,7 @@ const DonationsComponent = ({
       }
 
       const data = await response.json();
-      console.log('Sync success:', data);
+      // console.log('Sync success:', data);
       alert(`Donations sync completed! New donations added: ${data.newDonations || 0}`);
 
       // Refresh the page after successful sync

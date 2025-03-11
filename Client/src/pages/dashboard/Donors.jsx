@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
 
 // Components
-import AddDonatorButton from "../../components/Buttons/AddDonatorButton";
+// import AddDonatorButton from "../../components/Buttons/AddDonatorButton";
+import BroadcastEmailButton from "../../components/Buttons/BroadcastEmailButton";
 import SmartTable from "../../components/Molecules/SmartTable";
 
 const DonatorsPage = () => {
@@ -35,9 +36,10 @@ const DonatorsPage = () => {
       filteredData = allDonors.filter(donor => {
         // Adjust these fields based on your actual donor object structure
         return (
-          (donor.name && donor.name.toLowerCase().includes(searchLower)) ||
+          (donor.fName && donor.fName.toLowerCase().includes(searchLower)) ||
+          (donor.lName && donor.lName.toLowerCase().includes(searchLower)) ||
           (donor.email && donor.email.toLowerCase().includes(searchLower)) ||
-          (donor.phone && donor.phone.includes(debouncedSearch)) ||
+          (donor.phone_number_1?.number && donor.phone_number_1.number.includes(debouncedSearch)) ||
           (donor.donorId && donor.donorId.includes(debouncedSearch))
         );
       });
@@ -47,12 +49,24 @@ const DonatorsPage = () => {
     const startIndex = paginationModel.page * paginationModel.pageSize;
     const endIndex = startIndex + paginationModel.pageSize;
     
+    // Format data for SmartTable
+    const formattedDonors = filteredData.map(donor => ({
+      _id: donor._id,
+      fName: donor.fName || "",
+      lName: donor.lName || "",
+      email: donor.email || "N/A",
+      phoneNumber: donor.phone_number_1?.number || "N/A",
+      status: donor.status || "active",
+      nextContactDate: donor.nextContactDate || null,
+      owner: donor.owner || null,
+    }));
+    
     return {
-      donors: filteredData.slice(startIndex, endIndex),
+      donors: formattedDonors.slice(startIndex, endIndex),
       totalDocuments: filteredData.length
     };
   }, [allDonors, debouncedSearch, paginationModel.page, paginationModel.pageSize]);
-
+  
   const debouncedChangeHandler = useCallback(
     debounce((value) => {
       const trimmed = value.replace(/^0+/, "").trim();
@@ -149,54 +163,40 @@ const DonatorsPage = () => {
   }, [debouncedChangeHandler]);
 
   return (
-    <Box sx={{ padding: 4 }}>
-      {/* Header */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h4" component="h1" gutterBottom>
-          Donors
-        </Typography>
-
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+        <Typography variant="h4">Donors</Typography>
         <Box sx={{ display: "flex", gap: 2 }}>
-          <AddDonatorButton />
+          <BroadcastEmailButton />
+          {/* <AddDonatorButton /> */}
         </Box>
       </Box>
 
-      {/* Search Input */}
       <TextField
-        label="Search Donors"
+        label="Search"
         variant="outlined"
         fullWidth
-        margin="normal"
         value={searchQuery}
         onChange={handleSearchChange}
-        placeholder="Search by name, email, etc."
+        sx={{ mb: 3 }}
       />
 
-      {/* Error Message */}
       {error && (
-        <Alert severity="error" sx={{ my: 2 }}>
-          {error} — Please try again later.
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
         </Alert>
       )}
 
-      {/* Table */}
       <SmartTable
         data={paginatedData.donors}
+        totalDocuments={paginatedData.totalDocuments}
         loading={loading}
-        onStatusToggle={handleStatusToggle}
-        onDonatorSelect={handleDonatorSelect}
-        size="100%"
         page={paginationModel.page}
-        rowsPerPage={paginationModel.pageSize}
-        totalCount={paginatedData.totalDocuments}
+        pageSize={paginationModel.pageSize}
         onPageChange={handlePageChange}
         onPageSizeChange={handlePageSizeChange}
+        onRowClick={handleDonatorSelect}
+        onStatusToggle={handleStatusToggle}
       />
     </Box>
   );

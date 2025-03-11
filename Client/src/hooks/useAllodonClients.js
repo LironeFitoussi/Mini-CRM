@@ -41,8 +41,10 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
     const endIndex = startIndex + paginationModel.pageSize;
     
     return {
-      clients: filteredData.slice(startIndex, endIndex),
-      totalDocuments: filteredData.length
+      donors: filteredData.slice(startIndex, endIndex),
+      totalDocuments: filteredData.length,
+      currentPage: paginationModel.page + 1,
+      totalPages: Math.ceil(filteredData.length / paginationModel.pageSize)
     };
   }, [allClients, debouncedSearch, paginationModel.page, paginationModel.pageSize]);
 
@@ -77,7 +79,7 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
       params.append('limit', '10000');
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/v1/allodon/clients?${params.toString()}`
+        `${import.meta.env.VITE_API_URL}/api/v1/allodon/donors?${params.toString()}`
       );
       
       if (!response.ok) {
@@ -85,7 +87,9 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
       }
 
       const result = await response.json();
-      setAllClients(result.clients);
+      console.log(result);
+      
+      setAllClients(result.donors);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -106,7 +110,7 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
   const handleStatusToggle = useCallback(async (clientId, newStatus) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/v1/allodon/clients/${clientId}/status`,
+        `${import.meta.env.VITE_API_URL}/api/v1/allodon/donors/${clientId}/status`,
         {
           method: 'PUT',
           headers: {

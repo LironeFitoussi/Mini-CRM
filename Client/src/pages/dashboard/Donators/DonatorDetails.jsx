@@ -9,7 +9,6 @@ import { useDonator } from "../../../queryhooks/useDonator";
 import SmsIcon from "@mui/icons-material/Sms";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import EditDonatorButton from "../../../components/Buttons/EditDonatorButton";
-import DeleteDonatorButton from "../../../components/Atoms/DeleteDonatorButton";
 import StatusSelect from "../../../components/Atoms/StatusSelect";
 import AssignDonorOwner from "../../../components/Atoms/AssignDonorOwner";
 import TaskCalendar from "../../../components/TaskCalendar";
@@ -58,7 +57,6 @@ const ClientDetailsPage = () => {
     if (client?.allo_dons_id) {
       fetchAllodon(client.allo_dons_id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client?.allo_dons_id]);
 
   // ========== Functions ==========
@@ -66,7 +64,7 @@ const ClientDetailsPage = () => {
     const { data } = await axios.get(
       `${import.meta.env.VITE_API_URL}/api/v1/donations/allodon/${alloDonsId}`
     );
-    console.log(data);
+    // console.log(data);
     setAllodonData(data);
   };
 
@@ -74,7 +72,7 @@ const ClientDetailsPage = () => {
     setFormValues((prev) => ({ ...prev, [fieldName]: newValue }));
   };
 
-  const handleEmailSubmit = async (values) => {
+  const handleEmailSubmit = async () => {
     try {
       alert("Email sent successfully!");
       setEmailModalOpen(false);
@@ -140,16 +138,8 @@ const ClientDetailsPage = () => {
     donations = [],
     notes,
     status,
-    allo_dons_id,
   } = client;
 
-  // ========== Summarize Donations by Currency ==========
-  const groupedDonations = donations.reduce((acc, donation) => {
-    const { currency, amount } = donation;
-    if (!acc[currency]) acc[currency] = 0;
-    acc[currency] += amount;
-    return acc;
-  }, {});
 
   // ========== Setup for DonationsComponent ==========
   const donationTypes = getDonationTypes(donations);
