@@ -48,7 +48,7 @@ const donationSchema = new mongoose.Schema({
 
   // Remote donation ID (to avoid duplicates)
   remoteDonationId: {
-    type: Number,
+    type: mongoose.Schema.Types.Mixed,
     unique: true,
     sparse: true,
   },

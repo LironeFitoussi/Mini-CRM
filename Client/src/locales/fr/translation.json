@@ -1,4 +1,8 @@
 {
+    "pages": {
+        "nedarim": "Nedarim",
+        "allodon": "Allodon"
+    },
     "donations": {
         "currency": "Pièce",
         "cerfa": "CERF",

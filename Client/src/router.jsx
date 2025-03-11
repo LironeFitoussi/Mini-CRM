@@ -11,14 +11,17 @@ const LeadsPage = React.lazy(() => import("./pages/dashboard/Leads.jsx"));
 
 // Dashboard subpages
 const Overview = React.lazy(() => import("./pages/dashboard/Overview.jsx"));
-const DontaorsPage = React.lazy(() => import("./pages/dashboard/Donors.jsx")); // Added import
+const DontaorsPage = React.lazy(() => import("./pages/dashboard/Donors.jsx"));
 const ClientDetailsPage = React.lazy(() =>
   import("./pages/dashboard/Donators/DonatorDetails.jsx")
-); // Added import
+);
+// Using the correct component names
+const NedarimClients = React.lazy(() => import("./pages/dashboard/NedarimClients.jsx"));
+const AllodonClients = React.lazy(() => import("./pages/dashboard/AllodonClients.jsx"));
 const DonationsPage = React.lazy(() =>
   import("./pages/dashboard/Donations.jsx")
 );
-const EmailPage = React.lazy(() => import("./pages/dashboard/Email.jsx"));
+// const EmailPage = React.lazy(() => import("./pages/dashboard/Email.jsx"));
 const WhatsAppPage = React.lazy(() =>
   import("./pages/dashboard/WhatsAppPage.jsx")
 ); // Added import
@@ -62,7 +65,31 @@ const router = [
             )
           },
           {
+            path: "nedarim",
+            element: (
+              <ProtectedRoute level="user">
+                <NedarimClients />
+              </ProtectedRoute>
+            )
+          },
+          {
+            path: "allodon",
+            element: (
+              <ProtectedRoute level="user">
+                <AllodonClients />
+              </ProtectedRoute>
+            )
+          },
+          {
             path: "donors/:id",
+            element: (
+              <ProtectedRoute level="user">
+                <ClientDetailsPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "allodon-clients/:id",
             element: (
               <ProtectedRoute level="user">
                 <ClientDetailsPage />
@@ -85,14 +112,6 @@ const router = [
               </ProtectedRoute>
             ), // Donations route
           },
-          // {
-          //   path: "email",
-          //   element: (
-          //     <ProtectedRoute level="user">
-          //       <EmailPage />
-          //     </ProtectedRoute>
-          //   ), // Email route
-          // },
           {
             path: "whatsapp",
             element: (

@@ -34,7 +34,7 @@ const mailSchema = new mongoose.Schema({
 });
 
 // Main donator schema
-const donatorSchema = new mongoose.Schema(
+const donorSchema = new mongoose.Schema(
   {
     fName: {
       type: String,
@@ -44,10 +44,19 @@ const donatorSchema = new mongoose.Schema(
       type: String,
       // required: true,
     },
-    allo_dons_id: {
+    allo_dons_id: [{
       type: String,
       // required: false,
-    },
+    }],
+    nedarim_id: [{
+      type: String,
+      // required: false,
+    }],
+    platform_type: [{
+      type: String,
+      enum: ["allodon", "nedarim"],
+      // required: false,
+    }],
     birthdate: {
       type: Date,
       // required: false,
@@ -81,39 +90,39 @@ const donatorSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-donatorSchema.set("toObject", { virtuals: true });
-donatorSchema.set("toJSON", { virtuals: true });
+donorSchema.set("toObject", { virtuals: true });
+donorSchema.set("toJSON", { virtuals: true });
 
 // Virtual field for donations
-donatorSchema.virtual("donations", {
+donorSchema.virtual("donations", {
   ref: "Donation", // The model to use
   localField: "_id", // The field in Donator
   foreignField: "donator_id", // The field in Donation that points to Donator
 });
 
 // Virtual field for tasks
-donatorSchema.virtual("tasks", {
+donorSchema.virtual("tasks", {
   ref: "Task", // The model to use
   localField: "_id", // The field in Donator
   foreignField: "donator", // The field in Task that points to Donator
 });
 
 // Virtual field for notes
-donatorSchema.virtual("notes", {
+donorSchema.virtual("notes", {
   ref: "Note", // The model to use
   localField: "_id", // The field in Donator
   foreignField: "donator", // The field in Note that points to Donator
 });
 
 // Virtual field for owner
-donatorSchema.virtual("ownerDetails", {
+donorSchema.virtual("ownerDetails", {
   ref: "User", // The model to use
   localField: "owner", // The field in Donator
   foreignField: "_id", // The field in User that points to Donator
 });
 
 // Virtual to set the next contact date based on the latest note
-donatorSchema.virtual("nextContactDate", {
+donorSchema.virtual("nextContactDate", {
   ref: "Notification", // Reference the Note model
   localField: "_id", // Link with the Donator's _id
   foreignField: "donatorId", // Field in Note that points to Donator
@@ -128,7 +137,7 @@ donatorSchema.virtual("nextContactDate", {
 });
 
 // Always populate the nextContactDate virtual field
-donatorSchema.pre(/^find/, function (next) {
+donorSchema.pre(/^find/, function (next) {
   this.populate({
     path: "nextContactDate",
   });
@@ -136,7 +145,7 @@ donatorSchema.pre(/^find/, function (next) {
 });
 
 // Transform the schema to extract only the `dueDate` from the populated nextContactDate
-donatorSchema.set("toObject", {
+donorSchema.set("toObject", {
   virtuals: true,
   transform: (doc, ret) => {
     if (ret.nextContactDate && ret.nextContactDate.notificationDate) {
@@ -148,7 +157,7 @@ donatorSchema.set("toObject", {
   },
 });
 
-donatorSchema.set("toJSON", {
+donorSchema.set("toJSON", {
   virtuals: true,
   transform: (doc, ret) => {
     if (ret.nextContactDate && ret.nextContactDate.notificationDate) {
@@ -160,6 +169,6 @@ donatorSchema.set("toJSON", {
   },
 });
 
-const Donator = mongoose.model("Donator", donatorSchema);
+const Donor = mongoose.model("Donor", donorSchema);
 
-module.exports = Donator;
+module.exports = Donor;

@@ -1,4 +1,3 @@
-import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -31,12 +30,21 @@ const HorizontalNavbar = () => {
           >
             {t("general.donors")}
           </Link>
-          {/* <Link
-            to="leads"
+          
+          {/* Link for Special "Nedarim" Donors Page */}
+          <Link
+            to="nedarim"
             className="px-3 py-2 hover:bg-gray-100 rounded-md transition flex items-center"
           >
-            {t("leads")}
-          </Link> */}
+            {t("pages.nedarim")}
+          </Link>
+          {/* Link for Special Allodon Donors Page */}
+          <Link
+            to="allodon"
+            className="px-3 py-2 hover:bg-gray-100 rounded-md transition flex items-center"
+          >
+            {t("pages.allodon")}
+          </Link>
           {user?.role === "admin" || user?.role === "developer" ? (
             <Link
               to="users"

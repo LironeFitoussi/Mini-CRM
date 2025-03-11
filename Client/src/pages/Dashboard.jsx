@@ -1,7 +1,6 @@
 // src/pages/Dashboard.jsx
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/userSlice";
 
@@ -14,10 +13,8 @@ import Sidebar from "../components/Molecules/Sidebar.jsx";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const { t } = useTranslation();
   const {
     user,
-    isAuthenticated,
     isLoading: authLoading,
     error: authError,
   } = useAuth0();

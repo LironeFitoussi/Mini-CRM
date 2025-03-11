@@ -1,19 +1,22 @@
-// src/pages/DonatorsPage.jsx
+// src/pages/dashboard/NedarimClients.jsx
 import { useState, useEffect, useCallback } from "react";
-import {
-  Box,
-  TextField,
-  Alert,
-  Typography,
-} from "@mui/material";
+import { Box, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
 
 // Components
 import AddDonatorButton from "../../components/Buttons/AddDonatorButton";
 import SmartTable from "../../components/Molecules/SmartTable";
+import PageHeader from "../../components/Molecules/PageHeader";
+import SearchBar from "../../components/Atoms/SearchBar";
 
-const DonatorsPage = () => {
+/**
+ * NedarimClients page component
+ * Displays and manages donors from the Nedarim system
+ * 
+ * @returns {JSX.Element} NedarimClients page
+ */
+const NedarimClients = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -42,27 +45,29 @@ const DonatorsPage = () => {
     debouncedChangeHandler(e.target.value);
   };
 
-  const fetchDonators = async () => {
+  const fetchDonors = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const params = new URLSearchParams({
-        page: paginationModel.page + 1, // 1-based
+        page: paginationModel.page + 1, // 1-based for API
         limit: paginationModel.pageSize,
       });
+      
       if (debouncedSearch) {
         params.append("search", debouncedSearch);
       }
 
+      // Updated API endpoint for Nedarim donors
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/v1/donors?${params.toString()}`
+        `${import.meta.env.VITE_API_URL}/api/v1/nedarim/donors?${params.toString()}`
       );
+      
       if (!response.ok) {
         throw new Error(`Error fetching donors: ${response.statusText}`);
       }
 
       const result = await response.json();
-      // console.log(result);
       
       setData({
         donors: result.donors,
@@ -73,11 +78,6 @@ const DonatorsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchDonators();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationModel.page, paginationModel.pageSize, debouncedSearch]);
 
   const handlePageChange = useCallback((newPage) => {
@@ -88,10 +88,10 @@ const DonatorsPage = () => {
     setPaginationModel({ page: 0, pageSize: newPageSize });
   }, []);
 
-  const handleStatusToggle = async (donorId, newStatus) => {
+  const handleStatusToggle = useCallback(async (donorId, newStatus) => {
     try {
-      await fetch(
-        `${import.meta.env.VITE_API_URL}/api/v1/donors/${donorId}/status`,
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/v1/nedarim/donors/${donorId}/status`,
         {
           method: "PUT",
           headers: {
@@ -100,15 +100,20 @@ const DonatorsPage = () => {
           body: JSON.stringify({ status: newStatus }),
         }
       );
-      fetchDonators();
+      
+      if (!response.ok) {
+        throw new Error(`Error updating status: ${response.statusText}`);
+      }
+      
+      fetchDonors();
     } catch (err) {
       setError(`Failed to update status: ${err.message}`);
     }
-  };
+  }, [fetchDonors]);
 
-  const handleDonatorSelect = (donorId) => {
-    navigate(`/dashboard/donors/${donorId}`);
-  };
+  useEffect(() => {
+    fetchDonors();
+  }, [fetchDonors]);
 
   useEffect(() => {
     return () => {
@@ -116,33 +121,23 @@ const DonatorsPage = () => {
     };
   }, [debouncedChangeHandler]);
 
+  const handleDonatorSelect = (donorId) => {
+    navigate(`/dashboard/donors/${donorId}`);
+  };
+
   return (
     <Box sx={{ padding: 4 }}>
-      {/* Header */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h4" component="h1" gutterBottom>
-          Donors
-        </Typography>
-
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <AddDonatorButton />
-        </Box>
-      </Box>
+      {/* Page Header */}
+      <PageHeader 
+        title="Nedarim Donors" 
+        actions={<AddDonatorButton />} 
+      />
 
       {/* Search Input */}
-      <TextField
-        label="Search Donors"
-        variant="outlined"
-        fullWidth
-        margin="normal"
+      <SearchBar
         value={searchQuery}
         onChange={handleSearchChange}
+        label="Search Nedarim Donors"
         placeholder="Search by name, email, etc."
       />
 
@@ -170,4 +165,4 @@ const DonatorsPage = () => {
   );
 };
 
-export default DonatorsPage;
+export default NedarimClients;
