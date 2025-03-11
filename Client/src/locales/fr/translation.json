@@ -103,6 +103,7 @@
         "home": "Accueil",
         "dashboard": "Tableau de bord",
         "donors": "Donateurs",
+        "manualSync": "Synchronisation manuelle",
         "totalDonations": "Total Donations",
         "totalDonationsMonth": "Total Donations du Mois",
         "totalCallback": "Total Donateurs à Rappeler",

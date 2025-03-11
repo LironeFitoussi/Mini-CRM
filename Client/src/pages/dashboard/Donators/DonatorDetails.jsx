@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -312,7 +312,7 @@ const ClientDetailsPage = () => {
         >
           <ArrowCircleLeftIcon /> {t("actions.backToDonors")}
         </Button>
-        <DeleteDonatorButton donatorData={client} />
+        {/* <DeleteDonatorButton donatorData={client} /> */}
       </Box>
 
       {/* ========== Email Modal ========== */}

@@ -1,20 +1,21 @@
 // Users.js
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Button, Snackbar, Alert } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useLoaderData, useNavigation } from "react-router-dom";
 
 import UsersTable from "../../components/Molecules/UsersTable";
 import AddUserModal from "../../components/Modals/AddUserModal";
 import EditUserModal from "../../components/Modals/EditUserModal";
 import DeleteUserModal from "../../components/Modals/DeleteUserModal";
 
-const fetchUsers = async () => {
-  const { data } = await axios.get(
+// Define fetchUsers using the usersLoader function
+const fetchUsers = () => {
+  return axios.get(
     import.meta.env.VITE_API_URL + "/api/v1/users"
-  );
-  return data.users;
+  ).then(({ data }) => data.users);
 };
 
 const deleteUsers = async (ids) => {
@@ -26,10 +27,19 @@ const deleteUsers = async (ids) => {
 const Users = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  // Get the prefetched data from the loader
+  const initialUsers = useLoaderData();
+  const navigation = useNavigation();
+  
+  // Use the prefetched data as initialData for React Query
   const { data, error, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
+    initialData: initialUsers,
   });
+  
+  // Determine overall loading state
+  const isPageLoading = isLoading || navigation.state === "loading";
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -208,10 +218,36 @@ const Users = () => {
     setAlert({ ...alert, open: false });
   };
 
-  if (isLoading || !data) return <div className="text-center mt-10">Loading...</div>;
-  if (error)
-    return <div className="text-center mt-10">Error fetching users</div>;
-
+  if (isPageLoading || !data) {
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <div className="text-center p-8 bg-white rounded-lg shadow-md">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-lg font-semibold">{t("common.loading")}</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <div className="text-center p-8 bg-white rounded-lg shadow-md">
+          <p className="text-lg font-semibold text-red-600">{t("errors.fetchingUsers")}</p>
+          <p className="mt-2">{error.message || "An unknown error occurred"}</p>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={() => queryClient.invalidateQueries({ queryKey: ["users"] })}
+            className="mt-4"
+          >
+            {t("common.retry")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  
   const validData = data?.filter((row) => row && row._id) || [];
 
   return (
@@ -295,5 +331,11 @@ const Users = () => {
     </div>
   );
 };
+
+export function usersLoader() {
+  return axios.get(
+    import.meta.env.VITE_API_URL + "/api/v1/users"
+  ).then(({ data }) => data.users);
+}
 
 export default Users;

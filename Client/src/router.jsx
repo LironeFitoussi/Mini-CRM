@@ -22,7 +22,11 @@ const EmailPage = React.lazy(() => import("./pages/dashboard/Email.jsx"));
 const WhatsAppPage = React.lazy(() =>
   import("./pages/dashboard/WhatsAppPage.jsx")
 ); // Added import
+
+
 const UsersPage = React.lazy(() => import("./pages/dashboard/Users.jsx"));
+// Import the usersLoader function for prefetching data
+import { usersLoader } from "./pages/dashboard/Users.jsx";
 const SmsPage = React.lazy(() => import("./pages/dashboard/Sms.jsx")); // Added import
 
 const router = [
@@ -104,6 +108,7 @@ const router = [
                 <UsersPage />
               </ProtectedRoute>
             ), // Users route (admin only)
+            loader: usersLoader, // Add the loader for prefetching data
           },
           {
             path: "sms",
