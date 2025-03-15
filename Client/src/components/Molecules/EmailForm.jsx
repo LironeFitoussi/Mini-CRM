@@ -122,15 +122,93 @@ const EmailForm = ({
   const imagePlugin = useMemo(() => createImagePlugin(), []);
   const plugins = useMemo(() => [imagePlugin], [imagePlugin]);
 
-  // Initialize editor state
-  const [editorState, setEditorState] = useState(() => {
-    if (body) {
-      const blocksFromHTML = convertFromHTML(body);
+  // Utility function to validate image URLs
+  const validateImageUrl = (url) => {
+    // Check if URL is valid
+    let isValidUrl = false;
+    try {
+      new URL(url);
+      isValidUrl = true;
+    } catch {
+      return false;
+    }
+    
+    if (!isValidUrl) return false;
+    
+    // Check if URL likely points to an image
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp'];
+    const hasImageExtension = imageExtensions.some(ext => 
+      url.toLowerCase().includes(ext) || 
+      url.includes(`${ext.substring(1)}?`) // Handle URLs with query params
+    );
+    
+    // Also consider URLs from known image hosting services
+    const knownImageHosts = ['s3.', 'cloudinary.com', 'imgur.com', 'i.imgur.com'];
+    const isKnownImageHost = knownImageHosts.some(host => url.includes(host));
+    
+    // If either condition is true, consider it valid
+    return hasImageExtension || isKnownImageHost;
+  };
+
+  // Function to create editor state from HTML with proper image handling
+  const createEditorStateFromHTML = useMemo(() => (html) => {
+    // First, check if the HTML contains img tags
+    const hasImages = html && html.includes('<img');
+    
+    if (!hasImages) {
+      // If no images, use the standard conversion
+      const blocksFromHTML = convertFromHTML(html);
       const contentState = ContentState.createFromBlockArray(
         blocksFromHTML.contentBlocks,
         blocksFromHTML.entityMap
       );
       return EditorState.createWithContent(contentState);
+    }
+    
+    // Create a temporary DOM element to parse the HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    // Get all image elements
+    const imageElements = tempDiv.querySelectorAll('img');
+    const imageUrls = Array.from(imageElements)
+      .map(img => img.src)
+      .filter(url => validateImageUrl(url));
+    
+    // First convert HTML without images
+    // Replace img tags with placeholders that will be removed later
+    let htmlWithoutImages = html;
+    imageElements.forEach((img) => {
+      // Remove the image completely instead of replacing with a placeholder
+      htmlWithoutImages = htmlWithoutImages.replace(img.outerHTML, '');
+    });
+    
+    // Convert HTML to ContentState
+    const blocksFromHTML = convertFromHTML(htmlWithoutImages);
+    let contentState = ContentState.createFromBlockArray(
+      blocksFromHTML.contentBlocks,
+      blocksFromHTML.entityMap
+    );
+    
+    // Start with an editor state from this content
+    let editorState = EditorState.createWithContent(contentState);
+    
+    // Now add each image back as a proper entity
+    imageUrls.forEach(imageUrl => {
+      try {
+        editorState = imagePlugin.addImage(editorState, imageUrl);
+      } catch {
+        // Silent fail if image insertion fails
+      }
+    });
+    
+    return editorState;
+  }, [imagePlugin, validateImageUrl]);
+
+  // Initialize editor state with enhanced image handling
+  const [editorState, setEditorState] = useState(() => {
+    if (body) {
+      return createEditorStateFromHTML(body);
     }
     return EditorState.createEmpty();
   });
@@ -138,22 +216,18 @@ const EmailForm = ({
   // Inside the EmailForm component, add this state
   const [localHtml, setLocalHtml] = useState(body);
 
+  // Handle template loading when body prop changes
+  useEffect(() => {
+    // Only update if the body prop changes and is different from localHtml
+    if (body && body !== localHtml) {
+      setEditorState(createEditorStateFromHTML(body));
+      setLocalHtml(body);
+    }
+  }, [body, localHtml, createEditorStateFromHTML]);
+
   useEffect(() => {
     const contentState = editorState.getCurrentContent();
     const rawContent = convertToRaw(contentState);
-    
-    // Debug: Log raw content structure
-    console.log('Raw content in useEffect:', JSON.stringify(rawContent));
-    
-    // Log all entities in the entity map
-    console.log('Entity map in useEffect:', rawContent.entityMap);
-    
-    // Count the blocks by type
-    const blockTypes = {};
-    rawContent.blocks.forEach(block => {
-      blockTypes[block.type] = (blockTypes[block.type] || 0) + 1;
-    });
-    console.log('Block types count:', blockTypes);
     
     // Convert Draft.js content to HTML
     let html = '';
@@ -161,28 +235,18 @@ const EmailForm = ({
     rawContent.blocks.forEach(block => {
       const text = block.text;
       
-      // Debug log
-      console.log('Processing block:', block.type, 'text:', text, 'entityRanges:', block.entityRanges);
-      
       // Handle atomic blocks (images)
       if (block.type === 'atomic') {
         const entityKey = block.entityRanges[0]?.key;
-        console.log('Atomic block found, entityKey:', entityKey);
         
         if (entityKey !== undefined && rawContent.entityMap[entityKey]) {
           const entity = rawContent.entityMap[entityKey];
-          console.log('Entity found for atomic block:', entity);
           
           // The image plugin uses 'image' type, not 'IMAGE'
           if ((entity.type === 'IMAGE' || entity.type.toLowerCase() === 'image') && entity.data.src) {
             const imgSrc = entity.data.src;
-            console.log('Adding image HTML for src:', imgSrc);
             html += `<img src="${imgSrc}" alt="Embedded image" style="max-width: 100%; height: auto; display: block; margin: 10px 0;" />`;
-          } else {
-            console.warn('Entity is not an image type:', entity.type);
           }
-        } else {
-          console.warn('No entity found for atomic block with key:', entityKey);
         }
       }
       // Handle text blocks
@@ -204,14 +268,11 @@ const EmailForm = ({
         }
       }
     });
-
-    console.log('Final HTML generated:', html);
     
     // Update local HTML state first
     setLocalHtml(html);
     
     if (html !== body) {
-      console.log('Updating body, old:', body, 'new:', html);
       handleChange("body", html);
     }
   }, [editorState, body, handleChange]);
@@ -290,9 +351,6 @@ const EmailForm = ({
   };
 
   const generateEmailContent = () => {
-    // Debug - log body content
-    console.log('generateEmailContent - body content:', localHtml);
-    
     // Ensure body content is properly wrapped
     const emailContent = `
       <div style="position: relative; max-width: 100%;">
@@ -308,7 +366,6 @@ const EmailForm = ({
       </div>
     `;
     
-    console.log('Final email content for preview:', emailContent);
     return emailContent;
   };
 
@@ -334,37 +391,11 @@ const EmailForm = ({
   // Function to insert image using the image plugin
   const insertImage = (imageUrl) => {
     try {
-      console.log('Attempting to insert image at URL:', imageUrl);
-      
       // Use the imagePlugin to add an image at the current selection
       const newState = imagePlugin.addImage(editorState, imageUrl);
       
-      // Get the updated content state with the image
-      const contentState = newState.getCurrentContent();
-      const rawContent = convertToRaw(contentState);
-      
-      // Log the entity map to see the image entity
-      console.log('Entity map after image insertion:', rawContent.entityMap);
-      
-      // Check if the entity was created properly
-      const entityKeys = Object.keys(rawContent.entityMap);
-      if (entityKeys.length > 0) {
-        console.log('Entity keys found:', entityKeys);
-        entityKeys.forEach(key => {
-          const entity = rawContent.entityMap[key];
-          console.log(`Entity ${key}:`, entity);
-        });
-      } else {
-        console.warn('No entities found after image insertion!');
-      }
-      
-      // Find the atomic block that should contain the image
-      const atomicBlocks = rawContent.blocks.filter(block => block.type === 'atomic');
-      console.log('Atomic blocks after insertion:', atomicBlocks);
-      
       setEditorState(newState);
       setImageDialogOpen(false);
-      console.log('Image inserted using plugin:', imageUrl);
     } catch (error) {
       console.error('Error inserting image:', error);
       setImageDialogOpen(false);
@@ -373,13 +404,9 @@ const EmailForm = ({
 
   // Handle image upload from the dialog
   const handleImageUpload = (url) => {
-    console.log('handleImageUpload called with URL:', url);
-    
     // Verify image URL by creating an Image object
     const img = new Image();
     img.onload = () => {
-      console.log('Image verified successfully:', url);
-      console.log('Image dimensions:', img.width, 'x', img.height);
       insertImage(url);
     };
     img.onerror = (error) => {

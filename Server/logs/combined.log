@@ -465,3 +465,6 @@
 2025-03-15 21:36:48 [INFO]: ✅ SMTP server is ready to take our messages
 2025-03-15 21:36:51 [INFO]: ✅ Message sent: %s
 2025-03-15 21:36:51 [INFO]: 🗂️ Mail job marked as sent: 67d5d6cfd7592aa702e902fb
+2025-03-15 21:45:43 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-15 21:45:45 [INFO]: ✅ Message sent: %s
+2025-03-15 21:45:45 [INFO]: 🗂️ Mail job marked as sent: 67d5d8e6d7592aa702e93570

@@ -3,6 +3,9 @@
         "nedarim": "Nedarim",
         "allodon": "Allodon"
     },
+    "telepro": {
+        "selectOwner": "Sélectionnez un propriétaire"
+    },
     "donations": {
         "currency": "Pièce",
         "cerfa": "CERF",

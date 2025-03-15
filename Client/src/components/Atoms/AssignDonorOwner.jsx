@@ -57,7 +57,9 @@ const AssignDonorOwner = ({ currentOwner, selectedDonorId }) => {
   }
 
   return (
-    <Box component="span" sx={{ display: "inline-block" }}>
+    <Box component="span" sx={{ display: "inline-block",
+      width: "100%",
+     }}>
       {isUsersLoading ? (
         <Box component="span" sx={{ display: "inline-flex", justifyContent: "center" }}>
           <CircularProgress />
@@ -79,7 +81,7 @@ const AssignDonorOwner = ({ currentOwner, selectedDonorId }) => {
             }}
           >
             <MenuItem value="" disabled>
-              {t("Select a telepro")}
+              {t("telepro.selectOwner")}
             </MenuItem>
             {users?.map((user) => (
               <MenuItem key={user._id} value={user._id}>
