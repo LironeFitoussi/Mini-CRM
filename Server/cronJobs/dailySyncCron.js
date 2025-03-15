@@ -74,13 +74,14 @@ const ensureMongoDBConnection = async () => {
 // Add getCurrencyName function from syncNedarim.js
 function getCurrencyName(currencyCode) {
     const currencyMap = {
-        'ILS': 'ILS',
+        'ILS': '₪',
+        'NIS': '₪',
         'USD': 'USD',
         'EUR': 'EUR',
-        '1': 'NIS', // New Israeli Shekel
+        '1': '₪', // New Israeli Shekel
         // Add more currency mappings as needed
     };
-    return currencyMap[currencyCode] || currencyCode || 'ILS';
+    return currencyMap[currencyCode] || currencyCode || '₪';
 }
 
 // PART 1: NEDARIM SYNC FUNCTIONS
