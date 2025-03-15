@@ -11,7 +11,6 @@ const SmartTable = ({
   loading = false,
   onStatusToggle,
   onRowClick,
-  size = "100%",
   page,
   pageSize,
   totalDocuments,
@@ -24,7 +23,6 @@ const SmartTable = ({
     loading: PropTypes.bool.isRequired,
     onStatusToggle: PropTypes.func.isRequired,
     onRowClick: PropTypes.func,
-    size: PropTypes.string,
     page: PropTypes.number.isRequired,
     pageSize: PropTypes.number.isRequired,
     totalDocuments: PropTypes.number.isRequired,
@@ -72,15 +70,29 @@ const SmartTable = ({
       field: "email",
       headerName: t("clientInfo.email") || "Email",
       flex: 2,
-      renderCell: (params) =>
-        loading ? <Skeleton variant="text" aria-hidden="true" /> : params.value || "N/A",
+      renderCell: (params) => {
+        if (loading) {
+          return <Skeleton variant="text" aria-hidden="true" />;
+        }
+        
+        // Access email from email_1.email if available
+        const email = params.row.email_1?.email || params.row.email || "N/A";
+        return email;
+      },
     },
     {
       field: "phoneNumber",
       headerName: t("clientInfo.phone") || "Phone",
       flex: 1,
-      renderCell: (params) =>
-        loading ? <Skeleton variant="text" aria-hidden="true" /> : params.value || "N/A",
+      renderCell: (params) => {
+        if (loading) {
+          return <Skeleton variant="text" aria-hidden="true" />;
+        }
+        
+        // Access phone from phone_number_1.number if available
+        const phone = params.row.phone_number_1?.number || params.row.phoneNumber || params.row.phone || "N/A";
+        return phone;
+      },
     },
     {
       field: "status",
@@ -163,9 +175,9 @@ const SmartTable = ({
 
   return (
     <>
-      <div style={{ height: 600, width: size }}>
+      <div style={{ height: '100%', width: '100%', flexGrow: 1 }}>
         {loading ? (
-          <Skeleton variant="rectangular" height={600} />
+          <Skeleton variant="rectangular" height="100%" width="100%" />
         ) : (
           <DataGrid
             rows={data}
@@ -179,7 +191,7 @@ const SmartTable = ({
             onRowClick={handleRowClick}
             getRowClassName={getRowClassName}
             disableRowSelectionOnClick
-            autoHeight
+            sx={{ height: '100%', width: '100%' }}
           />
         )}
       </div>

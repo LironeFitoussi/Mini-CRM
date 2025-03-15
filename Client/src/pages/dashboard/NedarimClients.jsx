@@ -9,6 +9,7 @@ import debounce from "lodash.debounce";
 import SmartTable from "../../components/Molecules/SmartTable";
 import PageHeader from "../../components/Molecules/PageHeader";
 import SearchBar from "../../components/Atoms/SearchBar";
+import SyncButton from "../../components/Buttons/SyncButton";
 
 /**
  * NedarimClients page component
@@ -39,8 +40,11 @@ const NedarimClients = () => {
       filteredData = allDonors.filter(donor => {
         // Adjust these fields based on your actual donor object structure
         return (
-          (donor.name && donor.name.toLowerCase().includes(searchLower)) ||
+          (donor.fName && donor.fName.toLowerCase().includes(searchLower)) ||
+          (donor.lName && donor.lName.toLowerCase().includes(searchLower)) ||
+          (donor.email_1?.email && donor.email_1.email.toLowerCase().includes(searchLower)) ||
           (donor.email && donor.email.toLowerCase().includes(searchLower)) ||
+          (donor.phone_number_1?.number && donor.phone_number_1.number.includes(debouncedSearch)) ||
           (donor.phone && donor.phone.includes(debouncedSearch)) ||
           (donor.donorId && donor.donorId.includes(debouncedSearch))
         );
@@ -53,7 +57,22 @@ const NedarimClients = () => {
     // Apply pagination
     const startIndex = paginationModel.page * paginationModel.pageSize;
     const endIndex = startIndex + paginationModel.pageSize;
-    return filteredData.slice(startIndex, endIndex);
+    
+    // Map donors to a consistent format
+    const formattedDonors = filteredData.slice(startIndex, endIndex).map(donor => ({
+      _id: donor._id,
+      fName: donor.fName || "",
+      lName: donor.lName || "",
+      email: donor.email || "",
+      email_1: donor.email_1 || null,
+      phoneNumber: donor.phone || "",
+      phone_number_1: donor.phone_number_1 || null,
+      status: donor.status || "active",
+      nextContactDate: donor.nextContactDate || null,
+      owner: donor.owner || null,
+    }));
+    
+    return formattedDonors;
   }, [allDonors, debouncedSearch, paginationModel.page, paginationModel.pageSize]);
 
   const debouncedChangeHandler = useCallback(
@@ -157,11 +176,18 @@ const NedarimClients = () => {
   };
 
   return (
-    <Box sx={{ padding: 4 }}>
+    <Box 
+      sx={{ 
+        padding: 4, 
+        height: "calc(100vh - 64px)", // Adjust for app bar height
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
       {/* Page Header */}
       <PageHeader 
         title="Nedarim Donors" 
-        // actions={<AddDonatorButton />} 
+        actions={<SyncButton />} 
       />
 
       {/* Search Input */}
@@ -170,28 +196,30 @@ const NedarimClients = () => {
         onChange={handleSearchChange}
         label="Search Nedarim Donors"
         placeholder="Search by name, email, etc."
+        sx={{ mb: 2 }}
       />
 
       {/* Error Message */}
       {error && (
-        <Alert severity="error" sx={{ my: 2 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error} — Please try again later.
         </Alert>
       )}
 
-      {/* Table */}
-      <SmartTable
-        data={paginatedData}
-        loading={loading}
-        onStatusToggle={handleStatusToggle}
-        onDonatorSelect={handleDonatorSelect}
-        size="100%"
-        page={paginationModel.page}
-        rowsPerPage={paginationModel.pageSize}
-        totalCount={totalDocuments}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
-      />
+      {/* Table - Flex grow to fill available space */}
+      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
+        <SmartTable
+          data={paginatedData}
+          loading={loading}
+          onStatusToggle={handleStatusToggle}
+          onRowClick={handleDonatorSelect}
+          page={paginationModel.page}
+          pageSize={paginationModel.pageSize}
+          totalDocuments={totalDocuments}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
+      </Box>
     </Box>
   );
 };

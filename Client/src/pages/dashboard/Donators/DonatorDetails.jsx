@@ -156,8 +156,8 @@ const ClientDetailsPage = () => {
   return (
     <Box sx={{ padding: 4 }}>
       {/* ========== Main Info & Donations Chart ========== */}
-      <Paper sx={{ flex: 1, boxShadow: 3, minWidth: 200 }}>
-        <Box sx={{ p: 3 }}>
+      <Paper sx={{ flex: 1, boxShadow: 3, minWidth: 200, mb: 4 }}>
+        <Box sx={{ p: 4 }}>
           <Typography
             variant="h4"
             gutterBottom
@@ -178,68 +178,70 @@ const ClientDetailsPage = () => {
                 )} */}
             </Box>
           </Typography>
-          <Divider sx={{ my: 2 }} />
+          <Divider sx={{ my: 3 }} />
 
           {/* Contact Info */}
-          <Typography variant="body1" sx={{ mb: 1 }}>
-            <strong>Email:</strong> {email_1?.email || "N/A"}
-          </Typography>
-          {client?.email_2?.email && (
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>Email 2:</strong> {client.email_2?.email || "N/A"}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="body1" sx={{ mb: 1.5 }}>
+              <strong>Email:</strong> {email_1?.email || "N/A"}
             </Typography>
-          )}
-          {client?.email_3?.email && (
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>Email 3:</strong> {client.email_3?.email || "N/A"}
-            </Typography>
-          )}
-
-          <Typography variant="body1" sx={{ mb: 1 }}>
-            <strong>{t("customerManagement.phone")} 1:</strong>{" "}
-            {phone_number_1?.number || "N/A"}
-          </Typography>
-          {client?.phone_number_2?.number && (
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>{t("customerManagement.phone")} 2:</strong>{" "}
-              {client.phone_number_2?.number || "N/A"}
-            </Typography>
-          )}
-          {client?.phone_number_3?.number && (
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>{t("customerManagement.phone")} 3:</strong>{" "}
-              {client.phone_number_3?.number || "N/A"}
-            </Typography>
-          )}
-
-          <Typography variant="body1" sx={{ mb: 1 }}>
-            <strong>{t("contactsManagement.birthDate")}:</strong>{" "}
-            {birthdate
-              ? new Date(birthdate).toLocaleDateString("en-GB")
-              : "N/A"}
-          </Typography>
-
-          <Typography
-            variant="body1"
-            sx={{ mb: 2, display: "flex", alignItems: "center", width: "100%" }}
-          >
-            <strong>{t("contactsManagement.owner")}:</strong>{" "}
-            {user.role !== "user" ? (
-              <AssignDonorOwner
-                currentOwner={client.owner || {}}
-                selectedDonorId={id}
-              />
-            ) : client.owner ? (
-              <>
-                {client.owner.fName} {client.owner.lName}
-              </>
-            ) : (
-              "N/A"
+            {client?.email_2?.email && (
+              <Typography variant="body1" sx={{ mb: 1.5 }}>
+                <strong>Email 2:</strong> {client.email_2?.email || "N/A"}
+              </Typography>
             )}
-          </Typography>
+            {client?.email_3?.email && (
+              <Typography variant="body1" sx={{ mb: 1.5 }}>
+                <strong>Email 3:</strong> {client.email_3?.email || "N/A"}
+              </Typography>
+            )}
+
+            <Typography variant="body1" sx={{ mb: 1.5 }}>
+              <strong>{t("customerManagement.phone")} 1:</strong>{" "}
+              {phone_number_1?.number || "N/A"}
+            </Typography>
+            {client?.phone_number_2?.number && (
+              <Typography variant="body1" sx={{ mb: 1.5 }}>
+                <strong>{t("customerManagement.phone")} 2:</strong>{" "}
+                {client.phone_number_2?.number || "N/A"}
+              </Typography>
+            )}
+            {client?.phone_number_3?.number && (
+              <Typography variant="body1" sx={{ mb: 1.5 }}>
+                <strong>{t("customerManagement.phone")} 3:</strong>{" "}
+                {client.phone_number_3?.number || "N/A"}
+              </Typography>
+            )}
+
+            <Typography variant="body1" sx={{ mb: 1.5 }}>
+              <strong>{t("contactsManagement.birthDate")}:</strong>{" "}
+              {birthdate
+                ? new Date(birthdate).toLocaleDateString("en-GB")
+                : "N/A"}
+            </Typography>
+
+            <Typography
+              variant="body1"
+              sx={{ mb: 3, display: "flex", alignItems: "center", width: "100%" }}
+            >
+              <strong>{t("contactsManagement.owner")}:</strong>{" "}
+              {user.role !== "user" ? (
+                <AssignDonorOwner
+                  currentOwner={client.owner || {}}
+                  selectedDonorId={id}
+                />
+              ) : client.owner ? (
+                <>
+                  {client.owner.fName} {client.owner.lName}
+                </>
+              ) : (
+                "N/A"
+              )}
+            </Typography>
+          </Box>
 
           {/* ========== Quick Contact Buttons ========== */}
-          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 3 }}>
             <SendEmailButton recipient={email_1?.email} />
             <SendWhatsappButton recipientPhone={phone_number_1?.number} />
             <Button
@@ -257,17 +259,16 @@ const ClientDetailsPage = () => {
 
           {/* Donator nextContact */}
           {client.nextContactDate && (
-            <Typography variant="body1" sx={{ mt: 2 }}>
-              <strong>{t("contactsManagement.nextContact")}:</strong>
+            <Typography variant="body1">
+              <strong>{t("contactsManagement.nextContact")}:</strong>{" "}
               {new Date(client.nextContactDate).toLocaleString("en-GB")}
             </Typography>
           )}
         </Box>
       </Paper>
-      <Box sx={{ display: "flex", gap: 2, marginBottom: 3, flexWrap: "wrap" }}>
-        {/* ---------- Left Paper: Client Info ---------- */}
 
-        {/* ---------- Right Paper: Donations Chart ---------- */}
+      {/* ---------- Donations Chart ---------- */}
+      <Box sx={{ mb: 4 }}>
         <DonationsComponent
           t={t}
           allodonData={allodonData}
@@ -279,7 +280,7 @@ const ClientDetailsPage = () => {
       </Box>
 
       {/* ========== Donator Notes ========== */}
-      <Paper sx={{ p: 2, boxShadow: 3, mb: 3 }}>
+      <Paper sx={{ p: 4, boxShadow: 3, mb: 4 }}>
         <DonatorNotes donatorId={id} note={notes} key={id} />
       </Paper>
 
@@ -295,6 +296,7 @@ const ClientDetailsPage = () => {
           justifyContent: "space-between",
           alignItems: "center",
           mt: 4,
+          mb: 2,
           flexWrap: "wrap",
           gap: 2,
         }}

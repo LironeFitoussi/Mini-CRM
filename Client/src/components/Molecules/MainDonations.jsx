@@ -11,9 +11,16 @@ import {
   Grid,
   Tabs,
   Tab,
+  Modal,
+  IconButton,
+  Card,
+  CardContent,
+  Divider,
   // Button
 } from '@mui/material';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DownloadIcon from '@mui/icons-material/Download';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 // Expanded color palette to handle more donation types
@@ -32,9 +39,23 @@ const DonationsComponent = ({
 }) => {
   // Add state for tab selection
   const [chartTab, setChartTab] = useState(0);
+  // Add state for modal
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState(null);
 
   const handleTabChange = (event, newValue) => {
     setChartTab(newValue);
+  };
+
+  // Modal handlers
+  const handleOpenModal = (donation) => {
+    setSelectedDonation(donation);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedDonation(null);
   };
 
   // Create a record of donation amounts by currency
@@ -120,23 +141,24 @@ const DonationsComponent = ({
 
   return (
     <Paper sx={{ flex: 1, boxShadow: 3 }}>
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: 4 }}>
         {/* Header Section */}
-        <Box className="flex justify-between mb-4" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" gutterBottom>
+        <Box className="flex justify-between mb-4" sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          mb: 4
+        }}>
+          <Typography variant="h6" gutterBottom={false}>
             {t("general.totalDonations")}
           </Typography>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
             {/* For Each Currency Key Display the Total Amount */}
             {Object.keys(currencies).map((currency) => (
-              <Typography key={currency}>
+              <Typography key={currency} sx={{ fontWeight: 'medium' }}>
                 {currencies[currency]} {currency}
               </Typography>
             ))}
-            {/* 2) Manual Sync Button */}
-            {/* <Button variant="contained" color="primary" onClick={handleManualSync}>
-              {t("general.manualSync")}
-            </Button> */}
           </Box>
         </Box>
 
@@ -146,17 +168,21 @@ const DonationsComponent = ({
           <Grid item xs={12} md={7}>
             <Box
               sx={{
-                maxHeight: 400, // Adjust as needed
+                maxHeight: 400,
                 overflow: 'auto',
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: 'divider',
               }}
             >
-              <TableContainer component={Paper}>
+              <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
                 <Table stickyHeader aria-label="donations table">
                   <TableHead>
                     <TableRow>
                       <TableCell>{t("donations.amount")}</TableCell>
                       <TableCell>{t("donations.date")}</TableCell>
                       <TableCell>{t("donations.cerfa")}</TableCell>
+                      <TableCell align="center">{t("general.details")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -167,14 +193,35 @@ const DonationsComponent = ({
                         </TableCell>
                         <TableCell>{donation.date.split("T")[0]}</TableCell>
                         <TableCell>
-                          <a
-                            href={donation.cerfa}
-                            download
-                            target="_blank"
-                            rel="noreferrer"
+                          {typeof donation.cerfa === 'number' || !isNaN(Number(donation.cerfa)) ? (
+                            <Typography variant="body2" color="text.secondary">
+                              {donation.cerfa}
+                            </Typography>
+                          ) : donation.cerfa ? (
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              href={donation.cerfa}
+                              download
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label="download cerfa"
+                            >
+                              <DownloadIcon fontSize="small" />
+                            </IconButton>
+                          ) : (
+                            <Typography variant="body2" color="text.secondary">-</Typography>
+                          )}
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton 
+                            size="small" 
+                            color="primary" 
+                            onClick={() => handleOpenModal(donation)}
+                            aria-label="view donation details"
                           >
-                            {t("general.view")}
-                          </a>
+                            <VisibilityIcon fontSize="small" />
+                          </IconButton>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -186,15 +233,22 @@ const DonationsComponent = ({
 
           {/* Pie Chart */}
           <Grid item xs={12} md={5}>
-            <Box sx={{ width: '100%', height: 450 }}>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+            <Box sx={{ 
+              width: '100%', 
+              height: 450, 
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1,
+              p: 2
+            }}>
+              <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
                 <Tabs value={chartTab} onChange={handleTabChange} centered>
                   <Tab label={t("donations.byCurrency")} />
                   <Tab label={t("donations.byCategory")} />
                 </Tabs>
               </Box>
               
-              <ResponsiveContainer width="100%" height={380}>
+              <ResponsiveContainer width="100%" height={360}>
                 <PieChart margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
                   {/* Currency Chart */}
                   {chartTab === 0 && currencyData.length > 0 && (
@@ -262,30 +316,161 @@ const DonationsComponent = ({
                       boxShadow: '0 2px 5px rgba(0,0,0,0.15)'
                     }}
                   />
-                  <Legend 
-                    layout="vertical" 
-                    verticalAlign="middle" 
-                    align="right"
-                    iconType="circle"
-                    iconSize={10}
-                    formatter={(value, entry) => {
-                      // Truncate long names in the legend
-                      const displayName = value.length > 20 ? value.substring(0, 20) + '...' : value;
-                      return `${displayName}: ${entry.payload.value}`;
-                    }}
-                    wrapperStyle={{ 
-                      paddingLeft: '10px',
-                      fontSize: '12px',
-                      maxHeight: '300px',
-                      overflowY: 'auto'
-                    }}
-                  />
                 </PieChart>
               </ResponsiveContainer>
             </Box>
           </Grid>
         </Grid>
       </Box>
+
+      {/* Donation Details Modal */}
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="donation-details-modal"
+        aria-describedby="modal-showing-full-donation-details"
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Card sx={{ 
+          width: '90%', 
+          maxWidth: 600, 
+          maxHeight: '90vh',
+          overflow: 'auto',
+          p: 3,
+          boxShadow: 24,
+          borderRadius: 2,
+        }}>
+          {selectedDonation && (
+            <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+              <Typography variant="h6" component="h2" gutterBottom sx={{ mb: 2 }}>
+                {t("donations.detailsTitle")}
+              </Typography>
+              <Divider sx={{ mb: 3 }} />
+              
+              <Grid container spacing={3}>
+                {Object.entries(selectedDonation).map(([key, value]) => {
+                  // Skip the infos.original field as requested
+                  if (key === 'infos' && value && value.original) {
+                    // Destructure with rest pattern but don't use original
+                    // eslint-disable-next-line no-unused-vars
+                    const { original, ...restInfos } = value;
+                    value = restInfos;
+                  }
+                  
+                  // Get translated field title based on key
+                  const getTitleForKey = (keyName) => {
+                    // Map keys to translation keys
+                    const keyTranslationMap = {
+                      _id: "donations.modal.id",
+                      amount: "donations.modal.amount",
+                      currency: "donations.modal.currency",
+                      date: "donations.modal.date",
+                      cerfa: "donations.modal.cerfa",
+                      notes: "donations.modal.notes",
+                      infos: "donations.modal.additionalInfo",
+                      donorId: "donations.modal.donorId",
+                      donor: "donations.modal.donor",
+                      createdAt: "donations.modal.createdAt",
+                      updatedAt: "donations.modal.updatedAt",
+                      // Add more mappings as needed
+                    };
+                    
+                    return keyTranslationMap[keyName] 
+                      ? t(keyTranslationMap[keyName]) 
+                      : keyName.charAt(0).toUpperCase() + keyName.slice(1);
+                  };
+                  
+                  // Format the value for display
+                  let displayValue = value;
+                  if (typeof value === 'object' && value !== null) {
+                    if (Array.isArray(value)) {
+                      displayValue = JSON.stringify(value, null, 2);
+                    } else {
+                      return (
+                        <Grid item xs={12} key={key}>
+                          <Typography variant="subtitle1" color="primary" fontWeight="500">
+                            {getTitleForKey(key)}
+                          </Typography>
+                          <Box 
+                            sx={{ 
+                              pl: 0, 
+                              mb: 3, 
+                              p: 2, 
+                              bgcolor: 'background.paper', 
+                              borderRadius: 1, 
+                              border: '1px solid',
+                              borderColor: 'divider'
+                            }}
+                          >
+                            {Object.entries(value).map(([subKey, subValue]) => {
+                              // Get translated field title for subkey
+                              const getSubTitleForKey = (parentKey, childKey) => {
+                                const combinedKey = `${parentKey}.${childKey}`;
+                                const subKeyTranslationMap = {
+                                  'infos.type': "donations.modal.infoType",
+                                  'infos.method': "donations.modal.paymentMethod",
+                                  'infos.status': "donations.modal.status",
+                                  // Add more mappings as needed
+                                };
+                                
+                                return subKeyTranslationMap[combinedKey] 
+                                  ? t(subKeyTranslationMap[combinedKey]) 
+                                  : childKey.charAt(0).toUpperCase() + childKey.slice(1);
+                              };
+                              
+                              return (
+                                <Typography key={subKey} variant="body2" sx={{ mb: 0.5 }}>
+                                  <strong>{getSubTitleForKey(key, subKey)}:</strong> {
+                                    typeof subValue === 'object' && subValue !== null
+                                      ? JSON.stringify(subValue)
+                                      : String(subValue)
+                                  }
+                                </Typography>
+                              );
+                            })}
+                          </Box>
+                        </Grid>
+                      );
+                    }
+                  } else if (key === 'date') {
+                    // Format date for better readability
+                    displayValue = new Date(value).toLocaleString();
+                  } else {
+                    displayValue = String(value);
+                  }
+
+                  return (
+                    <Grid item xs={6} key={key}>
+                      <Typography variant="subtitle1" color="primary" fontWeight="500">
+                        {getTitleForKey(key)}
+                      </Typography>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          mb: 2,
+                          p: 2,
+                          bgcolor: 'background.paper',
+                          borderRadius: 1,
+                          border: '1px solid',
+                          borderColor: 'divider'
+                        }} 
+                        component="pre" 
+                        style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                      >
+                        {displayValue}
+                      </Typography>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </CardContent>
+          )}
+        </Card>
+      </Modal>
     </Paper>
   );
 };

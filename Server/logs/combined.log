@@ -468,3 +468,9 @@
 2025-03-15 21:45:43 [INFO]: ✅ SMTP server is ready to take our messages
 2025-03-15 21:45:45 [INFO]: ✅ Message sent: %s
 2025-03-15 21:45:45 [INFO]: 🗂️ Mail job marked as sent: 67d5d8e6d7592aa702e93570
+2025-03-15 22:48:11 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-15 22:48:11 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-15 22:48:50 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-15 22:48:50 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-15 22:49:20 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-15 22:49:20 [INFO]: 🔧 Email sending mode: ACTUAL SENDING

@@ -51,8 +51,10 @@ const Dashboard = () => {
         <Sidebar />
 
         {/* Main Content */}
-        <main className="p-6 overflow-y-auto">
-          <Outlet />
+        <main className="p-6 overflow-y-auto flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

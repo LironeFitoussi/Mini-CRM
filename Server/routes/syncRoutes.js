@@ -6,12 +6,21 @@ const { syncDonationsForSingleDonor } = require('../controllers/syncController')
 const { syncAllodonClients } = require('../sync/syncAllodon');
 const { syncNedarimDonations } = require('../sync/syncNedarim');
 const { syncAlloDonations } = require('../sync/syncAlloDonations');
+const { performDailySync } = require('../cronJobs/dailySyncCron');
 
 // Track last full sync status
 let lastFullSyncStatus = {
   lastRun: null,
   status: 'never run',
   error: null
+};
+
+// Track last daily sync status
+let lastDailySyncStatus = {
+  lastRun: null,
+  status: 'never run',
+  error: null,
+  results: null
 };
 
 // Manually sync a single donor by local donor ID
@@ -107,9 +116,51 @@ router.post('/full', async (req, res) => {
   }
 });
 
+// API endpoint for triggering a daily sync
+router.post('/daily', async (req, res) => {
+  try {
+    console.log('🔄 Manual daily sync triggered via API');
+    
+    const result = await performDailySync();
+    
+    lastDailySyncStatus = {
+      lastRun: new Date(),
+      status: result.success ? 'success' : 'failed',
+      error: result.error || null,
+      results: result.results
+    };
+    
+    res.json({
+      success: result.success,
+      message: result.success ? 'Daily sync completed successfully' : 'Daily sync failed',
+      results: result.results
+    });
+  } catch (error) {
+    console.error('❌ Error during manual daily sync:', error);
+    
+    lastDailySyncStatus = {
+      lastRun: new Date(),
+      status: 'failed',
+      error: error.message,
+      results: null
+    };
+    
+    res.status(500).json({
+      success: false,
+      message: 'Daily sync failed',
+      error: error.message
+    });
+  }
+});
+
 // API endpoint to get last full sync status
 router.get('/status', (req, res) => {
   res.json(lastFullSyncStatus);
+});
+
+// API endpoint to get last daily sync status
+router.get('/daily/status', (req, res) => {
+  res.json(lastDailySyncStatus);
 });
 
 module.exports = router;

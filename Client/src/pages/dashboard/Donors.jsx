@@ -13,6 +13,7 @@ import debounce from "lodash.debounce";
 // import AddDonatorButton from "../../components/Buttons/AddDonatorButton";
 import BroadcastEmailButton from "../../components/Buttons/BroadcastEmailButton";
 import SmartTable from "../../components/Molecules/SmartTable";
+import SyncButton from "../../components/Buttons/SyncButton";
 
 const DonatorsPage = () => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const DonatorsPage = () => {
         return (
           (donor.fName && donor.fName.toLowerCase().includes(searchLower)) ||
           (donor.lName && donor.lName.toLowerCase().includes(searchLower)) ||
+          (donor.email_1?.email && donor.email_1.email.toLowerCase().includes(searchLower)) ||
           (donor.email && donor.email.toLowerCase().includes(searchLower)) ||
           (donor.phone_number_1?.number && donor.phone_number_1.number.includes(debouncedSearch)) ||
           (donor.donorId && donor.donorId.includes(debouncedSearch))
@@ -54,8 +56,10 @@ const DonatorsPage = () => {
       _id: donor._id,
       fName: donor.fName || "",
       lName: donor.lName || "",
-      email: donor.email || "N/A",
+      email: donor.email_1?.email || donor.email || "N/A",
+      email_1: donor.email_1 || null,
       phoneNumber: donor.phone_number_1?.number || "N/A",
+      phone_number_1: donor.phone_number_1 || null,
       status: donor.status || "active",
       nextContactDate: donor.nextContactDate || null,
       owner: donor.owner || null,
@@ -167,6 +171,7 @@ const DonatorsPage = () => {
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
         <Typography variant="h4">Donors</Typography>
         <Box sx={{ display: "flex", gap: 2 }}>
+          <SyncButton />
           <BroadcastEmailButton />
           {/* <AddDonatorButton /> */}
         </Box>

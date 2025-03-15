@@ -15,7 +15,10 @@ import DeleteUserModal from "../../components/Modals/DeleteUserModal";
 const fetchUsers = () => {
   return axios.get(
     import.meta.env.VITE_API_URL + "/api/v1/users"
-  ).then(({ data }) => data.users);
+  ).then(({ data }) => {
+    // Ensure we're returning an array
+    return Array.isArray(data.users) ? data.users : [];
+  });
 };
 
 const deleteUsers = async (ids) => {
@@ -218,7 +221,7 @@ const Users = () => {
     setAlert({ ...alert, open: false });
   };
 
-  if (isPageLoading || !data) {
+  if (isPageLoading || !data || !Array.isArray(data)) {
     return (
       <div className="h-screen flex justify-center items-center">
         <div className="text-center p-8 bg-white rounded-lg shadow-md">
@@ -248,7 +251,10 @@ const Users = () => {
     );
   }
   
-  const validData = data?.filter((row) => row && row._id) || [];
+  // Ensure data is always an array before filtering
+  const validData = Array.isArray(data) 
+    ? data.filter((row) => row && row._id) 
+    : [];
 
   return (
     <div className="h-screen p-4">
@@ -335,7 +341,10 @@ const Users = () => {
 export function usersLoader() {
   return axios.get(
     import.meta.env.VITE_API_URL + "/api/v1/users"
-  ).then(({ data }) => data.users);
+  ).then(({ data }) => {
+    // Ensure we're returning an array
+    return Array.isArray(data.users) ? data.users : [];
+  });
 }
 
 export default Users;

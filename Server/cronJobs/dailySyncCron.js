@@ -77,6 +77,7 @@ function getCurrencyName(currencyCode) {
         'ILS': 'ILS',
         'USD': 'USD',
         'EUR': 'EUR',
+        '1': 'NIS', // New Israeli Shekel
         // Add more currency mappings as needed
     };
     return currencyMap[currencyCode] || currencyCode || 'ILS';

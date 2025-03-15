@@ -26,12 +26,14 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
     if (debouncedSearch) {
       const searchLower = debouncedSearch.toLowerCase();
       filteredData = allClients.filter(client => {
-        // Adjust these fields based on your actual client object structure
+        // Search across all relevant fields
         return (
-          (client.name && client.name.toLowerCase().includes(searchLower)) ||
+          (client.fName && client.fName.toLowerCase().includes(searchLower)) ||
+          (client.lName && client.lName.toLowerCase().includes(searchLower)) ||
+          (client.email_1?.email && client.email_1.email.toLowerCase().includes(searchLower)) ||
           (client.email && client.email.toLowerCase().includes(searchLower)) ||
-          (client.phone && client.phone.includes(debouncedSearch)) ||
-          (client.clientId && client.clientId.includes(debouncedSearch))
+          (client.phone_number_1?.number && client.phone_number_1.number.includes(debouncedSearch)) ||
+          (client.phone && client.phone.includes(debouncedSearch))
         );
       });
     }
@@ -40,8 +42,22 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
     const startIndex = paginationModel.page * paginationModel.pageSize;
     const endIndex = startIndex + paginationModel.pageSize;
     
+    // Map donors to a consistent format
+    const formattedDonors = filteredData.slice(startIndex, endIndex).map(client => ({
+      _id: client._id,
+      fName: client.fName || "",
+      lName: client.lName || "",
+      email: client.email || "",
+      email_1: client.email_1 || null,
+      phoneNumber: client.phone || "",
+      phone_number_1: client.phone_number_1 || null,
+      status: client.status || "active",
+      nextContactDate: client.nextContactDate || null,
+      owner: client.owner || null,
+    }));
+    
     return {
-      donors: filteredData.slice(startIndex, endIndex),
+      donors: formattedDonors,
       totalDocuments: filteredData.length,
       currentPage: paginationModel.page + 1,
       totalPages: Math.ceil(filteredData.length / paginationModel.pageSize)

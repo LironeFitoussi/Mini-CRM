@@ -1,4 +1,5 @@
 import { Box, Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 // Custom hooks
 import useAllodonClients from "../../hooks/useAllodonClients";
@@ -7,6 +8,7 @@ import useAllodonClients from "../../hooks/useAllodonClients";
 import PageHeader from "../../components/Molecules/PageHeader";
 import SearchBar from "../../components/Atoms/SearchBar";
 import AllodonTable from "../../components/Molecules/AllodonTable";
+import SyncButton from "../../components/Buttons/SyncButton";
 // import AddAllodonClientButton from "../../components/Buttons/AddAllodonClientButton";
 
 /**
@@ -16,6 +18,8 @@ import AllodonTable from "../../components/Molecules/AllodonTable";
  * @returns {JSX.Element} AllodonClients page
  */
 const AllodonClients = () => {
+  const navigate = useNavigate();
+  
   // Use the custom hook to manage clients data and state
   const {
     searchQuery,
@@ -29,14 +33,24 @@ const AllodonClients = () => {
     handleStatusToggle,
   } = useAllodonClients();
 
-  // console.log(data);
+  // Handle row click to navigate to donor details
+  const handleDonorSelect = (donorId) => {
+    navigate(`/dashboard/donors/${donorId}`);
+  };
 
   return (
-    <Box sx={{ padding: 4 }}>
-      {/* Page Header with Add Client Button */}
+    <Box 
+      sx={{ 
+        padding: 4, 
+        height: "calc(100vh - 64px)", // Adjust for app bar height
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      {/* Page Header with Sync Button */}
       <PageHeader
         title="Allodon Clients"
-        // actions={<AddAllodonClientButton />}
+        actions={<SyncButton />}
       />
 
       {/* Search Input */}
@@ -45,28 +59,32 @@ const AllodonClients = () => {
         onChange={handleSearchChange}
         label="Search Allodon Clients"
         placeholder="Search by name, email, phone..."
+        sx={{ mb: 2 }}
       />
 
       {/* Error Message */}
       {error && (
-        <Alert severity="error" sx={{ my: 2 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error} — Please try again later.
         </Alert>
       )}
 
-      {/* Clients Table */}
-      {data.donors && data.donors.length > 0 ? (
-        <AllodonTable
-          data={data.donors}
-          loading={loading}
-          onStatusToggle={handleStatusToggle}
-          page={paginationModel.page}
-          rowsPerPage={paginationModel.pageSize}
-          totalCount={data.totalDocuments}
-          onPageChange={handlePageChange}
-          onPageSizeChange={handlePageSizeChange}
-        />
-      ) : null}
+      {/* Clients Table - Flex grow to fill available space */}
+      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
+        {data.donors && data.donors.length > 0 ? (
+          <AllodonTable
+            data={data.donors}
+            loading={loading}
+            onStatusToggle={handleStatusToggle}
+            onRowClick={handleDonorSelect}
+            page={paginationModel.page}
+            pageSize={paginationModel.pageSize}
+            totalDocuments={data.totalDocuments}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
+        ) : null}
+      </Box>
     </Box>
   );
 };

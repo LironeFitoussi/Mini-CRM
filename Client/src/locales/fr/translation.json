@@ -14,6 +14,7 @@
         "edit": "Modifier le don",
         "delete": "Supprimer le don",
         "details": "Détails du don",
+        "detailsTitle": "Détails de la donation",
         "amount": "Montant",
         "type": "Type",
         "date": "Date",
@@ -22,7 +23,25 @@
         "tags": "Étiquettes",
         "assignedTo": "Attribué à",
         "contactBackDate": "Date de rappel",
-        "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer ce don?"
+        "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer ce don?",
+        "byCurrency": "Par devise",
+        "byCategory": "Par catégorie",
+        "modal": {
+            "id": "Identifiant",
+            "amount": "Montant",
+            "currency": "Devise",
+            "date": "Date",
+            "cerfa": "Document CERFA",
+            "notes": "Notes",
+            "additionalInfo": "Informations complémentaires",
+            "donorId": "ID du donateur",
+            "donor": "Donateur",
+            "createdAt": "Créé le",
+            "updatedAt": "Mis à jour le",
+            "infoType": "Type",
+            "paymentMethod": "Méthode de paiement",
+            "status": "Statut"
+        }
     },
     "NextContactTimeModal": {
         "title": "Définir l'heure du prochain contact",
