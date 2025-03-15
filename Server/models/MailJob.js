@@ -16,6 +16,27 @@ const MailJobSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  imageUrl: {
+    type: String,
+    default: ''
+  },
+  imageLink: {
+    type: String,
+    default: ''
+  },
+  isImageClickable: {
+    type: Boolean,
+    default: false
+  },
+  clickableImageText: {
+    type: String,
+    default: ''
+  },
+  imagePosition: {
+    type: String,
+    enum: ['top', 'bottom'],
+    default: 'top'
+  },
   sender: { // Reference to MailSender
     type: mongoose.Schema.Types.ObjectId,
     ref: 'MailSender',

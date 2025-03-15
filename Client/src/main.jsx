@@ -1,6 +1,10 @@
+// Import polyfill before anything else
+import './draftjs-polyfill';
+
 // src/index.jsx
 import "./index.css";
-import React from "react";
+// Since we've configured ESLint to not require React in scope, we can remove this import
+// import React from "react";
 import { createRoot } from "react-dom/client";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";

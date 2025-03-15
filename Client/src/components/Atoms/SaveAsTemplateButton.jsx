@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@mui/material";
+import PropTypes from 'prop-types';
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import ConfirmationModal from "../Modals/ConfirmationModal"; // Adjust the path
 import SaveIcon from '@mui/icons-material/Save';
 import { useTranslation } from "react-i18next";
 
-const SaveAsTemplateButton = ({ subject, body, imageUrl, imagePosition }) => {
+const SaveAsTemplateButton = ({ 
+  subject, 
+  body, 
+  imageUrl, 
+  imagePosition,
+  imageLink = '',
+  isImageClickable = false,
+  clickableImageText = ''
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -17,9 +26,24 @@ const SaveAsTemplateButton = ({ subject, body, imageUrl, imagePosition }) => {
     onSuccess: () => {
       queryClient.invalidateQueries(["templates"]); // Refresh the templates list
       setIsModalOpen(false);
+      alert(t("templateSaved") || "Template saved successfully!");
     },
     onError: (error) => {
+      // Log detailed error information
       console.error("Error saving template:", error.message);
+      console.error("Response data:", error.response?.data);
+      console.error("Status code:", error.response?.status);
+      
+      // Show a more informative error message
+      let errorMessage = t("templateSaveError") || "Error saving template. Please try again.";
+      if (error.response?.data?.message) {
+        errorMessage += ` (${error.response.data.message})`;
+      }
+      if (error.response?.data?.missingFields) {
+        errorMessage += ` Missing fields: ${error.response.data.missingFields.join(', ')}`;
+      }
+      
+      alert(errorMessage);
     },
   });
 
@@ -27,13 +51,31 @@ const SaveAsTemplateButton = ({ subject, body, imageUrl, imagePosition }) => {
   const handleCloseModal = () => setIsModalOpen(false);
 
   const handleSaveTemplate = () => {
-    saveTemplateMutation.mutate({
-      name: subject, // Use the subject as the template name (or adjust as needed)
+    // Check for empty body content
+    if (!body || body.trim() === '' || body === '<p><br></p>') {
+      alert(t("templateBodyEmpty") || "Template body cannot be empty!");
+      return;
+    }
+
+    // Create a template object with all fields
+    const templateData = {
+      name: subject, // Use the subject as the template name
       subject,
-      body,
-      imageUrl,
-      imagePosition,
-    });
+      body, // Use the processed HTML body content
+      imageUrl: imageUrl || '',
+      imagePosition: imagePosition || 'top',
+      imageLink: imageLink || '',
+      isImageClickable: isImageClickable === true,
+      clickableImageText: clickableImageText || ''
+    };
+
+    // Log complete data for debugging
+    console.log('Saving template with data:', templateData);
+    console.log('Body content length:', body ? body.length : 0);
+    console.log('Body content sample:', body ? body.substring(0, 100) + '...' : 'empty');
+    console.log('Image URL:', imageUrl || 'none');
+    
+    saveTemplateMutation.mutate(templateData);
   };
 
   return (
@@ -45,12 +87,22 @@ const SaveAsTemplateButton = ({ subject, body, imageUrl, imagePosition }) => {
         open={isModalOpen}
         onClose={handleCloseModal}
         onConfirm={handleSaveTemplate}
-        title={t("saveTemplate")}
-        description={t("confirmSaveTemplate")}
+        title={t("saveTemplate") || "Save Template"}
+        description={t("confirmSaveTemplate") || "Are you sure you want to save this email as a template?"}
         type={"primary"}
       />
     </>
   );
+};
+
+SaveAsTemplateButton.propTypes = {
+  subject: PropTypes.string.isRequired,
+  body: PropTypes.string.isRequired,
+  imageUrl: PropTypes.string,
+  imagePosition: PropTypes.string,
+  imageLink: PropTypes.string,
+  isImageClickable: PropTypes.bool,
+  clickableImageText: PropTypes.string
 };
 
 export default SaveAsTemplateButton;

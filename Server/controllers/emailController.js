@@ -21,14 +21,28 @@ function manipulateAnchors(htmlString) {
       const hrefMatch = attributes.match(/href=['"](.*?)['"]/i);
       const href = hrefMatch ? hrefMatch[1] : '#';
 
-      // Create the modified structure
-      return `<a rel="nofollow" href="https://${href}" style="color: blue; text-decoration: underline;" ${attributes}>${innerText}</a>`;
+      // Create the modified structure with proper href formatting
+      // Only prepend https:// if it doesn't already have a protocol
+      const formattedHref = href.startsWith('http') ? href : `https://${href}`;
+      
+      return `<a rel="nofollow" href="${formattedHref}" style="color: blue; text-decoration: underline;" ${attributes.replace(/href=['"].*?['"]/i, '')}>${innerText}</a>`;
   });
+}
+
+// Process and sanitize the email body
+function processEmailBody(body) {
+  // First ensure all anchor tags are properly formatted
+  let processedBody = manipulateAnchors(body);
+  
+  // Handle any other processing needed for the body
+  // For example, sanitize or transform other HTML elements
+  
+  return processedBody;
 }
 
 // Email sending controller
 const sendEmail = async (req, res) => {
-  const { from, to, subject, body } = req.body;
+  const { from, to, subject, body, imageUrl, imageLink, isImageClickable, clickableImageText } = req.body;
 
   // Basic validation
   if (!from || !to || !subject || !body) {
@@ -52,14 +66,21 @@ const sendEmail = async (req, res) => {
     // Array to hold created MailJob documents
     const createdMailJobs = [];
 
+    // Process the email body
+    const processedBody = processEmailBody(body);
+
     for (let i = 0; i < recipientChunks.length; i++) {
       const chunk = recipientChunks[i];
 
-      // Create a MailJob document
+      // Create a MailJob document with all the necessary email properties
       const mailJob = new MailJob({
         recipients: chunk,
         subject,
-        body:  manipulateAnchors(body), // Manipulate anchor tags in the email body
+        body: processedBody,
+        imageUrl,
+        imageLink,
+        isImageClickable,
+        clickableImageText,
         sender: sender._id,
         is_sent: false, // Initially set to false; will be updated after sending
       });

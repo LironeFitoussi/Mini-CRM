@@ -47,6 +47,9 @@ const ClientDetailsPage = () => {
     body: "",
     imagePosition: "top",
     imageUrl: null,
+    imageLink: "",
+    isImageClickable: false,
+    clickableImageText: "",
   });
 
   // ========== Fetch Specific Client ==========
@@ -223,7 +226,7 @@ const ClientDetailsPage = () => {
               <strong>{t("contactsManagement.owner")}:</strong>{" "}
               {user.role !== "user" ? (
                 <AssignDonorOwner
-                  currentOwner={client.owner}
+                  currentOwner={client.owner || {}}
                   selectedDonorId={id}
                 />
               ) : client.owner ? (

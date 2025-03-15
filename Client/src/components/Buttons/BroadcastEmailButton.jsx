@@ -22,6 +22,9 @@ const BroadcastEmailButton = () => {
     emailFooter: emailFooter,
     imagePosition: "top", // Default image position
     imageUrl: "",
+    imageLink: "", // Add imageLink field
+    isImageClickable: false, // Add isImageClickable field
+    clickableImageText: "", // Add clickableImageText field
   });
 
   // State for notifications
@@ -123,6 +126,9 @@ const BroadcastEmailButton = () => {
         body: "",
         imagePosition: "top",
         imageUrl: "",
+        imageLink: "",
+        isImageClickable: false,
+        clickableImageText: "",
       });
     } catch (error) {
       // Show error notification

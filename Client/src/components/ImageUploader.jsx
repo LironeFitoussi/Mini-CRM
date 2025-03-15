@@ -1,37 +1,21 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-
+import CircularProgress from "@mui/material/CircularProgress";
+// import PropType
 const ImageUploader = ({ handleChange }) => {
-  const [image, setImage] = useState(null);
+  // const Image
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const { t } = useTranslation();
-  // Create a ref for the hidden file input
   const inputRef = useRef(null);
 
-  const handleFileChange = (file) => {
-    setImage(file);
-    setUploadStatus("");
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      handleFileChange(file);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!image) {
-      alert("Please select an image to upload.");
-      return;
-    }
+  const handleFileChange = async (file) => {
+    if (!file) return;
 
     setIsUploading(true);
     const formData = new FormData();
-    formData.append("image", image);
+    formData.append("image", file);
 
     try {
       const response = await axios.post(
@@ -54,11 +38,9 @@ const ImageUploader = ({ handleChange }) => {
       );
     } finally {
       setIsUploading(false);
-      setImage(null);
     }
   };
 
-  // Function to handle click on the drop area
   const handleAreaClick = () => {
     if (inputRef.current) {
       inputRef.current.click();
@@ -70,11 +52,17 @@ const ImageUploader = ({ handleChange }) => {
       <div
         className="w-full max-w-md p-6 bg-white border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500"
         onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-        onClick={handleAreaClick} // Add onClick handler here
+        onDrop={(e) => {
+          e.preventDefault();
+          const file = e.dataTransfer.files[0];
+          if (file) {
+            handleFileChange(file);
+          }
+        }}
+        onClick={handleAreaClick}
       >
-        {image ? (
-          <p className="text-center text-gray-700">{image.name}</p>
+        {isUploading ? (
+          <CircularProgress />
         ) : (
           <p className="text-center text-gray-500">
             {t("imageUploader.dragAndDrop") || "Drag and drop an image here, or click to select"}
@@ -82,30 +70,12 @@ const ImageUploader = ({ handleChange }) => {
         )}
         <input
           type="file"
-          accept="image/*" // Restrict to image files
+          accept="image/*"
           className="hidden"
           onChange={(e) => handleFileChange(e.target.files[0])}
-          ref={inputRef} // Attach the ref to the input
+          ref={inputRef}
         />
       </div>
-
-      {image && (
-        <div className="mt-4 text-center">
-          <p className="text-gray-600">File selected: {image.name}</p>
-        </div>
-      )}
-
-      <button
-        className={`mt-4 px-6 py-2 rounded-lg text-white ${
-          isUploading
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-blue-500 hover:bg-blue-600"
-        }`}
-        onClick={handleUpload}
-        disabled={isUploading || !image}
-      >
-        {isUploading ? t("imageUploader.uploading") : t("imageUploader.uploadImage") || "Upload"}
-      </button>
 
       {uploadStatus && (
         <p

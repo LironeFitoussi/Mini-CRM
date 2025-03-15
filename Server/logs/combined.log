@@ -407,3 +407,61 @@
 2025-03-11 16:55:21 [INFO]: 📧 Body length: 397 characters
 2025-03-11 16:55:21 [INFO]: ✅ Simulated message ID: simulated-1741704921934-zam3lhz5q6r
 2025-03-11 16:55:22 [INFO]: 🗂️ Mail job marked as sent: 67d04ed9582014bb36c43918
+2025-03-12 11:29:28 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-12 11:29:28 [INFO]: 🔧 Email sending mode: SIMULATION (no emails will be sent)
+2025-03-12 11:29:49 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-12 11:29:49 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-12 11:32:28 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-12 11:32:29 [INFO]: ✅ Message sent: %s
+2025-03-12 11:32:29 [INFO]: 🗂️ Mail job marked as sent: 67d154ab2b749e4bcdab0099
+2025-03-12 11:34:32 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-12 11:34:34 [INFO]: ✅ Message sent: %s
+2025-03-12 11:34:34 [INFO]: 🗂️ Mail job marked as sent: 67d155272b749e4bcdab1454
+2025-03-12 11:42:31 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-12 11:42:47 [INFO]: ✅ Message sent: %s
+2025-03-12 11:42:47 [INFO]: 🗂️ Mail job marked as sent: 67d157062b749e4bcdab284b
+2025-03-12 11:46:55 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-12 11:46:57 [INFO]: ✅ Message sent: %s
+2025-03-12 11:46:57 [INFO]: 🗂️ Mail job marked as sent: 67d1580f2b749e4bcdab2853
+2025-03-12 11:48:39 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-12 11:48:42 [INFO]: ✅ Message sent: %s
+2025-03-12 11:48:42 [INFO]: 🗂️ Mail job marked as sent: 67d158762b749e4bcdab2863
+2025-03-12 11:56:12 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-12 11:56:14 [INFO]: ✅ Message sent: %s
+2025-03-12 11:56:14 [INFO]: 🗂️ Mail job marked as sent: 67d15a3b2b749e4bcdab2875
+2025-03-12 13:10:13 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-12 13:10:15 [INFO]: ✅ Message sent: %s
+2025-03-12 13:10:15 [INFO]: 🗂️ Mail job marked as sent: 67d16b942b749e4bcdab290d
+2025-03-12 13:22:01 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-12 13:22:01 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-12 13:22:14 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-12 13:22:14 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-12 13:22:25 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-12 13:22:25 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-12 13:22:59 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-12 13:22:59 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-12 13:23:31 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-12 13:23:31 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-12 13:24:31 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-12 13:24:31 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-12 13:26:47 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-12 13:26:47 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-12 13:27:24 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-12 13:27:31 [INFO]: ✅ Message sent: %s
+2025-03-12 13:27:31 [INFO]: 🗂️ Mail job marked as sent: 67d16f9a0bef8324028ac984
+2025-03-12 13:28:50 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-12 13:28:51 [INFO]: ✅ Message sent: %s
+2025-03-12 13:28:52 [INFO]: 🗂️ Mail job marked as sent: 67d16ff10bef8324028ac996
+2025-03-12 13:32:06 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-12 13:32:22 [INFO]: ✅ Message sent: %s
+2025-03-12 13:32:23 [INFO]: 🗂️ Mail job marked as sent: 67d170b60bef8324028ac99a
+2025-03-15 20:51:08 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-15 20:51:08 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-15 20:51:36 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-03-15 20:51:36 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-03-15 21:21:47 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-15 21:21:50 [INFO]: ✅ Message sent: %s
+2025-03-15 21:21:50 [INFO]: 🗂️ Mail job marked as sent: 67d5d34bd7592aa702e89f63
+2025-03-15 21:36:48 [INFO]: ✅ SMTP server is ready to take our messages
+2025-03-15 21:36:51 [INFO]: ✅ Message sent: %s
+2025-03-15 21:36:51 [INFO]: 🗂️ Mail job marked as sent: 67d5d6cfd7592aa702e902fb

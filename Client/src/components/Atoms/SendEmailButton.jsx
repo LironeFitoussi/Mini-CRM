@@ -1,5 +1,6 @@
 // SendEmailButton.jsx
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { Button, Alert, Snackbar } from "@mui/material";
 import axios from "axios";
@@ -21,6 +22,9 @@ const SendEmailButton = ({ recipient }) => {
     emailFooter: emailFooter,
     imagePosition: "top", // Default image position
     imageUrl: "",
+    imageLink: "", // Add imageLink field
+    isImageClickable: false, // Add isImageClickable field
+    clickableImageText: "", // Add clickableImageText field
   });
 
   // State for notifications
@@ -30,20 +34,51 @@ const SendEmailButton = ({ recipient }) => {
     severity: "success", // "success" or "error"
   });
 
-  const mailContent = `
-    ${
-      formValues.imagePosition === "top" && formValues.imageUrl
-        ? `<img src="${formValues.imageUrl}" alt="Email Header" style="max-width: 100%; height: auto;" />`
-        : ""
-    }
-    ${formValues.body}
-    ${
-      formValues.imagePosition === "bottom" && formValues.imageUrl
-        ? `<img src="${formValues.imageUrl}" alt="Email Footer" style="max-width: 100%; height: auto;" />`
-        : ""
-    }
-    ${emailFooter}
-  `;
+  // Email content generation function similar to the one in EmailForm
+  const generateEmailContent = () => {
+    return `
+      <div style="position: relative; display: inline-block;">
+        <div>${formValues.body}</div>
+        ${
+          formValues.isImageClickable && formValues.imageLink && formValues.imageUrl
+            ? `
+          <a href="${formValues.imageLink}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+            <img src="${formValues.imageUrl}" alt="Email Image" style="max-width: 100%; height: auto; display: block;" />
+            <div style="
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              background-color: rgba(0, 0, 0, 0.5);
+              color: white;
+              padding: 10px 20px;
+              border-radius: 5px;
+              text-align: center;
+              font-size: 16px;
+              font-weight: bold;
+            ">
+              ${formValues.clickableImageText || 'Click here'}
+            </div>
+          </a>
+        `
+            : `
+          <img src="${formValues.imageUrl}" alt="Email Image" style="max-width: 100%; height: auto;" />
+        `
+        }
+        <!-- Email Footer -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding: 10px; margin-top: 20px;">
+          <tr>
+            <td align="center">
+              <img src="https://image-uploader-lirone-v1.s3.eu-central-1.amazonaws.com/logo%20table%20mail.jpeg" alt="Email Footer" style="max-width: 100%; height: auto;" />
+            </td>
+          </tr>
+        </table>
+      </div>
+    `;
+  };
+
+  // Use the new email content generation function
+  const mailContent = generateEmailContent();
 
   // Function to handle sending the email
   const sendMail = async () => {
@@ -55,12 +90,15 @@ const SendEmailButton = ({ recipient }) => {
       subject: formValues.subject,
       body: mailContent,
       imageUrl: formValues.imageUrl,
+      imageLink: formValues.imageLink,
+      isImageClickable: formValues.isImageClickable,
+      clickableImageText: formValues.clickableImageText,
     };
 
     console.log("Sending email with data:", mailData);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         import.meta.env.VITE_API_URL + "/api/v1/email",
         mailData
       );
@@ -81,6 +119,9 @@ const SendEmailButton = ({ recipient }) => {
         body: "",
         imagePosition: "top",
         imageUrl: "",
+        imageLink: "",
+        isImageClickable: false,
+        clickableImageText: "",
       });
     } catch (error) {
       // Show error notification
@@ -158,6 +199,10 @@ const SendEmailButton = ({ recipient }) => {
       </Snackbar>
     </>
   );
+};
+
+SendEmailButton.propTypes = {
+  recipient: PropTypes.string,
 };
 
 export default SendEmailButton;

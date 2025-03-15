@@ -25,6 +25,18 @@ const MailTemplateSchema = new Schema({
         type: String,
         default: ''
     },
+    imageLink: {
+        type: String,
+        default: ''
+    },
+    isImageClickable: {
+        type: Boolean,
+        default: false
+    },
+    clickableImageText: {
+        type: String,
+        default: ''
+    },
     createdAt: {
         type: Date,
         default: Date.now

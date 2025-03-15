@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import useUsers from "../../queryhooks/useUsers"; // Hook to fetch users
 import PropTypes from 'prop-types';
+
 const assignDonorOwner = async ({ donorId, ownerId }) => {
   await axios.put(
     `${import.meta.env.VITE_API_URL}/api/v1/donors/${donorId}/owner`,
@@ -13,11 +14,6 @@ const assignDonorOwner = async ({ donorId, ownerId }) => {
 };
 
 const AssignDonorOwner = ({ currentOwner, selectedDonorId }) => {
-  AssignDonorOwner.propTypes = {
-    currentOwner: PropTypes.object.isRequired,
-    selectedDonorId: PropTypes.string.isRequired,
-  };
-
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [error, setError] = useState("");
@@ -57,19 +53,19 @@ const AssignDonorOwner = ({ currentOwner, selectedDonorId }) => {
   };
 
   if (isUsersError) {
-    return <Alert severity="error">{t("Failed to load telepros.")}</Alert>;
+    return <Alert severity="error" component="span">{t("Failed to load telepros.")}</Alert>;
   }
 
   return (
-    <Box>
+    <Box component="span" sx={{ display: "inline-block" }}>
       {isUsersLoading ? (
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Box component="span" sx={{ display: "inline-flex", justifyContent: "center" }}>
           <CircularProgress />
         </Box>
       ) : (
         <>
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" component="span" sx={{ mb: 2, display: "block" }}>
               {error}
             </Alert>
           )}
@@ -95,6 +91,11 @@ const AssignDonorOwner = ({ currentOwner, selectedDonorId }) => {
       )}
     </Box>
   );
+};
+
+AssignDonorOwner.propTypes = {
+  currentOwner: PropTypes.object.isRequired,
+  selectedDonorId: PropTypes.string.isRequired,
 };
 
 export default AssignDonorOwner;

@@ -323,6 +323,13 @@
         "noData": "Aucune donnée disponible"
     },
     "email": {
+        "clickableImageText": "Accomplissez la Mitsva du Makhatsit HaShekel",
+        "clickableImageTextPlaceholder": "Accomplissez la Mitsva du Makhatsit HaShekel",    
+        "makeImageClickable": "Rendre l'image cliquable",
+        "imageLinkHelper": "Lien de l'image",
+        "clickableImageTextHelper": "Texte du lien cliquable",
+        "imageLink": "Lien de l'image",
+        "imageLinkPlaceholder": "https://www.example.com/image.jpg",
         "subject": "Sujet",
         "message": "Message",
         "from": "De",

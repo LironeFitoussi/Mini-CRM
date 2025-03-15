@@ -4,23 +4,74 @@ const MailTemplate = require('../models/MailTemplate');
 // Create a new MailTemplate
 exports.createMailTemplate = async (req, res) => {
     try {
-        const { name, subject, body, imagePosition, imageUrl } = req.body;
+        const { 
+            name, 
+            subject, 
+            body, 
+            imagePosition, 
+            imageUrl, 
+            imageLink,
+            isImageClickable,
+            clickableImageText
+        } = req.body;
 
-        // Validate input
-        if (!name || !subject || !body) {
-            return res.status(400).json({ message: 'Name, subject, and body are required.' });
+        console.log('Received template data:');
+        console.log('- name:', name);
+        console.log('- subject:', subject);
+        console.log('- body length:', body ? body.length : 0);
+        console.log('- body sample:', body ? body.substring(0, 100) + '...' : 'empty');
+        console.log('- imageUrl:', imageUrl ? 'present' : 'empty');
+        console.log('- imagePosition:', imagePosition);
+        console.log('- imageLink:', imageLink);
+        console.log('- isImageClickable:', isImageClickable);
+
+        // Enhanced validation with detailed error messages
+        const missingFields = [];
+        if (!name) missingFields.push('name');
+        if (!subject) missingFields.push('subject');
+        if (!body) missingFields.push('body');
+        
+        if (missingFields.length > 0) {
+            return res.status(400).json({ 
+                message: 'Missing required fields', 
+                missingFields,
+                receivedData: {
+                    name: name || null,
+                    subject: subject || null,
+                    bodyLength: body ? body.length : 0,
+                    imagePosition: imagePosition || null,
+                    hasImageUrl: !!imageUrl,
+                    hasImageLink: !!imageLink,
+                    isImageClickable: isImageClickable || false,
+                    hasClickableText: !!clickableImageText
+                }
+            });
         }
 
         // Create and save the new mail template
-        const newMailTemplate = new MailTemplate({ name, subject, body, imagePosition, imageUrl });
+        const newMailTemplate = new MailTemplate({ 
+            name, 
+            subject, 
+            body, 
+            imagePosition: imagePosition || 'top', 
+            imageUrl: imageUrl || '',
+            imageLink: imageLink || '',
+            isImageClickable: isImageClickable === true,
+            clickableImageText: clickableImageText || ''
+        });
+        
         const savedTemplate = await newMailTemplate.save();
-
         res.status(201).json(savedTemplate);
     } catch (error) {
         if (error.code === 11000) { // Duplicate key error
             return res.status(409).json({ message: 'MailTemplate with this name already exists.' });
         }
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Template creation error:', error);
+        res.status(500).json({ 
+            message: 'Server error', 
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 };
 
@@ -57,7 +108,16 @@ exports.getMailTemplateById = async (req, res) => {
 exports.updateMailTemplate = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, subject, body } = req.body;
+        const { 
+            name, 
+            subject, 
+            body, 
+            imagePosition, 
+            imageUrl,
+            imageLink,
+            isImageClickable,
+            clickableImageText
+        } = req.body;
 
         // Validate input
         if (!name && !subject && !body) {
@@ -68,6 +128,11 @@ exports.updateMailTemplate = async (req, res) => {
         if (name) updatedFields.name = name;
         if (subject) updatedFields.subject = subject;
         if (body) updatedFields.body = body;
+        if (imagePosition) updatedFields.imagePosition = imagePosition;
+        if (imageUrl !== undefined) updatedFields.imageUrl = imageUrl;
+        if (imageLink !== undefined) updatedFields.imageLink = imageLink;
+        if (isImageClickable !== undefined) updatedFields.isImageClickable = isImageClickable;
+        if (clickableImageText !== undefined) updatedFields.clickableImageText = clickableImageText;
         updatedFields.updatedAt = Date.now();
 
         const updatedMailTemplate = await MailTemplate.findByIdAndUpdate(
