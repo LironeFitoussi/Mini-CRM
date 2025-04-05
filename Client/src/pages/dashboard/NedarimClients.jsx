@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Box, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
+import axios from "axios";
 
 // Components
 // import AddDonatorButton from "../../components/Buttons/AddDonatorButton";
@@ -10,6 +11,7 @@ import SmartTable from "../../components/Molecules/SmartTable";
 import PageHeader from "../../components/Molecules/PageHeader";
 import SearchBar from "../../components/Atoms/SearchBar";
 import SyncButton from "../../components/Buttons/SyncButton";
+import BroadcastEmailButton from "../../components/Buttons/BroadcastEmailButton";
 
 /**
  * NedarimClients page component
@@ -29,6 +31,31 @@ const NedarimClients = () => {
   const [totalDocuments, setTotalDocuments] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Function to fetch only Nedarim client emails
+  const fetchNedarimEmails = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/v1/nedarim/donors?limit=10000`
+      );
+      
+      // Filter only valid, subscribed emails
+      const emails = response.data.donors
+        .filter(donor => {
+          // Check if donor has a valid email (structure might be different for Nedarim)
+          const email = donor.email_1?.email || donor.email;
+          return email && email.trim() !== "" && 
+                 (!donor.email_1 || donor.email_1.isSubscribed !== false);
+        })
+        .map(donor => donor.email_1?.email || donor.email);
+      
+      // Return unique emails
+      return [...new Set(emails)];
+    } catch (error) {
+      console.error("Error fetching Nedarim client emails:", error);
+      throw error;
+    }
+  };
 
   // Memoized function to filter and paginate data client-side
   const paginatedData = useMemo(() => {
@@ -187,7 +214,12 @@ const NedarimClients = () => {
       {/* Page Header */}
       <PageHeader 
         title="Nedarim Donors" 
-        actions={<SyncButton />} 
+        actions={
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <SyncButton />
+            <BroadcastEmailButton fetchEmails={fetchNedarimEmails} />
+          </Box>
+        } 
       />
 
       {/* Search Input */}

@@ -8,7 +8,7 @@ import EmailModal from "../Modals/EmailModal";
 import { emailFooter } from "../../utils";
 import { useTranslation } from "react-i18next";
 
-const BroadcastEmailButton = () => {
+const BroadcastEmailButton = ({ fetchEmails }) => {
   // State to control the modal's visibility
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const { t } = useTranslation();
@@ -41,19 +41,29 @@ const BroadcastEmailButton = () => {
   const fetchDonorEmails = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/donors?limit=10000`
-      );
-      console.log(response.data.donors.length);
-      const emails = response.data.donors
-        .filter(donor => donor?.email_1?.email && donor?.email_1?.email?.trim() !== "" && donor?.email_1?.isSubscribed)
-        .map(donor => donor?.email_1?.email);
-      const uniqueEmails = [...new Set(emails)];
-      // console.log(uniqueEmails);
-      setFormValues(prev => ({
-        ...prev,
-        to: uniqueEmails,
-      }));
+      // If a custom fetch function was provided, use it
+      if (fetchEmails) {
+        const emails = await fetchEmails();
+        setFormValues(prev => ({
+          ...prev,
+          to: emails,
+        }));
+      } else {
+        // Default behavior - fetch all donors
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/v1/donors?limit=10000`
+        );
+        console.log(response.data.donors.length);
+        const emails = response.data.donors
+          .filter(donor => donor?.email_1?.email && donor?.email_1?.email?.trim() !== "" && donor?.email_1?.isSubscribed)
+          .map(donor => donor?.email_1?.email);
+        const uniqueEmails = [...new Set(emails)];
+        // console.log(uniqueEmails);
+        setFormValues(prev => ({
+          ...prev,
+          to: uniqueEmails,
+        }));
+      }
     } catch (error) {
       console.error("Error fetching donor emails:", error);
       setNotification({
@@ -205,7 +215,7 @@ const BroadcastEmailButton = () => {
 };
 
 BroadcastEmailButton.propTypes = {
-  donorEmails: PropTypes.arrayOf(PropTypes.string)
+  fetchEmails: PropTypes.func
 };
 
 export default BroadcastEmailButton; 

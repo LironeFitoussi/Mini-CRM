@@ -1,5 +1,6 @@
 import { Box, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // Custom hooks
 import useAllodonClients from "../../hooks/useAllodonClients";
@@ -9,6 +10,7 @@ import PageHeader from "../../components/Molecules/PageHeader";
 import SearchBar from "../../components/Atoms/SearchBar";
 import AllodonTable from "../../components/Molecules/AllodonTable";
 import SyncButton from "../../components/Buttons/SyncButton";
+import BroadcastEmailButton from "../../components/Buttons/BroadcastEmailButton";
 // import AddAllodonClientButton from "../../components/Buttons/AddAllodonClientButton";
 
 /**
@@ -38,6 +40,30 @@ const AllodonClients = () => {
     navigate(`/dashboard/donors/${donorId}`);
   };
 
+  // Function to fetch only Allodon client emails
+  const fetchAllodonEmails = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/v1/donors?source=allodon&limit=10000`
+      );
+      
+      // Filter only valid, subscribed emails
+      const emails = response.data.donors
+        .filter(donor => 
+          donor?.email_1?.email && 
+          donor?.email_1?.email?.trim() !== "" && 
+          donor?.email_1?.isSubscribed
+        )
+        .map(donor => donor?.email_1?.email);
+      
+      // Return unique emails
+      return [...new Set(emails)];
+    } catch (error) {
+      console.error("Error fetching Allodon client emails:", error);
+      throw error;
+    }
+  };
+
   return (
     <Box 
       sx={{ 
@@ -50,7 +76,12 @@ const AllodonClients = () => {
       {/* Page Header with Sync Button */}
       <PageHeader
         title="Allodon Clients"
-        actions={<SyncButton />}
+        actions={
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <SyncButton />
+            <BroadcastEmailButton fetchEmails={fetchAllodonEmails} />
+          </Box>
+        }
       />
 
       {/* Search Input */}
