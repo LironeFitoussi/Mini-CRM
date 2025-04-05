@@ -607,3 +607,20 @@ exports.checkPotentialDuplicates = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+/**
+ * Get all donors without pagination
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {Object} - The total donors object
+ */
+exports.getAllDonatorsUnlimited = async (req, res) => {
+  try {
+    const donors = await Donor.find();
+    res.status(200).json(donors);
+  } catch (error) {
+    console.error("Error fetching all donors:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};

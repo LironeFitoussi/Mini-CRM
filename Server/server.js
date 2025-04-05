@@ -58,9 +58,9 @@ app.get("/api/v1/get-auth-user", (req, res) => {
 
 // Initialize Cron Jobs
 initializeMailCronJob();
-initializeDonorsCronJob();
+// initializeDonorsCronJob();
 const { initializeDailySyncCron } = require('./cronJobs/dailySyncCron');
-initializeDailySyncCron();
+// initializeDailySyncCron();
 
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)

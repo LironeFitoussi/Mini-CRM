@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import MainInfoCard from "./Atoms/MainInfoCard";
 import axios from "axios";
 
@@ -7,25 +7,22 @@ const MainInfoContainer = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [totalDonors, setTotalDonors] = useState([]);
+  // const [totalDonors, setTotalDonors] = useState([]);
+  // const getDonatorsFromApi = async () => {
+  //   const res = await axios.get(
+  //     `${import.meta.env.VITE_API_URL}/api/v1/donors/unlimited`
+  //   );
 
-  const getDonatorsFromApi = async () => {
-    try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/allodon/unlimited`
-      );
-
-      setTotalDonors(res.data);
-    } catch (error) {
-      throw error;
-    }
-  }
+  //   setTotalDonors(res.data.length);
+  // }
 
   const fetchDashboardData = async () => {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/v1/dashboard`
       );
+
+      console.log(res.data);
       setData(res.data);
       setIsLoading(false);
     } catch (error) {
@@ -40,7 +37,7 @@ const MainInfoContainer = () => {
 
   useEffect(() => {
     fetchDashboardData();
-    getDonatorsFromApi();
+    // getDonatorsFromApi();
   }, []); // Empty dependency array ensures this runs once on mount
 
   if (isLoading) return <div>Loading...</div>;
@@ -64,7 +61,7 @@ const MainInfoContainer = () => {
         <MainInfoCard
           title="general.totalDonators"
           type="info"
-          content={totalDonors}
+          content={data.totalDonors}
         />
         <MainInfoCard
           title="general.totalDonationsMonth"

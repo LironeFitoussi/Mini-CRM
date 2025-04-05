@@ -34,7 +34,8 @@ const {
   setDonatorStatus,
   updateDonatorCallback,
   getTotalDonatorsWithCallback,
-  checkPotentialDuplicates
+  checkPotentialDuplicates,
+  getAllDonatorsUnlimited
 } = require("../controllers/donorsController");
 
 /**
@@ -43,6 +44,13 @@ const {
  * @access  Public
  */
 router.get("/", getAllDonators);
+
+/**
+ * @route   GET /donors/unlimited
+ * @desc    Retrieve all donors without pagination
+ * @access  Public
+ */
+router.get("/unlimited", getAllDonatorsUnlimited);
 
 /**
  * @route   GET /donors/total

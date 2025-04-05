@@ -322,6 +322,43 @@ const processAndSaveClients = async (allodonClients) => {
                         .lean();
                 }
             }
+
+            // If still not found, try matching by concatenated name using regex
+            if (!donor && client.first_name && client.last_name) {
+                // Create regex patterns that are case-insensitive and escape special characters
+                const escapedFirstName = client.first_name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const escapedLastName = client.last_name.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                
+                // Try both first+last and last+first combinations
+                donor = await Donor.findOne({
+                    $or: [
+                        // Match exact concatenated name (case insensitive)
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { $concat: ["$fName", "$lName"] },
+                                    regex: new RegExp(`^${escapedFirstName}${escapedLastName}$`, 'i')
+                                }
+                            }
+                        },
+                        // Match reversed concatenated name (case insensitive)
+                        {
+                            $expr: {
+                                $regexMatch: {
+                                    input: { $concat: ["$lName", "$fName"] },
+                                    regex: new RegExp(`^${escapedLastName}${escapedFirstName}$`, 'i')
+                                }
+                            }
+                        }
+                    ]
+                })
+                .select(selectFields)
+                .lean();
+
+                if (donor) {
+                    console.log(`Client ${client.first_name} ${client.last_name} (ID: ${client.id}): Found by name match`);
+                }
+            }
             
             if (!donor) {
                 // Create donor data directly without using Mongoose models
