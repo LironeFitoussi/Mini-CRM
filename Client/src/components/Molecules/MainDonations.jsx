@@ -86,15 +86,28 @@ const DonationsComponent = ({
 
   // Create data for pie chart showing donation amounts by notes/category
   const notesData = donations.reduce((acc, donation) => {
-    // Skip donations with no notes
-    if (!donation.notes) return acc;
+    // Use notes or fallback to infos.category if available
+    console.log('Donation:', donation);
     
-    const existingIndex = acc.findIndex(item => item.name === donation.notes);
+    // Determine the category name - use notes if available, otherwise try to use infos.category
+    let categoryName = null;
+    if (donation.notes) {
+      categoryName = donation.notes;
+    } else if (donation.infos && donation.infos.category) {
+      categoryName = donation.infos.category;
+    } else {
+      categoryName = "General"; // Default fallback category
+    }
+    
+    // Skip if no category name is available (this won't happen now with the default fallback)
+    if (!categoryName) return acc;
+    
+    const existingIndex = acc.findIndex(item => item.name === categoryName);
     if (existingIndex >= 0) {
       acc[existingIndex].value += donation.amount;
     } else {
       acc.push({
-        name: donation.notes,
+        name: categoryName,
         value: donation.amount,
         currency: donation.currency === "1" ? "NIS" : donation.currency
       });
