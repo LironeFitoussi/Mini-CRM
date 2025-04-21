@@ -87,7 +87,7 @@ const DonationsComponent = ({
   // Create data for pie chart showing donation amounts by notes/category
   const notesData = donations.reduce((acc, donation) => {
     // Use notes or fallback to infos.category if available
-    console.log('Donation:', donation);
+    // console.log('Donation:', donation);
     
     // Determine the category name - use notes if available, otherwise try to use infos.category
     let categoryName = null;
@@ -115,9 +115,9 @@ const DonationsComponent = ({
     return acc;
   }, []);
 
-  console.log('Currency Data for Chart:', currencyData);
-  console.log('Notes Data for Chart:', notesData);
-  
+    // console.log('Currency Data for Chart:', currencyData);
+    // console.log('Notes Data for Chart:', notesData);
+    
   // // 1) Manual Sync handler
   // const handleManualSync = async () => {
   //   if (!donorId) {
@@ -149,7 +149,7 @@ const DonationsComponent = ({
   //   }
   // };
 
-  console.log('Donations:', donations);
+  // console.log('Donations:', donations);
   
 
   return (

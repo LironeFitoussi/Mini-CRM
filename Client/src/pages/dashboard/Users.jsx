@@ -1,5 +1,5 @@
 // Users.js
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Button, Snackbar, Alert } from "@mui/material";
@@ -43,6 +43,17 @@ const Users = () => {
   
   // Determine overall loading state
   const isPageLoading = isLoading || navigation.state === "loading";
+
+  // Add auto-refresh after 4 seconds of loading
+  useEffect(() => {
+    if (isPageLoading) {
+      const timeoutId = setTimeout(() => {
+        window.location.reload();
+      }, 4000);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isPageLoading]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
