@@ -5,7 +5,7 @@ const Note = require("../models/Note");
 exports.getAllNotifications = async (req, res) => {
   try {
     // Query Parameters
-    const { archived = "false" } = req.query; // Default to true if not provided
+    const { archived = "false" } = req.query;
 
     // Convert the archived query parameter to a boolean value
     const isArchived = archived === "true";
@@ -14,15 +14,19 @@ exports.getAllNotifications = async (req, res) => {
     const notifications = await Notification.find({ archived: isArchived })
       .sort({ createdAt: -1 })
       .populate('user')
-      .populate('donator');
+      .populate('donor');
 
-    console.log(notifications);
+    if (!notifications) {
+      return res.status(200).json([]);
+    }
 
-    // Respond with the fetched notifications
     res.status(200).json(notifications);
   } catch (error) {
-    console.error("Error fetching notifications:", error);
-    res.status(500).json({ error: "Failed to fetch notifications" });
+    console.error("Error in getAllNotifications:", error);
+    res.status(500).json({ 
+      error: "Failed to fetch notifications",
+      details: error.message 
+    });
   }
 };
 
@@ -44,12 +48,30 @@ exports.getNotificationById = async (req, res) => {
 exports.getDonorsNotifications = async (req, res) => {
   try {
     const { donorId } = req.params;
-    const notifications = await Notification.find({ donatorId: donorId }).sort({
-      createdAt: -1,
-    }).populate('user').populate('donator');
+    
+    if (!donorId) {
+      return res.status(400).json({ error: "Donor ID is required" });
+    }
+
+    const notifications = await Notification.find({ 
+      donatorId: donorId,
+      archived: false 
+    })
+    .sort({ createdAt: -1 })
+    .populate('user')
+    .populate('donor');
+
+    if (!notifications) {
+      return res.status(200).json([]);
+    }
+
     res.status(200).json(notifications);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch notifications" });
+    console.error("Error in getDonorsNotifications:", error);
+    res.status(500).json({ 
+      error: "Failed to fetch notifications",
+      details: error.message 
+    });
   }
 };
 
@@ -59,7 +81,7 @@ exports.getUsersNotifications = async (req, res) => {
     const { userId } = req.params;
     const notifications = await Notification.find({ userId }).sort({
       createdAt: -1,
-    }).populate('user').populate('donator');
+    }).populate('user').populate('donor');
     res.status(200).json(notifications);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch notifications" });
@@ -67,17 +89,32 @@ exports.getUsersNotifications = async (req, res) => {
 };
 
 // Get Users Day Notifications
-// (all notifications that notificationDate is befre today)
 exports.getUsersDayNotifications = async (req, res) => {
   try {
     const { userId } = req.params;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const notifications = await Notification.find({
       userId,
-      // notificationDate: { $lt: new Date() },
-    }).sort({ createdAt: -1 }).populate('user').populate('donator');
+      notificationDate: { $lt: today },
+      archived: false
+    })
+    .sort({ createdAt: -1 })
+    .populate('user')
+    .populate('donor');
+
+    if (!notifications) {
+      return res.status(200).json([]);
+    }
+
     res.status(200).json(notifications);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch notifications" });
+    console.error("Error in getUsersDayNotifications:", error);
+    res.status(500).json({ 
+      error: "Failed to fetch notifications",
+      details: error.message 
+    });
   }
 };
 

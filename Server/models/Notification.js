@@ -29,7 +29,7 @@ const notificationSchema = new mongoose.Schema({
     },
     donatorId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Donator',
+        ref: 'Donor',
     },
     archived: {
         type: Boolean,
@@ -57,9 +57,9 @@ notificationSchema.virtual('user', {
     justOne: true,
 });
 
-// Donator Virtual Field
-notificationSchema.virtual('donator', {
-    ref: 'Donator',
+// Donor Virtual Field
+notificationSchema.virtual('donor', {
+    ref: 'Donor',
     localField: 'donatorId',
     foreignField: '_id',
     justOne: true,
