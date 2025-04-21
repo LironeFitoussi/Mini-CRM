@@ -1,5 +1,5 @@
 // Users.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Button, Snackbar, Alert } from "@mui/material";
@@ -10,6 +10,7 @@ import UsersTable from "../../components/Molecules/UsersTable";
 import AddUserModal from "../../components/Modals/AddUserModal";
 import EditUserModal from "../../components/Modals/EditUserModal";
 import DeleteUserModal from "../../components/Modals/DeleteUserModal";
+import LoadingSpinner from "../../components/Atoms/LoadingSpinner";
 
 // Define fetchUsers using the usersLoader function
 const fetchUsers = () => {
@@ -48,12 +49,14 @@ const Users = () => {
   useEffect(() => {
     if (isPageLoading) {
       const timeoutId = setTimeout(() => {
-        window.location.reload();
+        startTransition(() => {
+          queryClient.invalidateQueries({ queryKey: ["users"] });
+        });
       }, 4000);
 
       return () => clearTimeout(timeoutId);
     }
-  }, [isPageLoading]);
+  }, [isPageLoading, queryClient]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -123,7 +126,9 @@ const Users = () => {
   const handleAddUser = async (newUser) => {
     try {
       await axios.post(import.meta.env.VITE_API_URL + "/api/v1/users", newUser);
-      queryClient.invalidateQueries(["users"]);
+      startTransition(() => {
+        queryClient.invalidateQueries(["users"]);
+      });
       handleCloseAddModal();
       setAlert({
         open: true,
@@ -146,7 +151,9 @@ const Users = () => {
         `${import.meta.env.VITE_API_URL}/api/v1/users/${selectedRows[0]}`,
         updatedUser
       );
-      queryClient.invalidateQueries(["users"]);
+      startTransition(() => {
+        queryClient.invalidateQueries(["users"]);
+      });
       handleCloseEditModal();
       setAlert({
         open: true,
@@ -175,7 +182,9 @@ const Users = () => {
 
     try {
       await deleteUsers(selectedRows);
-      queryClient.invalidateQueries(["users"]);
+      startTransition(() => {
+        queryClient.invalidateQueries(["users"]);
+      });
       setIsDeleteModalOpen(false);
       setSelectedRows([]);
       setAlert({
@@ -232,17 +241,10 @@ const Users = () => {
     setAlert({ ...alert, open: false });
   };
 
-  if (isPageLoading || !data || !Array.isArray(data)) {
-    return (
-      <div className="h-screen flex justify-center items-center">
-        <div className="text-center p-8 bg-white rounded-lg shadow-md">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-lg font-semibold">{t("common.loading")}</p>
-        </div>
-      </div>
-    );
+  if (isPageLoading) {
+    return <LoadingSpinner />;
   }
-  
+
   if (error) {
     return (
       <div className="h-screen flex justify-center items-center">

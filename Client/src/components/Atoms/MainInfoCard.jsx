@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const MainInfoCard = ({ title, type, content }) => {
-  console.log(content);
+  // console.log(content);
 
   const { t } = useTranslation();
 

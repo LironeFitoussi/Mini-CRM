@@ -10,11 +10,11 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "./queryClient"; // Ensure correct path
-import { Suspense } from "react";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
+import LoadingSpinner from "./components/Atoms/LoadingSpinner";
 
 import routes from "./router.jsx";
 import "./i18n.js";
@@ -43,9 +43,10 @@ root.render(
           cacheLocation="localstorage"
           onRedirectCallback={onRedirectCallback} // Preserve route
         >
-          <Suspense fallback={<div>Loading...</div>}>
-            <RouterProvider router={router} />
-          </Suspense>
+          <RouterProvider 
+            router={router} 
+            fallbackElement={<LoadingSpinner />}
+          />
         </Auth0Provider>
       </QueryClientProvider>
     </LocalizationProvider>

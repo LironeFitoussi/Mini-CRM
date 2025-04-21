@@ -22,7 +22,7 @@ const MainInfoContainer = () => {
         `${import.meta.env.VITE_API_URL}/api/v1/dashboard`
       );
 
-      console.log(res.data);
+      // console.log(res.data);
       setData(res.data);
       setIsLoading(false);
     } catch (error) {

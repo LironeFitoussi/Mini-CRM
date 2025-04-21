@@ -222,6 +222,7 @@ const ClientDetailsPage = () => {
 
             <Typography
               variant="body1"
+              component="div"
               sx={{ mb: 3, display: "flex", alignItems: "center", width: "100%" }}
             >
               <strong>{t("contactsManagement.owner")}:</strong>{" "}

@@ -103,7 +103,7 @@ const useAllodonClients = (initialPagination = { page: 0, pageSize: 25 }) => {
       }
 
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
       
       setAllClients(result.donors);
     } catch (err) {

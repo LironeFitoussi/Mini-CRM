@@ -1,4 +1,5 @@
-import React from "react";
+import React, { Suspense, startTransition } from "react";
+import LoadingSpinner from "./components/Atoms/LoadingSpinner";
 
 // Import components
 import App from "./App.jsx";
@@ -7,149 +8,95 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Profile from "./pages/Profile.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import ProtectedRoute from "./components/Atoms/Protected.jsx";
-const LeadsPage = React.lazy(() => import("./pages/dashboard/Leads.jsx"));
 
-// Dashboard subpages
+// Lazy load components
+const LeadsPage = React.lazy(() => import("./pages/dashboard/Leads.jsx"));
 const Overview = React.lazy(() => import("./pages/dashboard/Overview.jsx"));
 const DontaorsPage = React.lazy(() => import("./pages/dashboard/Donors.jsx"));
-const ClientDetailsPage = React.lazy(() =>
-  import("./pages/dashboard/Donators/DonatorDetails.jsx")
-);
-// Using the correct component names
+const ClientDetailsPage = React.lazy(() => import("./pages/dashboard/Donators/DonatorDetails.jsx"));
 const NedarimClients = React.lazy(() => import("./pages/dashboard/NedarimClients.jsx"));
 const AllodonClients = React.lazy(() => import("./pages/dashboard/AllodonClients.jsx"));
-const DonationsPage = React.lazy(() =>
-  import("./pages/dashboard/Donations.jsx")
-);
-// const EmailPage = React.lazy(() => import("./pages/dashboard/Email.jsx"));
-const WhatsAppPage = React.lazy(() =>
-  import("./pages/dashboard/WhatsAppPage.jsx")
-); // Added import
-
-
+const DonationsPage = React.lazy(() => import("./pages/dashboard/Donations.jsx"));
+const WhatsAppPage = React.lazy(() => import("./pages/dashboard/WhatsAppPage.jsx"));
 const UsersPage = React.lazy(() => import("./pages/dashboard/Users.jsx"));
+const SmsPage = React.lazy(() => import("./pages/dashboard/Sms.jsx"));
+
 // Import the usersLoader function for prefetching data
 import { usersLoader } from "./pages/dashboard/Users.jsx";
-const SmsPage = React.lazy(() => import("./pages/dashboard/Sms.jsx")); // Added import
+
+// Wrap component with Suspense and ProtectedRoute
+const wrapRoute = (Component, level = "user") => (
+  <ProtectedRoute level={level}>
+    <Suspense fallback={<LoadingSpinner />}>
+      <Component />
+    </Suspense>
+  </ProtectedRoute>
+);
 
 const router = [
   {
     path: "/",
-    element: <App />, // Base layout component
+    element: <App />,
     children: [
-      { path: "/", element: <Home /> }, // Home route (unprotected)
+      { path: "/", element: <Home /> },
       {
         path: "dashboard",
-        element: (
-          <ProtectedRoute level="user">
-            <Dashboard />
-          </ProtectedRoute>
-        ),
-        // Protected route for dashboard
+        element: wrapRoute(Dashboard),
         children: [
           {
-            // Default route for dashboard
             index: true,
-            element: (
-              <ProtectedRoute level="user">
-                <Overview />
-              </ProtectedRoute>
-            ), // Overview route
+            element: wrapRoute(Overview)
           },
           {
             path: "donors",
-            element: (
-              <ProtectedRoute level="user">
-                <DontaorsPage />
-              </ProtectedRoute>
-            )
+            element: wrapRoute(DontaorsPage)
           },
           {
             path: "nedarim",
-            element: (
-              <ProtectedRoute level="user">
-                <NedarimClients />
-              </ProtectedRoute>
-            )
+            element: wrapRoute(NedarimClients)
           },
           {
             path: "allodon",
-            element: (
-              <ProtectedRoute level="user">
-                <AllodonClients />
-              </ProtectedRoute>
-            )
+            element: wrapRoute(AllodonClients)
           },
           {
             path: "donors/:id",
-            element: (
-              <ProtectedRoute level="user">
-                <ClientDetailsPage />
-              </ProtectedRoute>
-            ),
+            element: wrapRoute(ClientDetailsPage)
           },
           {
             path: "allodon-clients/:id",
-            element: (
-              <ProtectedRoute level="user">
-                <ClientDetailsPage />
-              </ProtectedRoute>
-            ),
+            element: wrapRoute(ClientDetailsPage)
           },
           {
             path: "leads",
-            element: (
-              <ProtectedRoute level="user">
-                <LeadsPage />
-              </ProtectedRoute>
-            ),
+            element: wrapRoute(LeadsPage)
           },
           {
             path: "donations",
-            element: (
-              <ProtectedRoute level="user">
-                <DonationsPage />
-              </ProtectedRoute>
-            ), // Donations route
+            element: wrapRoute(DonationsPage)
           },
           {
             path: "whatsapp",
-            element: (
-              <ProtectedRoute level="user">
-                <WhatsAppPage />
-              </ProtectedRoute>
-            ), // WhatsApp route
+            element: wrapRoute(WhatsAppPage)
           },
           {
             path: "users",
-            element: (
-              <ProtectedRoute level="admin">
-                <UsersPage />
-              </ProtectedRoute>
-            ), // Users route (admin only)
-            loader: usersLoader, // Add the loader for prefetching data
+            element: wrapRoute(UsersPage, "admin"),
+            loader: usersLoader
           },
           {
             path: "sms",
-            element: (
-              <ProtectedRoute level="user">
-                <SmsPage />
-              </ProtectedRoute>
-            ), // SMS route
-          },
-        ],
+            element: wrapRoute(SmsPage)
+          }
+        ]
       },
       {
         path: "profile",
-        element: (
-          <ProtectedRoute level="guest">
-            <Profile />
-          </ProtectedRoute>
-        ), // Protected route for profile
+        element: wrapRoute(Profile, "guest")
       },
-      { path: "*", element: <NotFound /> }, // Catch-all route for 404s
-    ],
-  },
+      { path: "*", element: <NotFound /> }
+    ]
+  }
 ];
 
 export default router;
