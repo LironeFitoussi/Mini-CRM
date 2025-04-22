@@ -6,7 +6,7 @@ import axios from "axios";
 
 import { useDonator } from "../../../queryhooks/useDonator";
 
-import SmsIcon from "@mui/icons-material/Sms";
+// import SmsIcon from "@mui/icons-material/Sms";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import EditDonatorButton from "../../../components/Buttons/EditDonatorButton";
 import StatusSelect from "../../../components/Atoms/StatusSelect";
@@ -245,7 +245,7 @@ const ClientDetailsPage = () => {
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 3 }}>
             <SendEmailButton recipient={email_1?.email} />
             <SendWhatsappButton recipientPhone={phone_number_1?.number} />
-            <Button
+            {/* <Button
               variant="contained"
               startIcon={<SmsIcon />}
               sx={{
@@ -255,7 +255,7 @@ const ClientDetailsPage = () => {
               }}
             >
               SMS
-            </Button>
+            </Button> */}
           </Box>
 
           {/* Donator nextContact */}
