@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Select, MenuItem, CircularProgress, Alert } from "@mui/material";
+import { Box, Select, MenuItem, CircularProgress, Alert, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -53,16 +53,32 @@ const AssignDonorOwner = ({ currentOwner, selectedDonorId }) => {
   };
 
   if (isUsersError) {
-    return <Alert severity="error" component="span">{t("Failed to load telepros.")}</Alert>;
+    return (
+      <Box component="span" sx={{ display: "inline-block", width: "100%" }}>
+        <Alert severity="error" component="span" sx={{ mb: 2 }}>
+          {t("Failed to load telepros.")}
+        </Alert>
+      </Box>
+    );
   }
 
   return (
-    <Box component="span" sx={{ display: "inline-block",
-      width: "100%",
-     }}>
+    <Box component="span" sx={{ display: "inline-block", width: "100%" }}>
       {isUsersLoading ? (
-        <Box component="span" sx={{ display: "inline-flex", justifyContent: "center" }}>
-          <CircularProgress />
+        <Box 
+          component="span" 
+          sx={{ 
+            display: "inline-flex", 
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 1,
+            width: "100%"
+          }}
+        >
+          <CircularProgress size={20} />
+          <Typography variant="body2" color="text.secondary">
+            {t("Loading telepros...")}
+          </Typography>
         </Box>
       ) : (
         <>
@@ -71,11 +87,27 @@ const AssignDonorOwner = ({ currentOwner, selectedDonorId }) => {
               {error}
             </Alert>
           )}
+          {assignOwnerMutation.isPending && (
+            <Box 
+              sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 1,
+                mb: 1
+              }}
+            >
+              <CircularProgress size={16} />
+              <Typography variant="body2" color="text.secondary">
+                {t("Updating owner...")}
+              </Typography>
+            </Box>
+          )}
           <Select
             fullWidth
             displayEmpty
             value={selectedOwner}
             onChange={handleChange}
+            disabled={assignOwnerMutation.isPending}
             sx={{
               width: "50%",
             }}
