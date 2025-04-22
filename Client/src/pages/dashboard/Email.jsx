@@ -13,9 +13,8 @@ import EmailPreviewModal from "../../components/Modals/EmailPreviewModal";
 const EmailPage = () => {
   // Mock data for "From" emails (approved registered emails from the backend)
   const fromEmails = [
-    "lironefit@gmail.com",
+    // "lironefit@gmail.com",
     "contact.lesenfantsderachi@gmail.com",
-    "info@company.com",
   ];
 
   // State variables

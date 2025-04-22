@@ -546,3 +546,80 @@
 2025-04-21 17:53:46 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
 2025-04-21 17:57:37 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2025-04-21 17:57:37 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-21 18:12:01 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-21 18:12:01 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-21 18:13:06 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-21 18:13:06 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 09:56:26 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 09:56:26 [INFO]: 🔧 Email sending mode: SIMULATION (no emails will be sent)
+2025-04-22 10:04:18 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 10:04:18 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 10:07:02 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 10:07:02 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 10:07:14 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 10:07:14 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 10:07:32 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 10:07:32 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 10:08:22 [INFO]: 🔍 Looking up sender with email: test.sender@gmail.com
+2025-04-22 10:08:22 [INFO]: 🔍 Sender lookup result: Not found
+2025-04-22 10:08:22 [ERROR]: ❌ Sender not found. Available senders: [{"email":"lironefit@gmail.com"},{"email":"contact.lesenfantsderachi@gmail.com"}]
+2025-04-22 10:08:36 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 10:08:36 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 10:08:42 [INFO]: 🔍 Looking up sender with email: lironefit@gmail.com
+2025-04-22 10:08:42 [INFO]: 🔍 Sender lookup result: Found
+2025-04-22 10:08:42 [INFO]: 🔍 Sender details: {"_id":"6761aa3bd50c81ccf14ad69f","email":"lironefit@gmail.com","name":"Lirone Fitoussi","password":"ykpp uzag thdc asvk","createdAt":"2024-12-17T16:43:39.814Z","__v":0,"created_at":"2025-04-22T07:08:42.355Z"}
+2025-04-22 10:08:43 [INFO]: ✅ SMTP server is ready to take our messages
+2025-04-22 10:08:44 [INFO]: ✅ Message sent: %s
+2025-04-22 10:08:44 [INFO]: 🗂️ Mail job marked as sent: 6807407a722934f2d701fd01
+2025-04-22 10:08:54 [INFO]: 🔍 Looking up sender with email: lironefit@gmail.com
+2025-04-22 10:08:54 [INFO]: 🔍 Sender lookup result: Found
+2025-04-22 10:08:54 [INFO]: 🔍 Sender details: {"_id":"6761aa3bd50c81ccf14ad69f","email":"lironefit@gmail.com","name":"Lirone Fitoussi","password":"ykpp uzag thdc asvk","createdAt":"2024-12-17T16:43:39.814Z","__v":0,"created_at":"2025-04-22T07:08:54.616Z"}
+2025-04-22 10:08:55 [INFO]: ✅ SMTP server is ready to take our messages
+2025-04-22 10:08:56 [INFO]: ✅ Message sent: %s
+2025-04-22 10:08:56 [INFO]: 🗂️ Mail job marked as sent: 68074086722934f2d701fd05
+2025-04-22 10:10:21 [INFO]: 🔍 Looking up sender with email: lironefit@gmail.com
+2025-04-22 10:10:21 [INFO]: 🔍 Sender lookup result: Found
+2025-04-22 10:10:21 [INFO]: 🔍 Sender details: {"_id":"6761aa3bd50c81ccf14ad69f","email":"lironefit@gmail.com","name":"Lirone Fitoussi","password":"ykpp uzag thdc asvk","createdAt":"2024-12-17T16:43:39.814Z","__v":0,"created_at":"2025-04-22T07:10:21.576Z"}
+2025-04-22 10:10:22 [INFO]: ✅ SMTP server is ready to take our messages
+2025-04-22 10:10:23 [INFO]: ✅ Message sent: %s
+2025-04-22 10:10:24 [INFO]: 🗂️ Mail job marked as sent: 680740dd722934f2d701fd23
+2025-04-22 10:12:27 [INFO]: 🔍 Looking up sender with email: lironefit@gmail.com
+2025-04-22 10:12:27 [INFO]: 🔍 Sender lookup result: Found
+2025-04-22 10:12:27 [INFO]: 🔍 Sender details: {"_id":"6761aa3bd50c81ccf14ad69f","email":"lironefit@gmail.com","name":"Lirone Fitoussi","password":"ykpp uzag thdc asvk","createdAt":"2024-12-17T16:43:39.814Z","__v":0,"created_at":"2025-04-22T07:12:27.969Z"}
+2025-04-22 10:12:28 [INFO]: ✅ SMTP server is ready to take our messages
+2025-04-22 10:12:30 [INFO]: ✅ Message sent: %s
+2025-04-22 10:12:30 [INFO]: 🗂️ Mail job marked as sent: 6807415b722934f2d701fd27
+2025-04-22 10:13:17 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 10:13:17 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 10:13:42 [INFO]: 🔍 Looking up sender with email: contact.lesenfantsderachi@gmail.com
+2025-04-22 10:13:42 [INFO]: 🔍 Sender lookup result: Found
+2025-04-22 10:13:42 [INFO]: 🔍 Sender details: {"_id":"6761b0efed8951a5be8b02f7","email":"contact.lesenfantsderachi@gmail.com","name":"Mail Rachi","password":"mojl pzwk ousi qnax","createdAt":"2024-12-17T17:12:15.342Z","__v":0,"created_at":"2025-04-22T07:13:42.525Z"}
+2025-04-22 10:13:43 [INFO]: ✅ SMTP server is ready to take our messages
+2025-04-22 10:13:44 [INFO]: ✅ Message sent: %s
+2025-04-22 10:13:45 [INFO]: 🗂️ Mail job marked as sent: 680741a6c15a83b389052188
+2025-04-22 10:14:14 [INFO]: 🔍 Looking up sender with email: contact.lesenfantsderachi@gmail.com
+2025-04-22 10:14:15 [INFO]: 🔍 Sender lookup result: Found
+2025-04-22 10:14:15 [INFO]: 🔍 Sender details: {"_id":"6761b0efed8951a5be8b02f7","email":"contact.lesenfantsderachi@gmail.com","name":"Mail Rachi","password":"mojl pzwk ousi qnax","createdAt":"2024-12-17T17:12:15.342Z","__v":0,"created_at":"2025-04-22T07:14:15.110Z"}
+2025-04-22 10:14:15 [INFO]: ✅ SMTP server is ready to take our messages
+2025-04-22 10:14:17 [INFO]: ✅ Message sent: %s
+2025-04-22 10:14:17 [INFO]: 🗂️ Mail job marked as sent: 680741c7c15a83b38905218c
+2025-04-22 10:15:02 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 10:15:02 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 10:15:41 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 10:15:41 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 10:15:54 [INFO]: 🔍 Looking up sender with email: contact.lesenfantsderachi@gmail.com
+2025-04-22 10:15:54 [INFO]: 🔍 Sender lookup result: Found
+2025-04-22 10:15:54 [INFO]: 🔍 Sender details: {"_id":"6761b0efed8951a5be8b02f7","email":"contact.lesenfantsderachi@gmail.com","name":"Mail Rachi","password":"mojl pzwk ousi qnax","createdAt":"2024-12-17T17:12:15.342Z","__v":0,"created_at":"2025-04-22T07:15:54.490Z"}
+2025-04-22 10:15:55 [INFO]: ✅ SMTP server is ready to take our messages
+2025-04-22 10:15:56 [INFO]: ✅ Message sent: %s
+2025-04-22 10:15:56 [INFO]: ✅ Message details:
+2025-04-22 10:15:56 [INFO]: 🗂️ Mail job marked as sent: 6807422a06add3573926dfa0
+2025-04-22 10:17:20 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 10:17:20 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 10:17:25 [INFO]: 🔍 Looking up sender with email: contact.lesenfantsderachi@gmail.com
+2025-04-22 10:17:25 [INFO]: 🔍 Sender lookup result: Found
+2025-04-22 10:17:25 [INFO]: 🔍 Sender details: {"_id":"6761b0efed8951a5be8b02f7","email":"contact.lesenfantsderachi@gmail.com","name":"Mail Rachi","password":"mojl pzwk ousi qnax","createdAt":"2024-12-17T17:12:15.342Z","__v":0,"created_at":"2025-04-22T07:17:25.188Z"}
+2025-04-22 10:17:25 [INFO]: ✅ SMTP server is ready to take our messages
+2025-04-22 10:17:27 [INFO]: ✅ Message sent: %s
+2025-04-22 10:17:27 [INFO]: ✅ Message details:
+2025-04-22 10:17:27 [INFO]: 🗂️ Mail job marked as sent: 680742853af8dccf6ee83e0f

@@ -16,7 +16,7 @@ const SendEmailButton = ({ recipient }) => {
   // State to manage form values
   const [formValues, setFormValues] = useState({
     to: recipient || "",
-    from: "contact.lesenfantsderachi@gmail.com", // Default "From" email
+    from: "", // Remove hardcoded value
     subject: "",
     body: "",
     emailFooter: emailFooter,
@@ -86,7 +86,7 @@ const SendEmailButton = ({ recipient }) => {
     
     const mailData = {
       to: formValues.to,
-      from: formValues.from,
+      from: formValues.from, // Use the selected from value
       subject: formValues.subject,
       body: mailContent,
       imageUrl: formValues.imageUrl,
@@ -111,10 +111,10 @@ const SendEmailButton = ({ recipient }) => {
       });
 
       setEmailModalOpen(false); // Close the modal after sending
-      // Optionally, reset form values
+      // Reset form values but keep the from field
       setFormValues({
         to: recipient || "",
-        from: "contact.lesenfantsderachi@gmail.com",
+        from: formValues.from, // Keep the selected from value
         subject: "",
         body: "",
         imagePosition: "top",
