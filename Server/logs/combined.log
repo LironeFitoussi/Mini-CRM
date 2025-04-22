@@ -623,3 +623,29 @@
 2025-04-22 10:17:27 [INFO]: ✅ Message sent: %s
 2025-04-22 10:17:27 [INFO]: ✅ Message details:
 2025-04-22 10:17:27 [INFO]: 🗂️ Mail job marked as sent: 680742853af8dccf6ee83e0f
+2025-04-22 11:30:00 [INFO]: ⏰ Cron job triggered at 22.4.2025, 11:30:00
+2025-04-22 11:30:00 [INFO]: 📭 No unsent mail jobs found
+2025-04-22 12:29:00 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 12:29:00 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 12:29:57 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 12:29:57 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 12:31:18 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 12:31:18 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 12:31:43 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 12:31:43 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 12:31:50 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 12:31:50 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 12:35:26 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 12:35:26 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 12:36:45 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 12:36:45 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 12:44:26 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 12:44:26 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 12:49:05 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 12:49:05 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 13:18:22 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 13:18:22 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 13:18:25 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 13:18:25 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-04-22 13:23:02 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-04-22 13:23:02 [INFO]: 🔧 Email sending mode: ACTUAL SENDING

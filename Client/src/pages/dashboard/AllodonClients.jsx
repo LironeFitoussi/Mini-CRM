@@ -5,6 +5,8 @@ import axios from "axios";
 // Custom hooks
 import useAllodonClients from "../../hooks/useAllodonClients";
 
+
+
 // Components
 import PageHeader from "../../components/Molecules/PageHeader";
 import SearchBar from "../../components/Atoms/SearchBar";
@@ -12,7 +14,7 @@ import AllodonTable from "../../components/Molecules/AllodonTable";
 import SyncButton from "../../components/Buttons/SyncButton";
 import BroadcastEmailButton from "../../components/Buttons/BroadcastEmailButton";
 // import AddAllodonClientButton from "../../components/Buttons/AddAllodonClientButton";
-
+import ClientsMainInfo from "../../components/Organisms/ClientsMainInfo";
 /**
  * AllodonClients page component
  * Displays and manages Allodon clients
@@ -63,21 +65,25 @@ const AllodonClients = () => {
       throw error;
     }
   };
-
+  
+  // console.log(data);
+  
   return (
     <Box 
       sx={{ 
         padding: 4, 
         height: "calc(100vh - 64px)", // Adjust for app bar height
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
+        alignItems: "center",
       }}
     >
       {/* Page Header with Sync Button */}
       <PageHeader
-        title="Allodon Clients"
+        title="Allodons Clients"
         actions={
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+            <ClientsMainInfo clientsData={data} platformFrom="allodon" />
             <SyncButton />
             <BroadcastEmailButton fetchEmails={fetchAllodonEmails} />
           </Box>
@@ -101,7 +107,7 @@ const AllodonClients = () => {
       )}
 
       {/* Clients Table - Flex grow to fill available space */}
-      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden' }}>
+      <Box sx={{ flexGrow: 1, display: 'flex', overflow: 'hidden', width: "100%", height: "100%" }}>
         {data.donors && data.donors.length > 0 ? (
           <AllodonTable
             data={data.donors}

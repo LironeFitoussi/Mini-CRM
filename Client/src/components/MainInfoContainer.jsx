@@ -7,14 +7,7 @@ const MainInfoContainer = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  // const [totalDonors, setTotalDonors] = useState([]);
-  // const getDonatorsFromApi = async () => {
-  //   const res = await axios.get(
-  //     `${import.meta.env.VITE_API_URL}/api/v1/donors/unlimited`
-  //   );
 
-  //   setTotalDonors(res.data.length);
-  // }
 
   const fetchDashboardData = async () => {
     try {

@@ -177,6 +177,8 @@ const BroadcastEmailButton = ({ fetchEmails }) => {
             "&:hover": {
               backgroundColor: "#388E3C",
             },
+            height: "fit-content",
+            width: "fit-content",
           }}
           onClick={handleClick}
           disabled={loading}

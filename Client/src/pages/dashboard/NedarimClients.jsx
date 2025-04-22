@@ -12,6 +12,7 @@ import PageHeader from "../../components/Molecules/PageHeader";
 import SearchBar from "../../components/Atoms/SearchBar";
 import SyncButton from "../../components/Buttons/SyncButton";
 import BroadcastEmailButton from "../../components/Buttons/BroadcastEmailButton";
+import ClientsMainInfo from "../../components/Organisms/ClientsMainInfo";
 
 /**
  * NedarimClients page component
@@ -32,6 +33,8 @@ const NedarimClients = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // console.log(allDonors);
+  
   // Function to fetch only Nedarim client emails
   const fetchNedarimEmails = async () => {
     try {
@@ -215,7 +218,15 @@ const NedarimClients = () => {
       <PageHeader 
         title="Nedarim Donors" 
         actions={
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+            <ClientsMainInfo 
+              clientsData={{
+                totalItems: totalDocuments,
+                totalDocuments: totalDocuments,
+                length: allDonors.length
+              }} 
+              platformFrom="nedarim" 
+            />
             <SyncButton />
             <BroadcastEmailButton fetchEmails={fetchNedarimEmails} />
           </Box>

@@ -14,12 +14,15 @@ const router = express.Router();
 const {
   getNedarimDonations,
   getNedarimDonors,
-  getNedarimStats
+  getNedarimStats,
+  getNedarimLastMonthDonations
 } = require("../controllers/nedarimController");
 
 // Routes for Nedarim donations
 router.get("/donations", getNedarimDonations);
 
+// Last Month Donations 
+router.get("/last-month-donations", getNedarimLastMonthDonations);
 // Routes for Nedarim donors
 router.get("/donors", getNedarimDonors);
 

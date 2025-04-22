@@ -62,6 +62,10 @@ const SyncButton = ({
       disabled={syncing}
       startIcon={syncing ? <CircularProgress size={20} /> : <SyncIcon />}
       {...buttonProps}
+      sx={{
+        height: "fit-content",
+        width: "fit-content",
+      }}
     >
       {syncing ? "Syncing..." : "Sync Data"}
     </Button>

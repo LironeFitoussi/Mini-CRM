@@ -236,3 +236,42 @@ exports.getNedarimStats = async (req, res) => {
     });
   }
 }; 
+
+/**
+ * Retrieves Allodon donations for the last month.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
+exports.getNedarimLastMonthDonations = async (req, res) => {
+  try {
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+    const lastMonthStart = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
+    const lastMonthEnd = new Date(lastMonth.getFullYear(), lastMonth.getMonth() + 1, 0);
+
+    const donations = await Donation.find({
+      platform: "nedarim",
+      date: { $gte: lastMonthStart, $lte: lastMonthEnd }
+    });
+
+    console.log(donations);
+
+    const totalAmounts = donations.reduce((acc, donation) => {
+      const currency = donation.currency || 'EUR';
+      acc[currency] = (acc[currency] || 0) + donation.amount;
+      return acc;
+    }, {});
+
+    res.status(200).json({
+      totalAmounts
+    });
+  } catch (error) {
+    console.error("Error fetching Nedarim last month donations:", error);
+    res.status(500).json({
+      error: "An error occurred while retrieving Nedarim last month donations",
+      details: error.message,
+    });
+  }
+};
+

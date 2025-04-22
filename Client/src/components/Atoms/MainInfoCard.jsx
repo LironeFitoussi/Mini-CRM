@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import CircularProgress from "@mui/material/CircularProgress";
+import PropTypes from 'prop-types';
 
 const MainInfoCard = ({ title, type, content }) => {
   // console.log(content);
@@ -14,13 +15,28 @@ const MainInfoCard = ({ title, type, content }) => {
   };
 
   const displayContent = () => {
-    if (content.length === 0) {
+    if (!content) {
       return (
         <div className="flex justify-center mt-4">
           <CircularProgress color="white" />
         </div>
       );
     }
+
+    // Handle object content (for currency amounts)
+    if (typeof content === 'object' && content !== null) {
+      return (
+        <div className="mt-2">
+          {Object.entries(content).map(([currency, amount]) => (
+            <p key={currency} className="text-lg font-semibold">
+              {currency}: {amount}
+            </p>
+          ))}
+        </div>
+      );
+    }
+
+    // Handle string/number content
     return <p className="text-3xl font-bold mt-2">{content}</p>;
   };
 
@@ -30,6 +46,19 @@ const MainInfoCard = ({ title, type, content }) => {
       {displayContent()}
     </div>
   );
+};
+
+MainInfoCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  type: PropTypes.oneOf(['info', 'success', 'warning', 'error']).isRequired,
+  content: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.shape({
+      '€': PropTypes.number,
+      '₪': PropTypes.number
+    })
+  ]).isRequired
 };
 
 export default MainInfoCard;

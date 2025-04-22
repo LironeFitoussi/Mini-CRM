@@ -15,7 +15,8 @@ const axios = require("axios");
 const {
   getAllodonDonations,
   getAllodonDonors,
-  getAllodonStats
+  getAllodonStats,
+  getAllodonLastMonthDonations
 } = require("../controllers/allodonController");
 
 router.get("/unlimited", async (req, res) => {
@@ -36,6 +37,9 @@ router.get("/unlimited", async (req, res) => {
 
 // Routes for Allodon donations
 router.get("/donations", getAllodonDonations);
+
+// Last Month Donations 
+router.get("/last-month-donations", getAllodonLastMonthDonations);
 
 // Routes for Allodon donors
 router.get("/donors", getAllodonDonors);

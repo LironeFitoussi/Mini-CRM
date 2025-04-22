@@ -237,3 +237,43 @@ exports.getAllodonStats = async (req, res) => {
     });
   }
 }; 
+
+/**
+ * Retrieves Allodon donations for the last month.
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ */
+exports.getAllodonLastMonthDonations = async (req, res) => {
+  try {
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+    // console.log(lastMonth);
+
+    const lastMonthStart = new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1);
+    const lastMonthEnd = new Date(lastMonth.getFullYear(), lastMonth.getMonth() + 1, 0);
+
+    const donations = await Donation.find({
+      platform: "allodons",
+      date: { $gte: lastMonthStart, $lte: lastMonthEnd }
+    });
+
+    console.log(donations);
+    // Get total amount of donations for the last month
+    const totalAmounts = donations.reduce((acc, donation) => {
+      const currency = donation.currency || 'EUR';
+      acc[currency] = (acc[currency] || 0) + donation.amount;
+      return acc;
+    }, {});
+
+    res.status(200).json({
+      totalAmounts,
+    });   
+  } catch (error) {
+    console.error("Error fetching Allodon last month donations:", error);
+    res.status(500).json({
+      error: "An error occurred while retrieving Allodon last month donations",
+      details: error.message,
+    });
+  }
+};  

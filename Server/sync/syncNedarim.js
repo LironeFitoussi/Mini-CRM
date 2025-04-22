@@ -655,7 +655,7 @@ const processAndSaveDonations = async (nedarimDonations) => {
 // Helper function to get currency name
 function getCurrencyName(currencyCode) {
     const currencies = {
-        "1": "NIS", // New Israeli Shekel
+        "1": "₪", // New Israeli Shekel
         // Add other currency codes as needed
     };
     

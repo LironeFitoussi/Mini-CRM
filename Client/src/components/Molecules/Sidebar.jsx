@@ -43,7 +43,7 @@ const HorizontalNavbar = () => {
             to="allodon"
             className="px-3 py-2 hover:bg-gray-100 rounded-md transition flex items-center"
           >
-            {t("pages.allodon")}
+            Allodons
           </Link>
           {user?.role === "admin" || user?.role === "developer" ? (
             <Link
