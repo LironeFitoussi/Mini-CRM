@@ -365,7 +365,9 @@
         "toHelper": "Sélectionnez une adresse email pour envoyer à.",
         "imagePosition": "Position de l'image",
         "imageTop": "En haut",
-        "imageBottom": "En bas"
+        "imageBottom": "En bas",
+        "recipient": "Destinataire",
+        "recipients": "Destinataires"
     },
     "forms": {
         "required": "Ce champ est requis",

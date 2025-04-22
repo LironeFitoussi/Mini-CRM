@@ -491,24 +491,24 @@ const EmailForm = ({
         >
           <Box sx={{ mb: 1, pb: 1, borderBottom: '1px solid #eee', display: 'flex', flexWrap: 'wrap' }}>
             <StyleButton 
-              label="B" 
+              label="Gras" 
               style="BOLD" 
               onToggle={toggleInlineStyle}
               editorState={editorState}
             />
             <StyleButton 
-              label="I" 
+              label="Italique" 
               style="ITALIC" 
               onToggle={toggleInlineStyle}
               editorState={editorState}
             />
             <StyleButton 
-              label="U" 
+              label="Souligné" 
               style="UNDERLINE" 
               onToggle={toggleInlineStyle}
               editorState={editorState}
             />
-            <StyleButton 
+            {/* <StyleButton 
               label="H1" 
               style="header-one" 
               onToggle={toggleBlockType} 
@@ -521,16 +521,16 @@ const EmailForm = ({
               onToggle={toggleBlockType} 
               isBlock={true}
               editorState={editorState}
-            />
+            /> */}
             <StyleButton 
-              label="UL" 
+              label="* * * " 
               style="unordered-list-item" 
               onToggle={toggleBlockType} 
               isBlock={true}
               editorState={editorState}
             />
             <StyleButton 
-              label="OL" 
+              label="1. 2. 3." 
               style="ordered-list-item" 
               onToggle={toggleBlockType} 
               isBlock={true}

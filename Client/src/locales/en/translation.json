@@ -93,7 +93,9 @@
         "toHelper": "Enter the recipient's email address.",
         "imagePosition": "Image Position",
         "imageTop": "Top",
-        "imageBottom": "Bottom"
+        "imageBottom": "Bottom",
+        "recipient": "Recipient",
+        "recipients": "Recipients"
     },
     "templates": {
         "save": "Save as Template",
