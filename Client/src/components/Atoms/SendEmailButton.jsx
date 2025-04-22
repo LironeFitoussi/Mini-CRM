@@ -69,7 +69,7 @@ const SendEmailButton = ({ recipient }) => {
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding: 10px; margin-top: 20px;">
           <tr>
             <td align="center">
-              <img src="https://ci3.googleusercontent.com/mail-sig/AIorK4z-IuMSYfe5kuASbYstIdbVrtawGWnO2ATZutINarXAFhx8l49tsl2t1PwjTbQ5nxEp9Mk_596A22pM" alt="Email Footer" style="max-width: 100%; height: auto;" />
+              <img src="https://i.ibb.co/bRb0b6Sd/logo-table-mail.jpg" alt="Email Footer" style="max-width: 100%; height: auto;" />
             </td>
           </tr>
         </table>
