@@ -44,6 +44,7 @@ const MainInfoContainer = () => {
     );
   }
 
+  // console.log(data);
   return (
     <>
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
@@ -59,7 +60,7 @@ const MainInfoContainer = () => {
         <MainInfoCard
           title="general.totalDonationsMonth"
           type="success"
-          content={data.totalDonations}
+          content={data.totalAmounts}
         />
         <MainInfoCard
           title="general.totalCallback"

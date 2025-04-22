@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 const MainInfoCard = ({ title, type, content }) => {
   // console.log(content);
 
+  
   const { t } = useTranslation();
 
   const colors = {
@@ -14,7 +15,11 @@ const MainInfoCard = ({ title, type, content }) => {
     error: "bg-red-500",
   };
 
+  // console.log(content);
   const displayContent = () => {
+    if (content === 0) {
+      return <p className="text-3xl font-bold mt-2">0</p>;
+    }
     if (!content) {
       return (
         <div className="flex justify-center mt-4">
@@ -23,18 +28,21 @@ const MainInfoCard = ({ title, type, content }) => {
       );
     }
 
+
     // Handle object content (for currency amounts)
     if (typeof content === 'object' && content !== null) {
       return (
         <div className="mt-2">
           {Object.entries(content).map(([currency, amount]) => (
             <p key={currency} className="text-lg font-semibold">
-              {currency}: {amount}
+              {currency}: {Math.round(amount)}
             </p>
           ))}
         </div>
       );
     }
+
+    // in case content is an empty array, return 0
 
     // Handle string/number content
     return <p className="text-3xl font-bold mt-2">{content}</p>;

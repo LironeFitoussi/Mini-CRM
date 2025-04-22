@@ -258,7 +258,7 @@ exports.getAllodonLastMonthDonations = async (req, res) => {
       date: { $gte: lastMonthStart, $lte: lastMonthEnd }
     });
 
-    console.log(donations);
+    // console.log(donations);
     // Get total amount of donations for the last month
     const totalAmounts = donations.reduce((acc, donation) => {
       const currency = donation.currency || 'EUR';

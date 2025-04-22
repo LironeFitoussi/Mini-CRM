@@ -56,7 +56,7 @@ const donationSchema = new mongoose.Schema({
   // ** New field to indicate which platform this donation came from **
   platform: {
     type: String,
-    default: 'allodons',
+    default: 'allodon',
   },
 }, { timestamps: true });
 
