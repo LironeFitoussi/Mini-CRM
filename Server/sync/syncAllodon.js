@@ -180,6 +180,12 @@ const fetchAllodonClients = async () => {
     }
 };
 
+// Add this function before processAndSaveClients
+const doNamesMatch = (name1, name2) => {
+    if (!name1 || !name2) return false;
+    return name1.toLowerCase().trim() === name2.toLowerCase().trim();
+};
+
 // Step 2: Sync the clients with our database
 const syncAllodonClients = async () => {
     try {
@@ -302,9 +308,21 @@ const processAndSaveClients = async (allodonClients) => {
                 const query = { $or: [] };
                 
                 if (client.email) {
-                    // Check all three email fields
-                    for (let i = 1; i <= 3; i++) {
-                        query.$or.push({ [`email_${i}.email`]: client.email });
+                    // Special case for berrebigregory@yahoo.fr
+                    if (client.email === "berrebigregory@yahoo.fr") {
+                        // Only check email if names match
+                        for (let i = 1; i <= 3; i++) {
+                            query.$or.push({
+                                [`email_${i}.email`]: client.email,
+                                fName: { $regex: new RegExp(`^${client.first_name}$`, 'i') },
+                                lName: { $regex: new RegExp(`^${client.last_name}$`, 'i') }
+                            });
+                        }
+                    } else {
+                        // Normal email check for other emails
+                        for (let i = 1; i <= 3; i++) {
+                            query.$or.push({ [`email_${i}.email`]: client.email });
+                        }
                     }
                 }
                 
@@ -371,7 +389,7 @@ const processAndSaveClients = async (allodonClients) => {
                 };
                 
                 // Add email if available
-                if (client.email) {
+                if (client.email && client.email !== "lesenfantsderachi@gmail.com" && client.id !== "6540581") {
                     donorData.email_1 = {
                         email: client.email,
                         isSubscribed: true
@@ -426,30 +444,62 @@ const processAndSaveClients = async (allodonClients) => {
                 }
                 
                 // Handle email - add to next available slot if it's a new email
-                if (client.email) {
-                    let emailExists = false;
-                    let availableSlot = null;
-                    
-                    // Check if this email already exists in any slot
-                    for (let i = 1; i <= 3; i++) {
-                        const emailObj = donor[`email_${i}`];
-                        if (emailObj && emailObj.email === client.email) {
-                            emailExists = true;
-                            break;
+                if (client.email && client.email !== "lesenfantsderachi@gmail.com" && client.id !== "6540581") {
+                    // Special case for berrebigregory@yahoo.fr
+                    if (client.email === "berrebigregory@yahoo.fr") {
+                        // Only update email if names match
+                        if (doNamesMatch(client.first_name, donor.fName) && doNamesMatch(client.last_name, donor.lName)) {
+                            let emailExists = false;
+                            let availableSlot = null;
+                            
+                            // Check if this email already exists in any slot
+                            for (let i = 1; i <= 3; i++) {
+                                const emailObj = donor[`email_${i}`];
+                                if (emailObj && emailObj.email === client.email) {
+                                    emailExists = true;
+                                    break;
+                                }
+                                // Keep track of first available slot
+                                if (!availableSlot && (!emailObj || !emailObj.email)) {
+                                    availableSlot = i;
+                                }
+                            }
+                            
+                            // If email doesn't exist and we found an available slot, add it
+                            if (!emailExists && availableSlot) {
+                                updateData[`email_${availableSlot}`] = {
+                                    email: client.email,
+                                    isSubscribed: true
+                                };
+                                updated = true;
+                            }
                         }
-                        // Keep track of first available slot
-                        if (!availableSlot && (!emailObj || !emailObj.email)) {
-                            availableSlot = i;
+                    } else {
+                        // Normal email handling for other emails
+                        let emailExists = false;
+                        let availableSlot = null;
+                        
+                        // Check if this email already exists in any slot
+                        for (let i = 1; i <= 3; i++) {
+                            const emailObj = donor[`email_${i}`];
+                            if (emailObj && emailObj.email === client.email) {
+                                emailExists = true;
+                                break;
+                            }
+                            // Keep track of first available slot
+                            if (!availableSlot && (!emailObj || !emailObj.email)) {
+                                availableSlot = i;
+                            }
                         }
-                    }
-                    
-                    // If email doesn't exist and we found an available slot, add it
-                    if (!emailExists && availableSlot) {
-                        updateData[`email_${availableSlot}`] = {
-                            email: client.email,
-                            isSubscribed: true
-                        };
-                        updated = true;
+                        
+                        // If email doesn't exist and we found an available slot, add it
+                        if (!emailExists && availableSlot) {
+                            updateData[`email_${availableSlot}`] = {
+                                email: client.email,
+                                isSubscribed: true
+                            };
+                            updated = true;
+                        }
                     }
                 }
                 
