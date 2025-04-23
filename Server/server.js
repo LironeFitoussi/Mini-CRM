@@ -17,7 +17,12 @@ const connectDB = require('./config/db');
 // const syncDonors = require('./scripts/syncDonors');
 
 app.use(morgan("dev"));
-app.use(cors());
+app.use(cors({
+  origin: 'https://rachi-crm.onrender.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 app.use(bodyParser.json());
 app.use("/api/upload", uploadRoutes);
 app.use(express.static(path.join(__dirname, 'public')));
@@ -58,9 +63,9 @@ app.get("/api/v1/get-auth-user", (req, res) => {
 
 // Initialize Cron Jobs
 initializeMailCronJob();
-// initializeDonorsCronJob();
+initializeDonorsCronJob();
 const { initializeDailySyncCron } = require('./cronJobs/dailySyncCron');
-// initializeDailySyncCron();
+initializeDailySyncCron();
 
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)
