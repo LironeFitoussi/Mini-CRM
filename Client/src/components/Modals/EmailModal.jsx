@@ -31,12 +31,12 @@ const EmailModal = ({
   const generateFullEmailContent = () => {
     const { body, imageUrl, imageLink, isImageClickable, clickableImageText } = formValues;
     
-    return `
-      <div style="position: relative; display: inline-block;">
-        <div>${body}</div>
-        ${
-          isImageClickable && imageLink && imageUrl
-            ? `
+    let imageHtml = '';
+    
+    // Only generate image HTML if there's an imageUrl
+    if (imageUrl) {
+      if (isImageClickable && imageLink) {
+        imageHtml = `
           <a href="${imageLink}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
             <img src="${imageUrl}" alt="Email Image" style="max-width: 100%; height: auto; display: block;" />
             <div style="
@@ -55,11 +55,18 @@ const EmailModal = ({
               ${clickableImageText || 'Accomplissez la Mitsva du Makhatsit HaShekel'}
             </div>
           </a>
-        `
-            : imageUrl ? `
-          <img src="${imageUrl}" alt="Email Image" style="max-width: 100%; height: auto;" />
-        ` : ''
-        }
+        `;
+      } else {
+        imageHtml = `
+          <img src="${imageUrl}" alt="Email Image" style="max-width: 100%; height: auto; display: block;" />
+        `;
+      }
+    }
+
+    return `
+      <div style="position: relative; display: inline-block;">
+        <div>${body}</div>
+        ${imageHtml}
       </div>
     `;
   };

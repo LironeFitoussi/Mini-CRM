@@ -66,6 +66,15 @@ function processEmailBody(body) {
   return processedBody;
 }
 
+// Function to split recipients into batches
+const splitIntoBatches = (recipients) => {
+  const batches = [];
+  for (let i = 0; i < recipients.length; i += MAX_RECIPIENTS_PER_EMAIL) {
+    batches.push(recipients.slice(i, i + MAX_RECIPIENTS_PER_EMAIL));
+  }
+  return batches;
+};
+
 // Email sending controller
 const sendEmail = async (req, res) => {
   const { from, to, subject, body, imageUrl, imageLink, isImageClickable, clickableImageText } = req.body;
@@ -76,39 +85,28 @@ const sendEmail = async (req, res) => {
   }
 
   try {
-    // Get email addresses (test or real)
-    const { from: actualFrom, to: actualTo } = getEmailAddresses(from, to);
-
-    // Debug log for sender lookup
-    logger.info(`🔍 Looking up sender with email: ${actualFrom}`);
-
-    // Get the sender's email from the database based on 'from' field
-    const sender = await MailSender.findOne({ email: actualFrom });
-
-    // Debug log for sender lookup result
-    logger.info(`🔍 Sender lookup result: ${sender ? 'Found' : 'Not found'}`);
-    if (sender) {
-      logger.info(`🔍 Sender details: ${JSON.stringify(sender)}`);
-    }
+    // Get the sender's email from the database
+    const sender = await MailSender.findOne({ email: from });
 
     if (!sender) {
-      // Get all available senders for debugging
       const allSenders = await MailSender.find({}, { email: 1, _id: 0 });
       logger.error(`❌ Sender not found. Available senders: ${JSON.stringify(allSenders)}`);
-      
       return res.status(404).json({ 
         message: "Sender not found.",
         details: {
-          searchedEmail: actualFrom,
+          searchedEmail: from,
           availableSenders: allSenders
         }
       });
     }
 
-    // Ensure 'to' is an array
-    const recipients = Array.isArray(actualTo) ? actualTo : [actualTo];
+    // Ensure 'to' is an array and remove any duplicates
+    const recipients = Array.isArray(to) ? [...new Set(to)] : [to];
 
-    // Create a single MailJob document for all recipients
+    // Split recipients into batches of MAX_RECIPIENTS_PER_EMAIL
+    const recipientBatches = splitIntoBatches(recipients);
+    
+    // Create a mail job for tracking
     const mailJob = new MailJob({
       recipients,
       subject,
@@ -121,94 +119,82 @@ const sendEmail = async (req, res) => {
       is_sent: false,
     });
 
-    // Save the MailJob document
     await mailJob.save();
 
-    // Define email options with BCC
-    const mailOptions = {
-      from: `Rav Benyamin Chemouny <${sender.email}>`,
-      to: recipients.join(", "), // Send directly to recipients
-      subject: mailJob.subject,
-      html: mailJob.body,
-    };
-
-    try {
-      let info;
-      
-      if (ENABLE_ACTUAL_SENDING) {
-        // Create a transporter using SMTP
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: sender.email,
-            pass: sender.password,
-          },
-          tls: {
-            rejectUnauthorized: false
-          }
-        });
-
-        // Verify the connection configuration
-        await transporter.verify();
-        logger.info("✅ SMTP server is ready to take our messages");
-        
-        // Send the email with BCC
-        info = await transporter.sendMail(mailOptions);
-        logger.info("✅ Message sent: %s", info.messageId);
-        logger.info("✅ Message details:", info);
-      } else {
-        // Simulate email sending
-        info = {
-          messageId: `simulated-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`,
-          envelope: {
-            from: sender.email,
-            to: sender.email,
-            bcc: recipients
-          }
-        };
-        
-        // Log the simulated email details
-        logger.info("✅ SIMULATED EMAIL - Not actually sent");
-        logger.info(`📧 From: ${mailOptions.from}`);
-        logger.info(`📧 To: ${mailOptions.to}`);
-        logger.info(`📧 BCC: ${mailOptions.bcc}`);
-        logger.info(`📧 Subject: ${mailOptions.subject}`);
-        logger.info(`📧 Body length: ${mailOptions.html.length} characters`);
-        logger.info(`✅ Simulated message ID: ${info.messageId}`);
-        
-        // Add a small delay to simulate actual sending time
-        await new Promise(resolve => setTimeout(resolve, 500));
+    // Create transporter (if not in test mode)
+    const transporter = process.env.NODE_ENV !== 'test' ? nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: sender.email,
+        pass: sender.password,
+      },
+      tls: {
+        rejectUnauthorized: false
       }
+    }) : null;
 
-      // Update the MailJob as sent
-      mailJob.is_sent = true;
-      mailJob.successful_recipients = recipients;
-      await mailJob.save();
-      logger.info(`🗂️ Mail job marked as sent: ${mailJob._id}`);
-
-      res.status(200).json({
-        message: ENABLE_ACTUAL_SENDING ? "Email sent successfully!" : "Email simulated successfully (not actually sent)!",
-        messageId: info.messageId,
-        mailJobsCreated: 1,
-        simulatedMode: !ENABLE_ACTUAL_SENDING,
-        testMode: isTestMode()
-      });
-    } catch (error) {
-      logger.error("❌ Error sending email:", error);
-      res.status(500).json({
-        message: "Failed to send email.",
-        error: error.toString(),
-      });
+    // If not in test mode, verify the connection
+    if (process.env.NODE_ENV !== 'test' && transporter) {
+      await transporter.verify();
+      logger.info("✅ SMTP server is ready to take our messages");
     }
+
+    const successfulRecipients = [];
+    const failedRecipients = [];
+
+    // Send emails in batches
+    for (const batch of recipientBatches) {
+      const mailOptions = {
+        from: `Rav Benyamin Chemouny <${sender.email}>`,
+        to: sender.email,
+        bcc: batch,
+        subject,
+        html: mailJob.body,
+      };
+
+      try {
+        if (process.env.NODE_ENV === 'test') {
+          // Simulate sending in test mode
+          logger.info(`✅ SIMULATED EMAIL - Batch of ${batch.length} recipients`);
+          successfulRecipients.push(...batch);
+          await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for simulation
+        } else {
+          // Actually send the email
+          const info = await transporter.sendMail(mailOptions);
+          logger.info(`✅ Batch sent successfully: ${info.messageId}`);
+          successfulRecipients.push(...batch);
+        }
+      } catch (error) {
+        logger.error(`❌ Error sending batch: ${error.message}`);
+        failedRecipients.push(...batch.map(email => ({ email, error: error.message })));
+      }
+    }
+
+    // Update the mail job with results
+    mailJob.is_sent = true;
+    mailJob.successful_recipients = successfulRecipients;
+    mailJob.failed_recipients = failedRecipients;
+    await mailJob.save();
+
+    // Send response
+    res.status(200).json({
+      message: process.env.NODE_ENV === 'test' ? 
+        "Email simulated successfully!" : 
+        "Email sent successfully!",
+      totalRecipients: recipients.length,
+      successfulRecipients: successfulRecipients.length,
+      failedRecipients: failedRecipients.length,
+      batches: recipientBatches.length
+    });
+
   } catch (error) {
-    logger.error("❌ Error creating mail job:", error);
+    logger.error("❌ Error in email sending process:", error);
     res.status(500).json({
-      message: "Failed to create mail job.",
+      message: "Failed to process email sending.",
       error: error.toString(),
     });
   }
 };
-
 
 const addMailSender = async (req, res) => {
   const { email, name, password } = req.body;

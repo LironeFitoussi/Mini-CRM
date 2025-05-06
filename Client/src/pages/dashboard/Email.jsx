@@ -92,9 +92,9 @@ const EmailPage = () => {
 
   // Combine body, optional image, and footer
   const fullEmailBody = `
-    ${imagePosition === "top" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" /><br/>` : ""}
+    ${imagePosition === "top" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" style="max-width: 100%; height: auto;" /><br/>` : ""}
     ${body}
-    ${imagePosition === "bottom" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" /><br/>` : ""}
+    ${imagePosition === "bottom" && imageUrl ? `<img src="${imageUrl}" alt="Email Image" style="max-width: 100%; height: auto;" /><br/>` : ""}
     ${emailFooter}
   `;
 

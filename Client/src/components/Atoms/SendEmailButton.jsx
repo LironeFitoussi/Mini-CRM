@@ -36,12 +36,12 @@ const SendEmailButton = ({ recipient }) => {
 
   // Email content generation function similar to the one in EmailForm
   const generateEmailContent = () => {
-    return `
-      <div style="position: relative; display: inline-block;">
-        <div>${formValues.body}</div>
-        ${
-          formValues.isImageClickable && formValues.imageLink && formValues.imageUrl
-            ? `
+    let imageHtml = '';
+    
+    // Only generate image HTML if there's an imageUrl
+    if (formValues.imageUrl) {
+      if (formValues.isImageClickable && formValues.imageLink) {
+        imageHtml = `
           <a href="${formValues.imageLink}" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
             <img src="${formValues.imageUrl}" alt="Email Image" style="max-width: 100%; height: auto; display: block;" />
             <div style="
@@ -60,11 +60,18 @@ const SendEmailButton = ({ recipient }) => {
               ${formValues.clickableImageText || 'Click here'}
             </div>
           </a>
-        `
-            : `
-          <img src="${formValues.imageUrl}" alt="Email Image" style="max-width: 100%; height: auto;" />
-        `
-        }
+        `;
+      } else {
+        imageHtml = `
+          <img src="${formValues.imageUrl}" alt="Email Image" style="max-width: 100%; height: auto; display: block;" />
+        `;
+      }
+    }
+
+    return `
+      <div style="position: relative; display: inline-block;">
+        <div>${formValues.body}</div>
+        ${imageHtml}
         <!-- Email Footer -->
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding: 10px; margin-top: 20px;">
           <tr>

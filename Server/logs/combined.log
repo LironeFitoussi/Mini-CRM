@@ -741,3 +741,38 @@
 2025-04-23 09:52:59 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
 2025-04-23 09:53:01 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
 2025-04-23 09:53:01 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-05-06 15:00:45 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-05-06 15:00:45 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-05-06 15:06:40 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-05-06 15:06:40 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-05-06 15:07:50 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-05-06 15:07:50 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-05-06 15:09:19 [INFO]: 🔍 Looking up sender with email: contact.lesenfantsderachi@gmail.com
+2025-05-06 15:09:19 [INFO]: 🔍 Sender lookup result: Found
+2025-05-06 15:09:19 [INFO]: 🔍 Sender details: {"_id":"6761b0efed8951a5be8b02f7","email":"contact.lesenfantsderachi@gmail.com","name":"Mail Rachi","password":"mojl pzwk ousi qnax","createdAt":"2024-12-17T17:12:15.342Z","__v":0,"created_at":"2025-05-06T12:09:19.265Z"}
+2025-05-06 15:09:20 [INFO]: ✅ SMTP server is ready to take our messages
+2025-05-06 15:09:22 [INFO]: ✅ Message sent: %s
+2025-05-06 15:09:22 [INFO]: ✅ Message details:
+2025-05-06 15:09:22 [INFO]: 🗂️ Mail job marked as sent: 6819fbefbe1fc4ed4d429286
+2025-05-06 15:19:15 [INFO]: 🔍 Looking up sender with email: contact.lesenfantsderachi@gmail.com
+2025-05-06 15:19:15 [INFO]: 🔍 Sender lookup result: Found
+2025-05-06 15:19:15 [INFO]: 🔍 Sender details: {"_id":"6761b0efed8951a5be8b02f7","email":"contact.lesenfantsderachi@gmail.com","name":"Mail Rachi","password":"mojl pzwk ousi qnax","createdAt":"2024-12-17T17:12:15.342Z","__v":0,"created_at":"2025-05-06T12:19:15.556Z"}
+2025-05-06 15:19:16 [INFO]: ✅ SMTP server is ready to take our messages
+2025-05-06 15:19:17 [INFO]: ✅ Message sent: %s
+2025-05-06 15:19:17 [INFO]: ✅ Message details:
+2025-05-06 15:19:17 [INFO]: 🗂️ Mail job marked as sent: 6819fe43be1fc4ed4d4292ab
+2025-05-06 15:21:57 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-05-06 15:21:57 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-05-06 15:22:07 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-05-06 15:22:07 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-05-06 15:22:57 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-05-06 15:22:57 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-05-06 15:23:17 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-05-06 15:23:17 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-05-06 15:24:19 [INFO]: 🕒 Mail cron job scheduled to run daily at 08:30 AM
+2025-05-06 15:24:19 [INFO]: 🔧 Email sending mode: ACTUAL SENDING
+2025-05-06 15:25:31 [INFO]: ✅ SMTP server is ready to take our messages
+2025-05-06 15:25:33 [INFO]: ✅ Batch sent successfully: <d67fc689-3281-5cc4-5bdf-96bcf6a51c4f@gmail.com>
+2025-05-06 15:25:35 [INFO]: ✅ Batch sent successfully: <d0b77fdb-054f-f11b-ca87-a3a6441bc685@gmail.com>
+2025-05-06 15:25:37 [INFO]: ✅ Batch sent successfully: <e540d88b-8c7a-324b-be8b-326e22467196@gmail.com>
+2025-05-06 15:25:39 [INFO]: ✅ Batch sent successfully: <39194ba6-d93e-2210-1d55-99828b91cdf3@gmail.com>
