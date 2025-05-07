@@ -48,6 +48,7 @@ exports.getDashboardData = async (req, res) => {
     
     // From donatorsWithCallback Get the ones where notificationDate is after now
     const donatorsWithPassedCallback = donatorsWithCallback.filter((notification) => {
+      const now = new Date();
       const isAfterNow = notification.notificationDate < now;
       return isAfterNow && notification.archived === false;
     });

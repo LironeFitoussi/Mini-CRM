@@ -17,12 +17,7 @@ const connectDB = require('./config/db');
 // const syncDonors = require('./scripts/syncDonors');
 
 app.use(morgan("dev"));
-app.use(cors({
-  origin: 'https://rachi-crm.onrender.com',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use("/api/upload", uploadRoutes);
 app.use(express.static(path.join(__dirname, 'public')));
