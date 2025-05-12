@@ -6,6 +6,7 @@
     "telepro": {
         "selectOwner": "Sélectionnez un propriétaire"
     },
+    
     "donations": {
         "currency": "Pièce",
         "cerfa": "CERF",
@@ -119,7 +120,8 @@
     },
     "confirmations": {
         "saveTemplate": "Enregistrer le modèle",
-        "confirmSaveTemplate": "Êtes-vous sûr de vouloir enregistrer cet email en tant que modèle?"
+        "confirmSaveTemplate": "Êtes-vous sûr de vouloir enregistrer cet email en tant que modèle?",
+        "supprimerlanote": "Voulez-vous supprimer cette note ?"
     },
     "general": {
         "addToTelepro": "Ajouter à Telepro",
@@ -354,7 +356,8 @@
         "roleName": "Nom du rôle",
         "assignRole": "Attribuer un rôle",
         "selectOneEdit": "Sélectionnez un utilisateur à modifier",
-        "selectDelete": "Sélectionnez un utilisateur à supprimer"
+        "selectDelete": "Sélectionnez un utilisateur à supprimer",
+        "loadingUsers": "Chargement des données utilisateurs..."
     },
     "email": {
         "clickableImageText": "Accomplissez la Mitsva du Makhatsit HaShekel",
@@ -369,6 +372,7 @@
         "from": "De",
         "to": "À",
         "send": "Envoyer",
+        "broadcastSubject" : "Titre de la diffusion",
         "preview": "Prévisualiser",
         "sendSuccess": "Email envoyé avec succès!",
         "sendFailure": "Échec de l'envoi de l'email. Veuillez réessayer.",

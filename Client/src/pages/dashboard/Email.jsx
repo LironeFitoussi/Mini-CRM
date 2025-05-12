@@ -41,7 +41,7 @@ const EmailPage = () => {
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding: 10px; margin-top: 20px;">
   <tr>
     <td align="center">
-      <img src="https://i.ibb.co/bRb0b6Sd/logo-table-mail.jpg"
+      <img src="https://image-uploader-lirone-v1.s3.eu-central-1.amazonaws.com/2025-05-12_07-48-36.jpeg"
            alt="Email Footer"
            style="max-width: 100%; height: auto;" />
     </td>

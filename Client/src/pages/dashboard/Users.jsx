@@ -45,6 +45,19 @@ const Users = () => {
   // Determine overall loading state
   const isPageLoading = isLoading || navigation.state === "loading";
 
+  // Add auto-refresh when data is empty
+  useEffect(() => {
+    if (data && (!Array.isArray(data) || data.length === 0)) {
+      const timeoutId = setTimeout(() => {
+        startTransition(() => {
+          queryClient.invalidateQueries({ queryKey: ["users"] });
+        });
+      }, 2000); // Retry after 2 seconds if data is empty
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [data, queryClient]);
+
   // Add auto-refresh after 4 seconds of loading
   useEffect(() => {
     if (isPageLoading) {
@@ -243,6 +256,16 @@ const Users = () => {
 
   if (isPageLoading) {
     return <LoadingSpinner />;
+  }
+
+  // Show loading state when data is empty
+  if (data && (!Array.isArray(data) || data.length === 0)) {
+    return (
+      <div className="h-screen flex flex-col justify-center items-center">
+        <LoadingSpinner />
+        <p className="mt-4 text-gray-600">{t("userManagement.loadingUsers")}</p>
+      </div>
+    );
   }
 
   if (error) {

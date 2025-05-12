@@ -17,15 +17,58 @@ const EmailModal = ({
 }) => {
   const { t } = useTranslation();
   const [recipientsCount, setRecipientsCount] = useState(0);
-  // console.log(formValues);
+  const [isBroadcast, setIsBroadcast] = useState(false);
+  const [isSingleEmail, setIsSingleEmail] = useState(false);
+
+  // Reset state when modal is closed
+  useEffect(() => {
+    if (!open) {
+      setRecipientsCount(0);
+      setIsBroadcast(false);
+      setIsSingleEmail(false);
+    }
+  }, [open]);
 
   useEffect(() => {
     if (formValues && formValues?.to) {
-      setRecipientsCount(formValues?.to?.length);
+      // Check if it's a single email (from SendEmailButton)
+      const isSingle = typeof formValues.to === 'string' && !formValues.to.includes(',');
+      setIsSingleEmail(isSingle);
+      
+      // Only treat as broadcast if it's not a single email
+      const isMultipleRecipients = !isSingle && (
+        Array.isArray(formValues.to) ? 
+          formValues.to.length > 1 : 
+          formValues.to.includes(',')
+      );
+      
+      setIsBroadcast(isMultipleRecipients);
+      
+      // Calculate recipients count
+      if (isSingle) {
+        setRecipientsCount(1);
+      } else {
+        setRecipientsCount(Array.isArray(formValues.to) ? 
+          formValues.to.length : 
+          formValues.to.split(',').filter(email => email.trim()).length);
+      }
     } else {
+      setIsSingleEmail(false);
+      setIsBroadcast(false);
       setRecipientsCount(0);
     }
   }, [formValues]);
+
+  // Handle modal close with cleanup
+  const handleModalClose = () => {
+    // Reset local state
+    setRecipientsCount(0);
+    setIsBroadcast(false);
+    setIsSingleEmail(false);
+    
+    // Call the provided onClose handler
+    onClose();
+  };
 
   // Generate full email content for saving as a template
   const generateFullEmailContent = () => {
@@ -72,11 +115,11 @@ const EmailModal = ({
   };
   
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleModalClose} maxWidth="md" fullWidth>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
         <Box>
           <DialogTitle>{t("email.modalTitle") || "Send Email"}</DialogTitle>
-          {recipientsCount > 0 && (
+          {isBroadcast && recipientsCount > 0 && (
             <Typography 
               variant="subtitle1" 
               sx={{ 
@@ -106,6 +149,7 @@ const EmailModal = ({
           handleSubmit={handleSubmit}
           formValues={formValues}
           mailContent={mailContent}
+          isSingleEmail={isSingleEmail}
         />
       </DialogContent>
     </Dialog>

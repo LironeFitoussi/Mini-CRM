@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 import { Modal, Box, Typography, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 const ConfirmationModal = ({ open, onClose, onConfirm, title, description, type }) => {
@@ -25,7 +25,7 @@ const ConfirmationModal = ({ open, onClose, onConfirm, title, description, type 
                 }}
             >
                 <Typography id="confirmation-modal-title" variant="h6" component="h2">
-                    {t(`confirmations.${title}`)}
+                    {t(`confirmations.${title.replace(/\s+/g, "").toLowerCase()}`)}
                 </Typography>
                 <Typography id="confirmation-modal-description" sx={{ mt: 2 }}>
                     {t(`confirmations.${description}`)}
@@ -42,6 +42,15 @@ const ConfirmationModal = ({ open, onClose, onConfirm, title, description, type 
             </Box>
         </Modal>
     );
+};
+
+ConfirmationModal.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onConfirm: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    type: PropTypes.oneOf(['danger', 'primary'])
 };
 
 export default ConfirmationModal;

@@ -109,7 +109,8 @@
         "roleName": "Role Name",
         "assignRole": "Assign Role",
         "selectOneEdit": "Select a user to edit",
-        "selectDelete": "Select a user to delete"
+        "selectDelete": "Select a user to delete",
+        "loadingUsers": "Loading users data..."
     },
     "email": {
         "subject": "Subject",

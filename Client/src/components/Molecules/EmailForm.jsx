@@ -110,6 +110,7 @@ const EmailForm = ({
   },
   handleChange,
   handleSubmit,
+  isSingleEmail = false,
 }) => {
   const { t } = useTranslation();
   const editorRef = useRef(null);
@@ -121,6 +122,17 @@ const EmailForm = ({
   // Create the image plugin
   const imagePlugin = useMemo(() => createImagePlugin(), []);
   const plugins = useMemo(() => [imagePlugin], [imagePlugin]);
+
+  // Reset state when body is empty (indicating modal close/reset)
+  useEffect(() => {
+    if (!body) {
+      setEmailPreviewOpen(false);
+      setIsSending(false);
+      setImageDialogOpen(false);
+      setEditorState(EditorState.createEmpty());
+      setLocalHtml('');
+    }
+  }, [body]);
 
   // Utility function to validate image URLs
   const validateImageUrl = (url) => {
@@ -277,7 +289,7 @@ const EmailForm = ({
     }
   }, [editorState, body, handleChange]);
 
-  const hasMultipleRecipients = to && to.includes(",");
+  const hasMultipleRecipients = !isSingleEmail && to && to.includes(",");
 
   const recipientCount = hasMultipleRecipients
     ? to.split(",").filter((email) => email.trim() !== "").length
@@ -359,7 +371,7 @@ const EmailForm = ({
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding: 10px; margin-top: 20px;">
           <tr>
             <td align="center">
-              <img src="https://i.ibb.co/bRb0b6Sd/logo-table-mail.jpg" alt="Email Footer" style="max-width: 100%; height: auto;" />
+              <img src="https://image-uploader-lirone-v1.s3.eu-central-1.amazonaws.com/2025-05-12_07-48-36.jpeg" alt="Email Footer" style="max-width: 100%; height: auto;" />
             </td>
           </tr>
         </table>
@@ -467,6 +479,10 @@ const EmailForm = ({
           fullWidth
           margin="normal"
           helperText={t("email.toHelper") || "Enter the recipient email"}
+          disabled={isSingleEmail}
+          InputProps={{
+            readOnly: isSingleEmail,
+          }}
         />
       )}
 
@@ -642,6 +658,7 @@ EmailForm.propTypes = {
   }).isRequired,
   handleChange: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  isSingleEmail: PropTypes.bool,
 };
 
 export default EmailForm;
