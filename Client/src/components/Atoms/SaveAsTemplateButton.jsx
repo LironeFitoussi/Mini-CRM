@@ -26,7 +26,7 @@ const SaveAsTemplateButton = ({
     onSuccess: () => {
       queryClient.invalidateQueries(["templates"]); // Refresh the templates list
       setIsModalOpen(false);
-      alert(t("templateSaved") || "Template saved successfully!");
+      alert(t("templates.templateSaved") || "Template saved successfully!");
     },
     onError: (error) => {
       // Log detailed error information
@@ -35,7 +35,7 @@ const SaveAsTemplateButton = ({
       console.error("Status code:", error.response?.status);
       
       // Show a more informative error message
-      let errorMessage = t("templateSaveError") || "Error saving template. Please try again.";
+      let errorMessage = t("templates.templateSaveError") || "Error saving template. Please try again.";
       if (error.response?.data?.message) {
         errorMessage += ` (${error.response.data.message})`;
       }
@@ -53,7 +53,7 @@ const SaveAsTemplateButton = ({
   const handleSaveTemplate = () => {
     // Check for empty body content
     if (!body || body.trim() === '' || body === '<p><br></p>') {
-      alert(t("templateBodyEmpty") || "Template body cannot be empty!");
+      alert(t("templates.templateBodyEmpty") || "Template body cannot be empty!");
       return;
     }
 
@@ -87,8 +87,8 @@ const SaveAsTemplateButton = ({
         open={isModalOpen}
         onClose={handleCloseModal}
         onConfirm={handleSaveTemplate}
-        title={t("saveTemplate") || "Save Template"}
-        description={t("confirmSaveTemplate") || "Are you sure you want to save this email as a template?"}
+        title={t("templates.save") || "Save Template"}
+        description={t("templates.confirmSave") || "Are you sure you want to save this email as a template?"}
         type={"primary"}
       />
     </>

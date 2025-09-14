@@ -116,7 +116,11 @@
         "errorLoadingTemplates": "Une erreur est survenue lors du chargement des modèles. Veuillez réessayer.",
         "confirmSaveTemplate": "Êtes-vous sûr de vouloir enregistrer cet email en tant que modèle?",
         "deleteTemplate": "Supprimer le modèle",
-        "confirmDeleteTemplate": "Êtes-vous sûr de vouloir supprimer ce modèle? Cette action ne peut pas être annulée."
+        "confirmDeleteTemplate": "Êtes-vous sûr de vouloir supprimer ce modèle? Cette action ne peut pas être annulée.",
+        "noTemplates": "Aucun modèle disponible",
+        "templateSaved": "Modèle enregistré avec succès!",
+        "templateSaveError": "Erreur lors de l'enregistrement du modèle. Veuillez réessayer.",
+        "templateBodyEmpty": "Le contenu du modèle ne peut pas être vide!"
     },
     "confirmations": {
         "saveTemplate": "Enregistrer le modèle",
@@ -376,6 +380,12 @@
         "preview": "Prévisualiser",
         "sendSuccess": "Email envoyé avec succès!",
         "sendFailure": "Échec de l'envoi de l'email. Veuillez réessayer.",
+        "selectSenderError": "Veuillez sélectionner une adresse email d'expéditeur",
+        "sentSuccess": "Email envoyé avec succès!",
+        "sendError": "Échec de l'envoi de l'email. Veuillez réessayer.",
+        "templatePreview": "Aperçu du modèle",
+        "templateLoadedInfo": "Modèle d'image chargé. Le contenu sera inclus dans votre e-mail.",
+        "htmlModeInfo": "Mode HTML: Collez votre contenu HTML ci-dessous. Parfait pour les emails générés par IA!",
         "modalTitle": "Envoyer un Email",
         "fromHelper": "Sélectionnez une adresse email pour envoyer depuis.",
         "toHelper": "Sélectionnez une adresse email pour envoyer à.",
@@ -383,7 +393,13 @@
         "imageTop": "En haut",
         "imageBottom": "En bas",
         "recipient": "Destinataire",
-        "recipients": "Destinataires"
+        "recipients": "Destinataires",
+        "createLink": "Créer un lien",
+        "linkUrl": "URL du lien",
+        "linkText": "Texte du lien",
+        "linkTextHelper": "Si vide, le texte sélectionné ou l'URL sera utilisé",
+        "uploadImage": "Télécharger une image",
+        "broadcastNotice": "Cet email sera envoyé à tous les donateurs actifs avec des adresses email valides."
     },
     "forms": {
         "required": "Ce champ est requis",
@@ -443,5 +459,11 @@
         "email": "Email",
         "phone": "Téléphone",
         "role": "Rôle"
+    },
+    "common": {
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "delete": "Supprimer",
+        "edit": "Modifier"
     }
 }

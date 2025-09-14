@@ -121,6 +121,12 @@
         "send": "Send",
         "sendSuccess": "Email sent successfully!",
         "sendFailure": "Failed to send email. Please try again.",
+        "selectSenderError": "Please select a sender email address",
+        "sentSuccess": "Email sent successfully!",
+        "sendError": "Failed to send email. Please try again.",
+        "templatePreview": "Template Preview",
+        "templateLoadedInfo": "Image template loaded. The content will be included in your email.",
+        "htmlModeInfo": "HTML Mode: Paste your HTML content below. Perfect for AI-generated emails!",
         "modalTitle": "Send Email",
         "fromHelper": "Select an email address to send from.",
         "toHelper": "Enter the recipient's email address.",
@@ -128,14 +134,24 @@
         "imageTop": "Top",
         "imageBottom": "Bottom",
         "recipient": "Recipient",
-        "recipients": "Recipients"
+        "recipients": "Recipients",
+        "createLink": "Create Link",
+        "linkUrl": "Link URL",
+        "linkText": "Link Text",
+        "linkTextHelper": "If empty, selected text or URL will be used",
+        "uploadImage": "Upload Image",
+        "broadcastNotice": "This email will be sent to all active donors with valid email addresses."
     },
     "templates": {
         "save": "Save as Template",
         "errorLoadingTemplates": "Error loading templates. Please try again.",
         "confirmSave": "Are you sure you want to save this email as a template?",
         "delete": "Delete Template",
-        "confirmDelete": "Are you sure you want to delete this template? This action cannot be undone."
+        "confirmDelete": "Are you sure you want to delete this template? This action cannot be undone.",
+        "noTemplates": "No templates available",
+        "templateSaved": "Template saved successfully!",
+        "templateSaveError": "Error saving template. Please try again.",
+        "templateBodyEmpty": "Template body cannot be empty!"
     },
     "confirmations": {
         "saveTemplate": "Save Template",
@@ -403,5 +419,11 @@
         "email": "Email",
         "phone": "Phone",
         "role": "Role"
+    },
+    "common": {
+        "cancel": "Cancel",
+        "save": "Save",
+        "delete": "Delete",
+        "edit": "Edit"
     }
 }
